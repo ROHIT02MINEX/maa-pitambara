@@ -25,7 +25,11 @@ export function SignupForm({
 }) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
-  const [done, setDone] = React.useState<{ email: string; emailSent: boolean } | null>(null);
+  const [done, setDone] = React.useState<{
+    email: string;
+    emailSent: boolean;
+    verificationRequired: boolean;
+  } | null>(null);
 
   const {
     register,
@@ -53,7 +57,11 @@ export function SignupForm({
     }
 
     toast.success(result.message ?? "Account created.");
-    setDone({ email: values.email, emailSent: result.data?.emailSent ?? false });
+    setDone({
+      email: values.email,
+      emailSent: result.data?.emailSent ?? false,
+      verificationRequired: result.data?.verificationRequired ?? false,
+    });
   }
 
   if (done) {
@@ -63,14 +71,26 @@ export function SignupForm({
           <CheckCircle2 className="h-7 w-7" aria-hidden />
         </span>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Check your inbox</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {done.verificationRequired ? "Check your inbox" : "Account created"}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            We sent a verification link to <strong className="text-foreground">{done.email}</strong>.
-            Confirm your address, then sign in to set up your profile.
+            {done.verificationRequired ? (
+              <>
+                We sent a verification link to{" "}
+                <strong className="text-foreground">{done.email}</strong>. Confirm your address,
+                then sign in to set up your profile.
+              </>
+            ) : (
+              <>
+                Your account for <strong className="text-foreground">{done.email}</strong> is
+                ready. Sign in to choose your trade and set up your profile.
+              </>
+            )}
           </p>
         </div>
 
-        {!done.emailSent ? (
+        {done.verificationRequired && !done.emailSent ? (
           <Alert variant="warning">
             <AlertDescription>
               E-mail delivery is not configured on this deployment, so the verification link was

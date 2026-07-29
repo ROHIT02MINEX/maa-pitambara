@@ -6,6 +6,7 @@ import { Role } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/lib/auth.config";
+import { emailVerificationRequired } from "@/lib/env";
 import { loginSchema } from "@/lib/validations/auth";
 
 /** How long a JWT may go without being re-checked against the database. */
@@ -39,7 +40,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!user || !user.passwordHash || !ok) return null;
         if (user.disabled) return null;
-        if (!user.emailVerified) return null;
+        // Only gate on verification when the deployment can actually send the
+        // link; see `emailVerificationRequired()`.
+        if (emailVerificationRequired() && !user.emailVerified) return null;
 
         return {
           id: user.id,

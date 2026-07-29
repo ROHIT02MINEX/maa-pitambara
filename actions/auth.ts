@@ -20,6 +20,7 @@ import { limitByIdentifier, resetRateLimit, RATE_LIMITS } from "@/lib/rate-limit
 import { downgradeSessionCookieToBrowserSession } from "@/lib/session-cookie";
 import { ACTIVITY, logActivity } from "@/lib/activity";
 import { absoluteUrl } from "@/lib/utils";
+import { emailVerificationRequired } from "@/lib/env";
 import {
   changePasswordSchema,
   forgotPasswordSchema,
@@ -54,7 +55,7 @@ async function issueVerificationEmail(userId: string, email: string, name: strin
 
 export async function registerAction(
   input: unknown,
-): Promise<ActionResult<{ emailSent: boolean }>> {
+): Promise<ActionResult<{ emailSent: boolean; verificationRequired: boolean }>> {
   const parsed = signupSchema.safeParse(input);
   if (!parsed.success) {
     return actionError("Please fix the highlighted fields.", parsed.error.flatten().fieldErrors);
@@ -78,23 +79,41 @@ export async function registerAction(
 
   const passwordHash = await hashPassword(password);
 
+  // With no way to deliver the link, demanding verification would lock the
+  // account out for good — so the address is accepted as-is instead.
+  const requireVerification = emailVerificationRequired();
+
   // A Google-first user adding a password: attach credentials to the account.
   const user = existing
     ? await prisma.user.update({
         where: { id: existing.id },
-        data: { passwordHash, name: existing.name ?? name },
+        data: {
+          passwordHash,
+          name: existing.name ?? name,
+          ...(requireVerification ? {} : { emailVerified: existing.emailVerified ?? new Date() }),
+        },
       })
-    : await prisma.user.create({ data: { name, email, passwordHash } });
+    : await prisma.user.create({
+        data: {
+          name,
+          email,
+          passwordHash,
+          ...(requireVerification ? {} : { emailVerified: new Date() }),
+        },
+      });
 
   await logActivity({ userId: user.id, action: ACTIVITY.SIGNUP, detail: email });
 
   if (user.emailVerified) {
-    return actionOk({ emailSent: false }, "Account created. You can sign in now.");
+    return actionOk(
+      { emailSent: false, verificationRequired: false },
+      "Account created. You can sign in now.",
+    );
   }
 
   const result = await issueVerificationEmail(user.id, email, name);
   return actionOk(
-    { emailSent: result.delivered },
+    { emailSent: result.delivered, verificationRequired: true },
     "Account created. Check your inbox to verify your e-mail address.",
   );
 }
@@ -133,7 +152,7 @@ export async function loginAction(
   if (user.disabled) {
     return actionError("This account has been disabled. Please contact your administrator.");
   }
-  if (!user.emailVerified) {
+  if (emailVerificationRequired() && !user.emailVerified) {
     return actionError(
       "Please verify your e-mail address before signing in. Check your inbox for the link.",
       undefined,

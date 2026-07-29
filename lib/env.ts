@@ -59,4 +59,20 @@ export function envStatus() {
   };
 }
 
+/**
+ * Whether new accounts must confirm their e-mail address before signing in.
+ *
+ * Defaults to "only when e-mail can actually be delivered". Requiring
+ * verification on a deployment with no SMTP would lock every user out
+ * permanently — the link is written to the server log, which a learner cannot
+ * reach. Set `REQUIRE_EMAIL_VERIFICATION` explicitly to override in either
+ * direction.
+ */
+export function emailVerificationRequired(): boolean {
+  const flag = process.env.REQUIRE_EMAIL_VERIFICATION?.toLowerCase();
+  if (flag === "true") return true;
+  if (flag === "false") return false;
+  return envStatus().email;
+}
+
 export const isProduction = process.env.NODE_ENV === "production";
