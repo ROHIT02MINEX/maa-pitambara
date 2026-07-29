@@ -1,0 +1,312 @@
+// Prisma schema for the Skill Learning & Assessment Portal.
+// Datasource: PostgreSQL (Supabase). `DIRECT_URL` is used for migrations so that
+// the pooled connection (PgBouncer) is bypassed when DDL is executed.
+
+generator client {
+  provider = "prisma-client-js"
+  // `native` covers local development. The RHEL targets are for serverless
+  // hosts (Netlify/Vercel functions run on Amazon Linux), where the engine
+  // built on the Ubuntu build image would not load.
+  binaryTargets = ["native", "rhel-openssl-3.0.x", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Occupation {
+  FITTER
+  ELECTRICIAN
+  SOLAR_TECHNICIAN
+  BASIC_COSMETOLOGY
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum QuestionType {
+  MCQ
+  TRUE_FALSE
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum AnswerOption {
+  A
+  B
+  C
+  D
+}
+
+enum TestStatus {
+  IN_PROGRESS
+  PASSED
+  FAILED
+}
+
+// ---------------------------------------------------------------------------
+// Auth.js core models
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String      @id @default(cuid())
+  name          String?
+  email         String      @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  phone         String?
+  occupation    Occupation?
+  role          Role        @default(USER)
+  disabled      Boolean     @default(false)
+  lastLoginAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  accounts     Account[]
+  sessions     Session[]
+  tests        Test[]
+  bookmarks    Bookmark[]
+  pdfViews     PdfView[]
+  activityLogs ActivityLog[]
+  uploadedPdfs Pdf[]         @relation("PdfUploader")
+  resetTokens  PasswordResetToken[]
+  verifyTokens EmailVerificationToken[]
+
+  @@index([occupation])
+  @@index([role])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// Credential flows (email verification / password reset)
+// ---------------------------------------------------------------------------
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  expires   DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// Learning material
+// ---------------------------------------------------------------------------
+
+model Pdf {
+  id           String     @id @default(cuid())
+  title        String
+  description  String?
+  occupation   Occupation
+  topic        String?
+  fileUrl      String
+  storagePath  String
+  fileSize     Int        @default(0)
+  mimeType     String     @default("application/pdf")
+  uploadedById String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  uploadedBy User?      @relation("PdfUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  bookmarks  Bookmark[]
+  views      PdfView[]
+
+  @@index([occupation])
+  @@index([createdAt])
+  @@map("pdfs")
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  pdfId     String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pdf  Pdf  @relation(fields: [pdfId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pdfId])
+  @@index([userId])
+  @@map("bookmarks")
+}
+
+model PdfView {
+  id       String   @id @default(cuid())
+  userId   String
+  pdfId    String
+  views    Int      @default(1)
+  viewedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pdf  Pdf  @relation(fields: [pdfId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pdfId])
+  @@index([userId])
+  @@map("pdf_views")
+}
+
+// ---------------------------------------------------------------------------
+// Assessment
+// ---------------------------------------------------------------------------
+
+model Question {
+  id            String       @id @default(cuid())
+  occupation    Occupation
+  topic         String
+  type          QuestionType @default(MCQ)
+  question      String
+  optionA       String
+  optionB       String
+  optionC       String?
+  optionD       String?
+  correctAnswer AnswerOption
+  explanation   String?
+  difficulty    Difficulty   @default(EASY)
+  active        Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  answers TestAnswer[]
+
+  @@index([occupation, active])
+  @@index([topic])
+  @@map("questions")
+}
+
+model Test {
+  id             String     @id @default(cuid())
+  userId         String
+  occupation     Occupation
+  score          Int        @default(0)
+  totalQuestions Int        @default(20)
+  percentage     Float      @default(0)
+  status         TestStatus @default(IN_PROGRESS)
+  timeTaken      Int        @default(0) // seconds
+  durationSec    Int        @default(1800)
+  startedAt      DateTime   @default(now())
+  expiresAt      DateTime
+  submittedAt    DateTime?
+  createdAt      DateTime   @default(now())
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers TestAnswer[]
+
+  @@index([userId])
+  @@index([occupation])
+  @@index([status])
+  @@index([createdAt])
+  @@map("tests")
+}
+
+model TestAnswer {
+  id             String        @id @default(cuid())
+  testId         String
+  questionId     String
+  orderIndex     Int
+  optionOrder    String // e.g. "C,A,D,B" — per-attempt option shuffle
+  selectedAnswer AnswerOption?
+  correct        Boolean       @default(false)
+  answeredAt     DateTime?
+
+  test     Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([testId, questionId])
+  @@index([testId])
+  @@map("test_answers")
+}
+
+// ---------------------------------------------------------------------------
+// Auditing
+// ---------------------------------------------------------------------------
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  detail    String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}

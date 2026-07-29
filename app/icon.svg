@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Skill Portal">
+  <rect width="64" height="64" rx="14" fill="#2563eb" />
+  <path
+    d="M32 16 12 25l20 9 16-7.2V38h4V25L32 16Zm-12 16.4V40c0 3.3 5.4 6 12 6s12-2.7 12-6v-7.6l-12 5.4-12-5.4Z"
+    fill="#ffffff"
+  />
+</svg>
