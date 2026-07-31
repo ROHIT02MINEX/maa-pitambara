@@ -45,7 +45,12 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  if (isLoggedIn && AUTH_ROUTES.includes(pathname)) {
+  // `?expired=1` means a server component found the session invalid (deleted or
+  // disabled account) while this cookie still decodes. Without this escape the
+  // two would bounce each other forever.
+  const sessionExpired = nextUrl.searchParams.get("expired") === "1";
+
+  if (isLoggedIn && !sessionExpired && AUTH_ROUTES.includes(pathname)) {
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 
@@ -58,14 +63,16 @@ export default auth((req) => {
   }
 
   // Signed in from here on.
-  const profileComplete = session?.user?.profileComplete === true;
-
-  if (!profileComplete && pathname !== "/onboarding") {
-    return NextResponse.redirect(new URL("/onboarding", nextUrl));
-  }
-  if (profileComplete && pathname === "/onboarding") {
-    return NextResponse.redirect(new URL("/dashboard", nextUrl));
-  }
+  //
+  // Profile completeness is deliberately NOT enforced here. Middleware runs on
+  // the Edge and can only decode the JWT — it cannot refresh it from the
+  // database, so straight after onboarding this cookie still says "incomplete"
+  // while the server components (which do refresh) say "complete". Gating on it
+  // in both places made them disagree and bounce forever:
+  //   /onboarding -> page says complete -> /dashboard -> middleware says
+  //   incomplete -> /onboarding -> ...
+  // The check now lives only in `(app)/layout.tsx` and the onboarding page,
+  // which read the same freshly-refreshed session and therefore cannot disagree.
 
   if (pathname.startsWith("/admin") && session?.user?.role !== "ADMIN") {
     return NextResponse.redirect(new URL("/dashboard?error=forbidden", nextUrl));

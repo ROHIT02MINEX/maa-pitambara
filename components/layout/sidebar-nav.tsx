@@ -9,6 +9,7 @@ import {
   FileText,
   LayoutDashboard,
   ListChecks,
+  RotateCcw,
   UserRound,
   Users,
   type LucideIcon,
@@ -28,6 +29,7 @@ const ICONS: Record<NavIconName, LucideIcon> = {
   pdfs: FileText,
   questions: FileQuestion,
   analytics: BarChart3,
+  retests: RotateCcw,
 };
 
 function isActive(pathname: string, href: string) {

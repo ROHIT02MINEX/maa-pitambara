@@ -2,6 +2,7 @@ import Link from "next/link";
 import { GraduationCap, ShieldCheck, Timer, TrendingUp } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
+import { INSTITUTE } from "@/lib/constants";
 
 const HIGHLIGHTS = [
   { icon: Timer, text: "30-minute timed tests with a server-side clock" },
@@ -22,7 +23,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
             <GraduationCap className="h-5 w-5" />
           </span>
-          Skill Portal
+          <span className="flex flex-col leading-tight">
+            <span>{INSTITUTE.shortName}</span>
+            <span className="text-xs font-normal text-muted-foreground">
+              {INSTITUTE.city} · ITI code {INSTITUTE.scvtCode}
+            </span>
+          </span>
         </Link>
 
         <div className="relative max-w-md">
@@ -46,7 +52,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <p className="relative text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Skill Learning &amp; Assessment Portal
+          © {new Date().getFullYear()} {INSTITUTE.name}, {INSTITUTE.city}
+          <span className="mt-1 block">{INSTITUTE.affiliation} · ITI code {INSTITUTE.scvtCode}</span>
         </p>
       </aside>
 
@@ -56,7 +63,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="h-4 w-4" />
             </span>
-            Skill Portal
+            {INSTITUTE.shortName}
           </Link>
           <ThemeToggle />
         </div>

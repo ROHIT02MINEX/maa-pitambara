@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 /** Admin panel. Access is gated in the middleware and re-checked here. */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
-  if (!user?.id) redirect("/login");
+  if (!user?.id) redirect("/login?expired=1");
   if (user.role !== "ADMIN") redirect("/dashboard?error=forbidden");
 
   return (

@@ -1,5 +1,23 @@
 import { Occupation, Difficulty, QuestionType, TestStatus } from "@prisma/client";
 
+/**
+ * Institute identity. Details verified against the UP government ITI register
+ * (update.vppup.in, ITI code 2627) rather than typed from memory.
+ */
+export const INSTITUTE = {
+  name: "Maa Pitambra Private ITI",
+  shortName: "Maa Pitambra ITI",
+  city: "Jhansi",
+  address:
+    "Behind Hero JMK Showroom, Shivpuri Road, Nandanpura, Jhansi, Uttar Pradesh 284003",
+  scvtCode: "2627",
+  ncvtCode: "PU09001984",
+  affiliation: "NCVT & SCVT affiliated",
+  email: "mppitijhs@gmail.com",
+  phone: "+91 98892 16678",
+  portalName: "Skill Learning & Assessment Portal",
+} as const;
+
 /** Single source of truth for the four supported trades. */
 export const OCCUPATIONS = [
   Occupation.FITTER,

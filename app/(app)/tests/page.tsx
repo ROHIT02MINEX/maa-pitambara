@@ -20,7 +20,9 @@ import {
 import { finalizeExpiredTests } from "@/lib/test-engine";
 import { occupationLabel, PASS_PERCENTAGE, TEST_QUESTION_COUNT } from "@/lib/constants";
 import { formatDate, formatDuration } from "@/lib/utils";
+import { getRetestOverview } from "@/lib/retest";
 import { StartTestButton } from "@/components/tests/start-test-button";
+import { RetestPanel } from "@/components/tests/retest-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -52,13 +54,16 @@ export default async function TestsPage() {
   // Close out anything whose timer expired while the learner was away.
   await finalizeExpiredTests(user.id);
 
-  const [inProgress, history, bankSize] = await Promise.all([
+  const [inProgress, history, bankSize, retest] = await Promise.all([
     getInProgressTest(user.id),
     getTestHistory(user.id),
     getQuestionBankSize(user.occupation),
+    getRetestOverview(user.id),
   ]);
 
   const enoughQuestions = bankSize >= TEST_QUESTION_COUNT;
+  const canStart = retest.eligibility.allowed;
+  const blockedMessage = retest.eligibility.allowed ? null : retest.eligibility.message;
 
   return (
     <div className="space-y-6">
@@ -70,7 +75,10 @@ export default async function TestsPage() {
             {bankSize === 1 ? "" : "s"} available
           </p>
         </div>
-        <StartTestButton disabled={!enoughQuestions} resumeId={inProgress?.id ?? null} />
+        <StartTestButton
+          disabled={!enoughQuestions || !canStart}
+          resumeId={inProgress?.id ?? null}
+        />
       </header>
 
       {inProgress ? (
@@ -113,6 +121,14 @@ export default async function TestsPage() {
           ))}
         </ul>
       </section>
+
+      <RetestPanel
+        canRequest={retest.eligibility.allowed === false && retest.eligibility.reason === "needs-request"}
+        blockedMessage={blockedMessage}
+        requests={retest.requests}
+        attemptsUsed={retest.attemptsUsed}
+        freeAttempts={retest.freeAttempts}
+      />
 
       <Card>
         <CardHeader>

@@ -6,7 +6,7 @@ import { currentUser } from "@/lib/auth";
 import { AppShell } from "@/components/layout/app-shell";
 import { LEARNER_NAV } from "@/components/layout/nav-items";
 import { Button } from "@/components/ui/button";
-import { occupationLabel } from "@/lib/constants";
+import { INSTITUTE, occupationLabel } from "@/lib/constants";
 
 /**
  * Learner area. The middleware already blocks unauthenticated access and
@@ -14,7 +14,9 @@ import { occupationLabel } from "@/lib/constants";
  */
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await currentUser();
-  if (!user?.id) redirect("/login");
+  // `expired=1` tells the middleware not to bounce us straight back here when
+  // the cookie still decodes but the account behind it is gone or disabled.
+  if (!user?.id) redirect("/login?expired=1");
   if (!user.profileComplete) redirect("/onboarding");
 
   const isAdmin = user.role === "ADMIN";
@@ -22,7 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <AppShell
       items={LEARNER_NAV}
-      title="Skill Portal"
+      title={INSTITUTE.shortName}
       subtitle={occupationLabel(user.occupation)}
       user={{ name: user.name, email: user.email, image: user.image, isAdmin }}
       sidebarFooter={

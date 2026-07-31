@@ -16,7 +16,8 @@ export type NavIconName =
   | "users"
   | "pdfs"
   | "questions"
-  | "analytics";
+  | "analytics"
+  | "retests";
 
 export type NavItem = {
   href: string;
@@ -39,4 +40,5 @@ export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/pdfs", label: "PDFs", icon: "pdfs" },
   { href: "/admin/questions", label: "Questions", icon: "questions" },
   { href: "/admin/analytics", label: "Test analytics", icon: "analytics" },
+  { href: "/admin/retests", label: "Retest requests", icon: "retests" },
 ];

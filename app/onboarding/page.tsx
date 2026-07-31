@@ -16,7 +16,9 @@ export const metadata: Metadata = {
 
 export default async function OnboardingPage() {
   const sessionUser = await currentUser();
-  if (!sessionUser?.id) redirect("/login");
+  if (!sessionUser?.id) redirect("/login?expired=1");
+  // Same session value the app layout reads, so the two can never disagree
+  // and ping-pong between /onboarding and /dashboard.
   if (sessionUser.profileComplete) redirect("/dashboard");
 
   const user = await prisma.user.findUnique({

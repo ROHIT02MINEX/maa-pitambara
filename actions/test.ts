@@ -15,6 +15,8 @@ import {
   finalizeTest,
   pickRandomQuestionIds,
 } from "@/lib/test-engine";
+import { getTestEligibility } from "@/lib/retest";
+import { backupTestResult } from "@/lib/sheets-backup";
 import { actionError, actionOk, type ActionResult } from "@/types";
 
 const saveAnswerSchema = z.object({
@@ -54,6 +56,11 @@ export async function startTestAction(): Promise<ActionResult<{ testId: string }
   });
   if (active) return actionOk({ testId: active.id }, "Resuming your test in progress.");
 
+  // One attempt by default; anything further needs an approved retest. This is
+  // the enforcement point — the UI hides the button, but that is only a hint.
+  const eligibility = await getTestEligibility(sessionUser.id);
+  if (!eligibility.allowed) return actionError(eligibility.message);
+
   const questionIds = await pickRandomQuestionIds(sessionUser.occupation);
   if (questionIds.length < TEST_QUESTION_COUNT) {
     return actionError(
@@ -86,6 +93,15 @@ export async function startTestAction(): Promise<ActionResult<{ testId: string }
     },
     select: { id: true },
   });
+
+  // Spend the retest grant only once the attempt actually exists, so a failure
+  // above can never burn the learner's approval.
+  if (eligibility.reason === "approved-retest") {
+    await prisma.retestRequest.update({
+      where: { id: eligibility.grantId },
+      data: { consumedAt: new Date() },
+    });
+  }
 
   await logActivity({ userId: sessionUser.id, action: ACTIVITY.TEST_STARTED, detail: test.id });
   revalidatePath("/tests");
@@ -157,6 +173,10 @@ export async function submitTestAction(
   }
 
   await finalizeTest(testId, auto);
+
+  // Best-effort spreadsheet backup. Never allowed to fail the submission.
+  await backupTestResult(testId);
+
   await logActivity({
     userId: sessionUser.id,
     action: auto ? ACTIVITY.TEST_AUTO_SUBMITTED : ACTIVITY.TEST_SUBMITTED,

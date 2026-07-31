@@ -56,6 +56,12 @@ enum TestStatus {
   FAILED
 }
 
+enum RetestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 // ---------------------------------------------------------------------------
 // Auth.js core models
 // ---------------------------------------------------------------------------
@@ -84,6 +90,8 @@ model User {
   uploadedPdfs Pdf[]         @relation("PdfUploader")
   resetTokens  PasswordResetToken[]
   verifyTokens EmailVerificationToken[]
+  retestRequests  RetestRequest[] @relation("RetestRequester")
+  retestsReviewed RetestRequest[] @relation("RetestReviewer")
 
   @@index([occupation])
   @@index([role])
@@ -289,6 +297,32 @@ model TestAnswer {
   @@unique([testId, questionId])
   @@index([testId])
   @@map("test_answers")
+}
+
+/// A learner gets one attempt by default. Any further attempt needs an
+/// administrator to approve a request. An APPROVED row is a single-use grant:
+/// `consumedAt` is stamped when the learner starts the attempt it paid for,
+/// which is what stops one approval unlocking unlimited retests.
+model RetestRequest {
+  id           String       @id @default(cuid())
+  userId       String
+  occupation   Occupation
+  reason       String?
+  status       RetestStatus @default(PENDING)
+  adminNote    String?
+  reviewedById String?
+  reviewedAt   DateTime?
+  consumedAt   DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  user       User  @relation("RetestRequester", fields: [userId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("RetestReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("retest_requests")
 }
 
 // ---------------------------------------------------------------------------

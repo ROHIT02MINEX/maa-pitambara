@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
+import { INSTITUTE } from "@/lib/constants";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -14,17 +15,26 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: {
-    default: "Skill Learning & Assessment Portal",
-    template: "%s · Skill Portal",
+    default: `${INSTITUTE.name} · ${INSTITUTE.portalName}`,
+    template: `%s · ${INSTITUTE.shortName}`,
   },
-  description:
-    "Occupation-wise learning material and timed assessments for Fitter, Electrician, Solar Technician and Basic Cosmetology trainees.",
-  applicationName: "Skill Portal",
-  keywords: ["ITI", "skill development", "assessment", "fitter", "electrician", "solar", "cosmetology"],
+  description: `Occupation-wise learning material and timed assessments for trainees of ${INSTITUTE.name}, ${INSTITUTE.city} — Fitter, Electrician, Solar Technician and Basic Cosmetology.`,
+  applicationName: INSTITUTE.shortName,
+  keywords: [
+    "ITI",
+    "Maa Pitambra",
+    "Jhansi",
+    "skill development",
+    "assessment",
+    "fitter",
+    "electrician",
+    "solar technician",
+    "cosmetology",
+  ],
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
-    title: "Skill Learning & Assessment Portal",
+    title: `${INSTITUTE.name} · ${INSTITUTE.portalName}`,
     description: "Learn from trade-specific material and prove your skills with timed tests.",
   },
 };

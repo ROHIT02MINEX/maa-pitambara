@@ -17,7 +17,9 @@ import { occupationLabel } from "@/lib/constants";
 import { activityLabel } from "@/lib/activity-labels";
 import { formatDate, formatDuration, initials } from "@/lib/utils";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { isSheetsBackupConfigured } from "@/lib/sheets-backup";
 import { OccupationScoresChart, OccupationUsersChart } from "@/components/admin/admin-charts";
+import { SheetsBackupCard } from "@/components/admin/sheets-backup-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -126,6 +128,8 @@ export default async function AdminDashboardPage() {
         <OccupationUsersChart data={overview.occupationCounts} />
         <OccupationScoresChart data={overview.occupationScores} />
       </div>
+
+      <SheetsBackupCard configured={isSheetsBackupConfigured()} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

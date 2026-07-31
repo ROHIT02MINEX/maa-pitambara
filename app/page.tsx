@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { OCCUPATIONS, OCCUPATION_DESCRIPTIONS, OCCUPATION_LABELS } from "@/lib/constants";
+import { INSTITUTE, OCCUPATIONS, OCCUPATION_DESCRIPTIONS, OCCUPATION_LABELS } from "@/lib/constants";
 import { PASS_PERCENTAGE, TEST_QUESTION_COUNT } from "@/lib/constants";
 import { currentUser } from "@/lib/auth";
 
@@ -51,7 +51,12 @@ export default async function LandingPage() {
             <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="h-5 w-5" />
             </span>
-            <span className="hidden sm:inline">Skill Portal</span>
+            <span className="hidden flex-col leading-tight sm:flex">
+              <span>{INSTITUTE.shortName}</span>
+              <span className="text-xs font-normal text-muted-foreground">
+                {INSTITUTE.city} · ITI code {INSTITUTE.scvtCode}
+              </span>
+            </span>
           </Link>
 
           <nav className="flex items-center gap-2" aria-label="Primary">
@@ -79,14 +84,21 @@ export default async function LandingPage() {
       <main id="main">
         <section className="container py-20 md:py-28">
           <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-5">Skill Learning &amp; Assessment Portal</Badge>
+            <Badge className="mb-5">{INSTITUTE.portalName}</Badge>
             <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
               Learn your trade. Then prove it.
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
+            <p className="mx-auto mt-3 text-base font-semibold text-primary sm:text-lg">
+              {INSTITUTE.name}, {INSTITUTE.city}
+            </p>
+            <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg text-muted-foreground">
               Occupation-wise study material and timed, randomised assessments for Fitter,
               Electrician, Solar Technician and Basic Cosmetology trainees — with progress
               tracking that actually reflects what you know.
+            </p>
+            <p className="mx-auto mt-3 text-xs text-muted-foreground">
+              {INSTITUTE.affiliation} · ITI code {INSTITUTE.scvtCode} · NCVT MIS{" "}
+              {INSTITUTE.ncvtCode}
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -159,7 +171,10 @@ export default async function LandingPage() {
 
       <footer className="border-t border-border/60 py-8">
         <div className="container flex flex-col items-center justify-between gap-3 text-sm text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} Skill Learning &amp; Assessment Portal</p>
+          <p className="text-center sm:text-left">
+            © {new Date().getFullYear()} {INSTITUTE.name}, {INSTITUTE.city}
+            <span className="block text-xs">{INSTITUTE.address}</span>
+          </p>
           <nav className="flex gap-5" aria-label="Footer">
             <Link href="/login" className="hover:text-foreground">
               Sign in
