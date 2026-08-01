@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
@@ -25,9 +24,9 @@ export function OnboardingForm({
   defaultName?: string | null;
   lockedOccupation?: Occupation | null;
 }) {
-  const router = useRouter();
   const { update } = useSession();
   const [formError, setFormError] = React.useState<string | null>(null);
+  const [redirecting, setRedirecting] = React.useState(false);
 
   const {
     register,
@@ -59,11 +58,11 @@ export function OnboardingForm({
       return;
     }
 
-    toast.success(result.message ?? "Profile saved.");
+    setRedirecting(true);
+    toast.success(result.message ?? "Profile saved! Loading dashboard...");
     // Refresh the JWT so `profileComplete` flips before the redirect.
     await update();
-    router.replace("/dashboard");
-    router.refresh();
+    window.location.assign("/dashboard");
   }
 
   return (
@@ -156,8 +155,8 @@ export function OnboardingForm({
         ) : null}
       </fieldset>
 
-      <Button type="submit" className="w-full" size="lg" loading={isSubmitting}>
-        Save profile and continue
+      <Button type="submit" className="w-full" size="lg" loading={isSubmitting || redirecting} disabled={isSubmitting || redirecting}>
+        {redirecting ? "Loading dashboard..." : "Save profile and continue"}
       </Button>
     </form>
   );

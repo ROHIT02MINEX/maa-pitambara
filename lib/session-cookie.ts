@@ -11,18 +11,23 @@ const SESSION_COOKIE_PATTERN = /authjs\.session-token(\.\d+)?$/;
  * unchecked — the session then dies when the browser closes.
  */
 export async function downgradeSessionCookieToBrowserSession() {
-  const store = await cookies();
+  try {
+    const store = await cookies();
 
-  for (const cookie of store.getAll()) {
-    if (!SESSION_COOKIE_PATTERN.test(cookie.name)) continue;
-    store.set({
-      name: cookie.name,
-      value: cookie.value,
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      secure: cookie.name.startsWith("__Secure-"),
-      // No `maxAge` / `expires` → the browser drops it when it closes.
-    });
+    for (const cookie of store.getAll()) {
+      if (!SESSION_COOKIE_PATTERN.test(cookie.name)) continue;
+      if (cookie.value) {
+        store.set({
+          name: cookie.name,
+          value: cookie.value,
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: cookie.name.startsWith("__Secure-"),
+        });
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to downgrade session cookie:", err);
   }
 }

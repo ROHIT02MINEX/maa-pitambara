@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
-import { registerAction } from "@/actions/auth";
+import { loginAction, registerAction } from "@/actions/auth";
 import { runAction } from "@/lib/run-action";
 import { signupSchema, type SignupInput } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ export function SignupForm({
 }) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
+  const [redirecting, setRedirecting] = React.useState(false);
   const [done, setDone] = React.useState<{
     email: string;
     emailSent: boolean;
@@ -56,11 +57,27 @@ export function SignupForm({
       return;
     }
 
+    const verificationRequired = result.data?.verificationRequired ?? false;
+
+    if (!verificationRequired) {
+      // Auto-login after registration when verification is not required
+      setRedirecting(true);
+      toast.success("Account created! Setting up your session...");
+      const loginRes = await runAction(() =>
+        loginAction({ email: values.email, password: values.password, remember: true }),
+      );
+
+      if (loginRes.ok) {
+        window.location.assign(loginRes.data?.redirectTo || "/onboarding");
+        return;
+      }
+    }
+
     toast.success(result.message ?? "Account created.");
     setDone({
       email: values.email,
       emailSent: result.data?.emailSent ?? false,
-      verificationRequired: result.data?.verificationRequired ?? false,
+      verificationRequired,
     });
   }
 
@@ -174,8 +191,8 @@ export function SignupForm({
           ) : null}
         </div>
 
-        <Button type="submit" className="w-full" loading={isSubmitting}>
-          Create account
+        <Button type="submit" className="w-full" loading={isSubmitting || redirecting} disabled={isSubmitting || redirecting}>
+          {redirecting ? "Setting up account..." : "Create account"}
         </Button>
       </form>
 

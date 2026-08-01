@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail } from "lucide-react";
@@ -26,11 +25,11 @@ export function LoginForm({
   /** False when the deployment has no Google OAuth credentials configured. */
   googleEnabled: boolean;
 }) {
-  const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [needsVerification, setNeedsVerification] = React.useState(false);
   const [resending, setResending] = React.useState(false);
+  const [redirecting, setRedirecting] = React.useState(false);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -58,9 +57,10 @@ export function LoginForm({
       return;
     }
 
-    toast.success("Signed in. Welcome back!");
-    router.push(callbackUrl || result.data?.redirectTo || "/dashboard");
-    router.refresh();
+    setRedirecting(true);
+    toast.success("Signed in! Redirecting...");
+    const targetUrl = callbackUrl || result.data?.redirectTo || "/dashboard";
+    window.location.assign(targetUrl);
   }
 
   async function handleResend() {
@@ -168,8 +168,8 @@ export function LoginForm({
           </Label>
         </div>
 
-        <Button type="submit" className="w-full" loading={isSubmitting}>
-          Sign in
+        <Button type="submit" className="w-full" loading={isSubmitting || redirecting} disabled={isSubmitting || redirecting}>
+          {redirecting ? "Signing in..." : "Sign in"}
         </Button>
       </form>
 

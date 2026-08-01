@@ -2,7 +2,7 @@ import NextAuth, { type Session } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
-import { Role } from "@prisma/client";
+import { Occupation, Role } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/lib/auth.config";
@@ -78,33 +78,48 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const stale = !token.refreshedAt || Date.now() - token.refreshedAt > TOKEN_REFRESH_MS;
       if (!user && trigger !== "update" && !stale) return token;
 
-      const dbUser = await prisma.user.findUnique({
-        where: { id: token.sub },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true,
-          role: true,
-          phone: true,
-          occupation: true,
-          disabled: true,
-          emailVerified: true,
-        },
-      });
+      try {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+            phone: true,
+            occupation: true,
+            disabled: true,
+            emailVerified: true,
+          },
+        });
 
-      // User was deleted (or disabled) — invalidate the token contents.
-      if (!dbUser || dbUser.disabled) return { ...token, id: undefined, sub: undefined };
+        // User was deleted (or disabled) — invalidate the token contents.
+        if (!dbUser || dbUser.disabled) return { ...token, id: undefined, sub: undefined };
 
-      token.id = dbUser.id;
-      token.name = dbUser.name;
-      token.email = dbUser.email;
-      token.picture = dbUser.image;
-      token.role = dbUser.role;
-      token.phone = dbUser.phone;
-      token.occupation = dbUser.occupation;
-      token.profileComplete = Boolean(dbUser.name && dbUser.phone && dbUser.occupation);
-      token.refreshedAt = Date.now();
+        token.id = dbUser.id;
+        token.name = dbUser.name;
+        token.email = dbUser.email;
+        token.picture = dbUser.image;
+        token.role = dbUser.role;
+        token.phone = dbUser.phone;
+        token.occupation = dbUser.occupation;
+        token.profileComplete = Boolean(dbUser.name && dbUser.phone && dbUser.occupation);
+        token.refreshedAt = Date.now();
+      } catch (dbErr) {
+        console.error("Database lookup error in jwt callback:", dbErr);
+        if (user) {
+          token.id = user.id;
+          token.name = user.name;
+          token.email = user.email;
+          token.picture = user.image;
+          const u = user as Record<string, unknown>;
+          token.role = (u.role as Role) ?? "USER";
+          token.phone = (u.phone as string | null) ?? null;
+          token.occupation = (u.occupation as Occupation | null) ?? null;
+          token.profileComplete = Boolean(user.name && u.phone && u.occupation);
+        }
+      }
       return token;
     },
   },

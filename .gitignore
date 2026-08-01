@@ -48,3 +48,6 @@ prisma/*.db-journal
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# MCP config
+.mcp.json

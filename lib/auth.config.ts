@@ -10,7 +10,7 @@ import Google from "next-auth/providers/google";
  */
 export const authConfig = {
   trustHost: true,
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET || "ZJ9/vwh8QtMY6lMg+V+MDLJG3stU/lZSZpjEaGyobYo=",
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days ("remember me" ceiling)
