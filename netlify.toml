@@ -1,13 +1,20 @@
 # Netlify build configuration.
-# The official Next.js runtime is auto-installed by Netlify; it handles the App
-# Router, Server Actions, middleware and image optimisation.
+#
+# This site was created via API and deployed via CLI, so it never went
+# through Netlify's UI-based framework auto-detection. The Next.js runtime
+# plugin is declared explicitly here rather than relied on implicitly --
+# without it, middleware and Server Actions are not guaranteed to deploy
+# correctly even though static pages still render.
 
 [build]
   command = "npx prisma generate && next build"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "22"
   # Skip Prisma's postinstall telemetry prompt on CI.
   CHECKPOINT_DISABLE = "1"
 
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 

@@ -30,13 +30,7 @@ export default auth((req) => {
   const isLoggedIn = Boolean(session?.user?.id);
 
   // Auth.js endpoints and the health probe must always pass through untouched.
-  // TEMPORARY: /api/debug-db is a diagnostic route, removed together with its
-  // handler once the production database-connectivity issue is found.
-  if (
-    pathname.startsWith("/api/auth") ||
-    pathname === "/api/health" ||
-    pathname === "/api/debug-db"
-  ) {
+  if (pathname.startsWith("/api/auth") || pathname === "/api/health") {
     return NextResponse.next();
   }
 
