@@ -72,7 +72,7 @@ export async function getTestEligibility(userId: string): Promise<TestEligibilit
     allowed: false,
     reason: "needs-request",
     message:
-      "You have used your attempt. Request a retest below — an administrator will review it.",
+      "You have used your attempt. Request a retest below, and an administrator will review it.",
   };
 }
 

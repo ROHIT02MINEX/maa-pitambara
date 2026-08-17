@@ -9,7 +9,9 @@ import {
   ExternalLink,
   Eye,
   FileText,
+  HelpCircle,
   Search,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -29,6 +31,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useDebounce } from "@/hooks/use-debounce";
+import { SUBJECT_SHORT_LABELS } from "@/lib/constants";
 import { cn, formatBytes, formatDate } from "@/lib/utils";
 import type { PdfListItem } from "@/types";
 
@@ -57,11 +60,19 @@ export function PdfLibrary({
   );
 
   const debouncedQuery = useDebounce(query);
+  const highlightRef = React.useRef<HTMLLIElement | null>(null);
 
   // Keep local bookmark state in sync when the server sends a new list.
   React.useEffect(() => {
     setBookmarks(Object.fromEntries(pdfs.map((pdf) => [pdf.id, pdf.bookmarked])));
   }, [pdfs]);
+
+  // Arriving from a result page's "find in library" link: bring the document
+  // into view rather than leaving the learner to hunt for the ring.
+  React.useEffect(() => {
+    if (!highlightId) return;
+    highlightRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [highlightId]);
 
   // Push the debounced search term into the URL so results are shareable.
   React.useEffect(() => {
@@ -155,67 +166,93 @@ export function PdfLibrary({
         <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {pdfs.map((pdf) => {
             const bookmarked = bookmarks[pdf.id] ?? false;
+            const highlighted = highlightId === pdf.id;
             return (
-              <li key={pdf.id}>
+              <li key={pdf.id} ref={highlighted ? highlightRef : undefined}>
                 <Card
                   className={cn(
-                    "flex h-full flex-col p-5 transition-shadow hover:shadow-md",
-                    highlightId === pdf.id && "ring-2 ring-primary",
+                    "flex h-full flex-col overflow-hidden p-0 transition-shadow hover:shadow-md",
+                    highlighted && "ring-2 ring-primary",
                   )}
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                      <FileText className="h-5 w-5" aria-hidden />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold leading-snug">{pdf.title}</h3>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {formatBytes(pdf.fileSize)} · {formatDate(pdf.createdAt)}
-                      </p>
+                  {/* Gold spine, echoing the seal's inner ring. */}
+                  <div className="gold-rule" aria-hidden />
+
+                  <div className="flex flex-1 flex-col p-5">
+                    <div className="flex items-start gap-3">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary dark:bg-gold/15 dark:text-gold">
+                        <FileText className="h-5 w-5" aria-hidden />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold leading-snug">{pdf.title}</h3>
+                        {pdf.titleHi ? (
+                          <p lang="hi" className="font-devanagari text-xs text-muted-foreground">
+                            {pdf.titleHi}
+                          </p>
+                        ) : null}
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {formatBytes(pdf.fileSize)} · {formatDate(pdf.createdAt)}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        disabled={pending === pdf.id}
+                        onClick={() => handleBookmark(pdf.id)}
+                        aria-pressed={bookmarked}
+                        aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
+                      >
+                        {bookmarked ? (
+                          <BookmarkCheck className="h-4 w-4 text-primary dark:text-gold" />
+                        ) : (
+                          <Bookmark className="h-4 w-4" />
+                        )}
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      disabled={pending === pdf.id}
-                      onClick={() => handleBookmark(pdf.id)}
-                      aria-pressed={bookmarked}
-                      aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
-                    >
-                      {bookmarked ? (
-                        <BookmarkCheck className="h-4 w-4 text-primary" />
-                      ) : (
-                        <Bookmark className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
 
-                  {pdf.description ? (
-                    <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted-foreground">
-                      {pdf.description}
-                    </p>
-                  ) : (
-                    <div className="flex-1" />
-                  )}
+                    {pdf.description ? (
+                      <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted-foreground">
+                        {pdf.description}
+                      </p>
+                    ) : (
+                      <div className="flex-1" />
+                    )}
 
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    {pdf.topic ? <Badge variant="secondary">{pdf.topic}</Badge> : null}
-                    {pdf.viewed ? (
-                      <Badge variant="success">
-                        <Eye className="h-3 w-3" /> Viewed
-                      </Badge>
-                    ) : null}
-                  </div>
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      {pdf.builtIn ? (
+                        <Badge variant="secondary">
+                          <ShieldCheck className="h-3 w-3" /> Official
+                        </Badge>
+                      ) : null}
+                      {pdf.subject ? (
+                        <Badge variant="outline">{SUBJECT_SHORT_LABELS[pdf.subject]}</Badge>
+                      ) : null}
+                      {pdf.year ?? pdf.topic ? (
+                        <Badge variant="outline">{pdf.year ?? pdf.topic}</Badge>
+                      ) : null}
+                      {pdf.questionCount > 0 ? (
+                        <Badge variant="outline" title="Test questions drawn from this document">
+                          <HelpCircle className="h-3 w-3" /> {pdf.questionCount} in tests
+                        </Badge>
+                      ) : null}
+                      {pdf.viewed ? (
+                        <Badge variant="success">
+                          <Eye className="h-3 w-3" /> Viewed
+                        </Badge>
+                      ) : null}
+                    </div>
 
-                  <div className="mt-4 flex gap-2">
-                    <Button className="flex-1" onClick={() => handleOpen(pdf)}>
-                      Read
-                    </Button>
-                    <Button asChild variant="outline" size="icon" title="Download">
-                      <a href={pdf.fileUrl} download target="_blank" rel="noopener noreferrer">
-                        <Download className="h-4 w-4" />
-                        <span className="sr-only">Download {pdf.title}</span>
-                      </a>
-                    </Button>
+                    <div className="mt-4 flex gap-2">
+                      <Button className="flex-1" onClick={() => handleOpen(pdf)}>
+                        Read
+                      </Button>
+                      <Button asChild variant="outline" size="icon" title="Download">
+                        <a href={pdf.fileUrl} download target="_blank" rel="noopener noreferrer">
+                          <Download className="h-4 w-4" />
+                          <span className="sr-only">Download {pdf.title}</span>
+                        </a>
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               </li>

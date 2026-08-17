@@ -86,7 +86,7 @@ const FITTER: SeedQuestion[] = [
     type: QuestionType.TRUE_FALSE,
     question: "A file should be used with a handle fitted to its tang.",
     answer: AnswerOption.A,
-    explanation: "Without a handle the exposed tang can pierce the palm — it is a basic safety rule.",
+    explanation: "Without a handle the exposed tang can pierce the palm; it is a basic safety rule.",
   },
   {
     topic: "Drilling",
@@ -169,7 +169,7 @@ const FITTER: SeedQuestion[] = [
     type: QuestionType.TRUE_FALSE,
     question: "Compressed air may be used to blow metal chips off your clothing.",
     answer: AnswerOption.B,
-    explanation: "Compressed air can drive chips into skin or eyes — use a brush instead.",
+    explanation: "Compressed air can drive chips into skin or eyes, so use a brush instead.",
   },
   {
     topic: "Safety",
@@ -201,7 +201,7 @@ const ELECTRICIAN: SeedQuestion[] = [
     question: "The SI unit of electrical power is the:",
     options: ["Volt", "Ampere", "Watt", "Ohm"],
     answer: AnswerOption.C,
-    explanation: "Power is measured in watts — one joule per second.",
+    explanation: "Power is measured in watts, one joule per second.",
   },
   {
     topic: "Basic Electricity",
@@ -519,7 +519,7 @@ const SOLAR: SeedQuestion[] = [
       "Cannot be isolated",
     ],
     answer: AnswerOption.A,
-    explanation: "You cannot switch off the sun — the DC side is live in daylight.",
+    explanation: "You cannot switch off the sun; the DC side is live in daylight.",
   },
   {
     topic: "Safety",
@@ -645,7 +645,7 @@ const COSMETOLOGY: SeedQuestion[] = [
     type: QuestionType.TRUE_FALSE,
     question: "Disposable items such as waxing spatulas may be reused on the next client.",
     answer: AnswerOption.B,
-    explanation: "Single-use items must be discarded after one client — double-dipping spreads infection.",
+    explanation: "Single-use items must be discarded after one client. Double-dipping spreads infection.",
   },
   {
     topic: "Hygiene and Sanitation",
@@ -785,7 +785,7 @@ async function main() {
   for (const [occupation, questions] of banks) {
     const existing = await prisma.question.count({ where: { occupation } });
     if (existing > 0) {
-      console.log(`  • ${occupation}: ${existing} question(s) already present — skipped`);
+      console.log(`  • ${occupation}: ${existing} question(s) already present, skipped`);
       continue;
     }
 
@@ -796,7 +796,7 @@ async function main() {
   console.log("→ Seed complete.");
   if (!process.env.ADMIN_PASSWORD) {
     console.log(
-      `\n  ⚠ Administrator password defaulted to "ChangeMe123!" — sign in and change it immediately,\n    or re-run the seed with ADMIN_PASSWORD set.\n`,
+      `\n  ⚠ Administrator password defaulted to "ChangeMe123!". Sign in and change it immediately,\n    or re-run the seed with ADMIN_PASSWORD set.\n`,
     );
   }
 }

@@ -31,7 +31,7 @@ export async function syncSheetsBackupAction(): Promise<ActionResult<{ synced: n
   return actionOk(
     { synced: result.synced },
     result.synced === 0
-      ? "Nothing to sync — no completed attempts yet."
+      ? "Nothing to sync. No completed attempts yet."
       : `Sent ${result.synced} result row(s) to Google Sheets.`,
   );
 }

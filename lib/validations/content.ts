@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AnswerOption, Difficulty, Occupation, QuestionType } from "@prisma/client";
+import { AnswerOption, Difficulty, Occupation, QuestionType, Subject } from "@prisma/client";
 import { MAX_PAGE_SIZE } from "@/lib/constants";
 
 // ---------------------------------------------------------------------------
@@ -29,6 +29,8 @@ const baseQuestionSchema = z.object({
   occupation: z.nativeEnum(Occupation, {
     errorMap: () => ({ message: "Select an occupation" }),
   }),
+  // Which of the four AITT papers this belongs to; drives the test blueprint.
+  subject: z.nativeEnum(Subject).default(Subject.TRADE_THEORY),
   topic: z.string().trim().min(2, "Topic is required").max(80),
   type: z.nativeEnum(QuestionType).default(QuestionType.MCQ),
   question: z.string().trim().min(8, "Question must be at least 8 characters").max(1000),
@@ -78,6 +80,7 @@ export type QuestionInput = z.infer<typeof questionSchema>;
 /** Shape of a single row in the CSV bulk importer. */
 export const questionCsvRowSchema = z.object({
   occupation: z.string().trim(),
+  subject: z.string().trim().optional(),
   topic: z.string().trim(),
   type: z.string().trim().optional(),
   question: z.string().trim(),

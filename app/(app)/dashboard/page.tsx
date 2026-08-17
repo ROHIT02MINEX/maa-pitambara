@@ -198,7 +198,7 @@ export default async function DashboardPage() {
           {recentTests.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
               <p className="text-sm text-muted-foreground">
-                You haven&apos;t taken a test yet. Twenty questions, thirty minutes — give it a go.
+                You haven&apos;t taken a test yet. Twenty questions, thirty minutes. Give it a go.
               </p>
               <Button asChild className="mt-4">
                 <Link href="/tests">Start your first test</Link>
@@ -223,7 +223,7 @@ export default async function DashboardPage() {
                     </p>
                     <p className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" aria-hidden /> {formatDuration(test.timeTaken)} ·{" "}
-                      {test.submittedAt ? formatDate(test.submittedAt, true) : "—"}
+                      {test.submittedAt ? formatDate(test.submittedAt, true) : "-"}
                     </p>
                   </div>
                   <Badge variant={test.status === "PASSED" ? "success" : "destructive"}>

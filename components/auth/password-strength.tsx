@@ -41,7 +41,7 @@ export function PasswordStrength({ password }: { password: string }) {
         ) : (
           <>
             <span className="font-medium text-foreground">{LEVELS[level]}</span>
-            {" — missing: "}
+            {". Missing: "}
             {RULES.filter((rule) => !rule.test(password))
               .map((rule) => rule.label)
               .join(", ") || "nothing, looks good"}

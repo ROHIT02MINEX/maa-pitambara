@@ -29,8 +29,14 @@ export default auth((req) => {
   const session = req.auth;
   const isLoggedIn = Boolean(session?.user?.id);
 
-  // Auth.js endpoints and the health probe must always pass through untouched.
-  if (pathname.startsWith("/api/auth") || pathname === "/api/health") {
+  // Auth.js endpoints, the health probe and scheduled cron jobs must always pass
+  // through untouched. The cron route guards itself with CRON_SECRET; it has no
+  // user session, so the checks below would reject it.
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname === "/api/health" ||
+    pathname.startsWith("/api/cron/")
+  ) {
     return NextResponse.next();
   }
 
@@ -82,6 +88,10 @@ export default auth((req) => {
 });
 
 export const config = {
-  // Everything except Next internals and static assets.
+  // Everything except Next internals and static image assets.
+  //
+  // `.pdf` is deliberately NOT excluded: the question banks under
+  // `public/study-material/` are course material for enrolled trainees, so an
+  // anonymous request for one is redirected to sign in like any other page.
   matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
 };

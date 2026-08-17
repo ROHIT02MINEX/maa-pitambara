@@ -1,0 +1,1076 @@
+{
+  "version": 3,
+  "routes": [
+    {
+      "src": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$",
+      "headers": {
+        "Location": "/$1"
+      },
+      "status": 308,
+      "continue": true
+    },
+    {
+      "src": "/_next/__private/trace",
+      "dest": "/404",
+      "status": 404,
+      "continue": true
+    },
+    {
+      "src": "/(?!_next/data(?:/|$))(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "delete",
+          "target": {
+            "key": "x-nextjs-data"
+          }
+        }
+      ],
+      "continue": true
+    },
+    {
+      "src": "/_next/data/(.*)",
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-nextjs-data"
+          },
+          "args": "1"
+        }
+      ],
+      "continue": true
+    },
+    {
+      "src": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$",
+      "headers": {
+        "X-DNS-Prefetch-Control": "on",
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload"
+      },
+      "continue": true
+    },
+    {
+      "src": "/404/?",
+      "status": 404,
+      "continue": true,
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-prerender-revalidate"
+        }
+      ]
+    },
+    {
+      "src": "/500",
+      "status": 500,
+      "continue": true
+    },
+    {
+      "src": "^/_next/data/2wtom2_WzLmFXu34W1ZDk/(.*).json",
+      "dest": "/$1",
+      "override": true,
+      "continue": true,
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ]
+    },
+    {
+      "src": "^/index(?:/)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/",
+      "override": true,
+      "continue": true
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "003b6df3af6f91ee7c6ab492c08b303c86271a5f79"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#logoutAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "4012cc86079f84c5c39d159009864c904506f70626"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#verifyEmailAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "4058ed7fe4ae4a625d9942f544597db03b937d0388"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#googleSignInAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "4092e408e4d45b0803a157d0ee050d6c126b79ee68"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#resetPasswordAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "409734dbe17911824ecd247b7516f9f624beaf5af8"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#changePasswordAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40a83fae364d3914eb3fbc82ef5c8cfb0513dda004"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#forgotPasswordAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40e60e9057a0ef6a1b000e428587d4505940b428b8"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#registerAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40f157479556b9bc09f35c7a82ededc8a7f057a32c"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#loginAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40fb8942a03adf72b78990c27dfedae08f18ce5312"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\auth.ts#resendVerificationAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "405f9efe8a647aeea986e7101177dfea7e36c87771"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\profile.ts#updateProfileAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "406c25d2f0e61bee42fac18deba434336b13c09fab"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\profile.ts#createProfileAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40426b525524a336e77ce191a0697c01841704c743"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\retest.ts#reviewRetestAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40e62a68d62961537807de587435fcbeec748969cf"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\retest.ts#requestRetestAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "0045e56e6d37620a3f035cf743212bcdcdea597df3"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\test.ts#startTestAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40dc1579a53f4592d8a354749ecaf0a3c0d5fcbf00"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\test.ts#saveAnswerAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "608c2da22a58d4adf375668599224f17efbdaeebe7"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\test.ts#submitTestAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "406672af3fe0af8241c789b58b4c8e49f3c0e32acd"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\pdf.ts#recordPdfViewAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40c8e2a5d2e13bea1322dbdb46680cbe72db62450a"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\pdf.ts#toggleBookmarkAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "4000a010bd4f5b762d9c7cc6758ed398cd6831cc07"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\pdfs.ts#deletePdfAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "4013ab74e4ee757d21d54840d551ad5ce0138048b0"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\pdfs.ts#updatePdfAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40236a6621e4f9c5eebe8e69b0a586d48d7c21b252"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\pdfs.ts#createPdfAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "4057daaa3319bbd36dc719219ecd556979e82fb6ba"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\users.ts#updateUserAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "409101fab926273eadfbb23627f53f2a61b85a123a"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\users.ts#resetUserPasswordAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "40cde3a36e985655d265cec2b91d4b54067207bdc6"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\users.ts#deleteUserAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "60ea6906ba81e3c3bfe85990c8b5a4b5e5fb46f2a9"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\users.ts#setUserDisabledAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "400bf1c45c9edb9989b2d4a36835a1b4f3bd3e3dc1"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\questions.ts#createQuestionAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "403a022a18e04c3badb4fc6ef1091fdd09f0f0e63f"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\questions.ts#deleteQuestionAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "403c293eaf95b4e29b376f2cee5102e20649234a76"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\questions.ts#importQuestionsAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "606d5195917666c11cd32aaa370f462adbf11e6f3f"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\questions.ts#updateQuestionAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "60c6b04e725dc7604fbd108724a9f592bfc5a0ff4e"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\questions.ts#toggleQuestionActiveAction"
+        }
+      ]
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "next-action",
+          "value": "000e7f31de86ad03f721a452add51e46017145c057"
+        }
+      ],
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "append",
+          "target": {
+            "key": "x-server-action-name"
+          },
+          "args": "../D:\\iti jhansi claude\\actions\\admin\\backup.ts#syncSheetsBackupAction"
+        }
+      ]
+    },
+    {
+      "continue": true,
+      "src": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!_next\\/static|_next\\/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*))(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-prerender-revalidate",
+          "value": "3cd79d37263653b866b543d069a9c529"
+        }
+      ],
+      "middlewarePath": "middleware",
+      "middlewareRawSrc": [
+        "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"
+      ],
+      "override": true
+    },
+    {
+      "src": "^/$",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/_next/data/2wtom2_WzLmFXu34W1ZDk/index.json",
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/((?!_next/)(?:.*[^/]|.*))/?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/_next/data/2wtom2_WzLmFXu34W1ZDk/$1.json",
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/?",
+      "has": [
+        {
+          "type": "header",
+          "key": "rsc",
+          "value": "1"
+        }
+      ],
+      "dest": "/index.rsc",
+      "headers": {
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/((?!.+\\.rsc).+?)(?:/)?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "rsc",
+          "value": "1"
+        }
+      ],
+      "dest": "/$1.rsc",
+      "headers": {
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "continue": true,
+      "override": true
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "^/_next/data/2wtom2_WzLmFXu34W1ZDk/(.*).json",
+      "dest": "/$1",
+      "continue": true,
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ]
+    },
+    {
+      "src": "^/index(?:/)?",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/",
+      "continue": true
+    },
+    {
+      "src": "/index(\\.action|\\.rsc)",
+      "dest": "/",
+      "continue": true
+    },
+    {
+      "src": "/\\.prefetch\\.rsc$",
+      "dest": "/__index.prefetch.rsc",
+      "check": true
+    },
+    {
+      "src": "/(.+)/\\.prefetch\\.rsc$",
+      "dest": "/$1.prefetch.rsc",
+      "check": true
+    },
+    {
+      "src": "/\\.rsc$",
+      "dest": "/index.rsc",
+      "check": true
+    },
+    {
+      "src": "/(.+)/\\.rsc$",
+      "dest": "/$1.rsc",
+      "check": true
+    },
+    {
+      "handle": "resource"
+    },
+    {
+      "src": "/.*",
+      "status": 404
+    },
+    {
+      "handle": "miss"
+    },
+    {
+      "src": "/_next/static/.+",
+      "status": 404,
+      "check": true,
+      "dest": "/_next/static/not-found.txt",
+      "headers": {
+        "content-type": "text/plain; charset=utf-8"
+      }
+    },
+    {
+      "handle": "rewrite"
+    },
+    {
+      "src": "^/$",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/_next/data/2wtom2_WzLmFXu34W1ZDk/index.json",
+      "continue": true
+    },
+    {
+      "src": "^/((?!_next/)(?:.*[^/]|.*))/?$",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "dest": "/_next/data/2wtom2_WzLmFXu34W1ZDk/$1.json",
+      "continue": true
+    },
+    {
+      "src": "^/_next/data/2wtom2_WzLmFXu34W1ZDk/api/auth/(?<nxtPnextauth>.+?)(?:/)?.json$",
+      "dest": "/api/auth/[...nextauth]?nxtPnextauth=$nxtPnextauth"
+    },
+    {
+      "src": "^/_next/data/2wtom2_WzLmFXu34W1ZDk/tests/result/(?<nxtPtestId>[^/]+?)(?:/)?.json$",
+      "dest": "/tests/result/[testId]?nxtPtestId=$nxtPtestId"
+    },
+    {
+      "src": "^/_next/data/2wtom2_WzLmFXu34W1ZDk/tests/(?<nxtPtestId>[^/]+?)(?:/)?.json$",
+      "dest": "/tests/[testId]?nxtPtestId=$nxtPtestId"
+    },
+    {
+      "src": "^/api/auth/(?<nxtPnextauth>.+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/api/auth/[...nextauth].rsc?nxtPnextauth=$nxtPnextauth"
+    },
+    {
+      "src": "^/api/auth/(?<nxtPnextauth>.+?)(?:/)?$",
+      "dest": "/api/auth/[...nextauth]?nxtPnextauth=$nxtPnextauth"
+    },
+    {
+      "src": "^/tests/result/(?<nxtPtestId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/tests/result/[testId].rsc?nxtPtestId=$nxtPtestId"
+    },
+    {
+      "src": "^/tests/result/(?<nxtPtestId>[^/]+?)(?:/)?$",
+      "dest": "/tests/result/[testId]?nxtPtestId=$nxtPtestId"
+    },
+    {
+      "src": "^/tests/(?<nxtPtestId>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/tests/[testId].rsc?nxtPtestId=$nxtPtestId"
+    },
+    {
+      "src": "^/tests/(?<nxtPtestId>[^/]+?)(?:/)?$",
+      "dest": "/tests/[testId]?nxtPtestId=$nxtPtestId"
+    },
+    {
+      "src": "^/_next/data/2wtom2_WzLmFXu34W1ZDk/(.*).json",
+      "headers": {
+        "x-nextjs-matched-path": "/$1"
+      },
+      "continue": true,
+      "override": true
+    },
+    {
+      "src": "^/_next/data/2wtom2_WzLmFXu34W1ZDk/(.*).json",
+      "dest": "__next_data_catchall"
+    },
+    {
+      "handle": "hit"
+    },
+    {
+      "src": "/_next/static/(?:[^/]+/pages|pages|chunks|runtime|css|image|media|2wtom2_WzLmFXu34W1ZDk)/.+",
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "src": "/index(?:/)?",
+      "headers": {
+        "x-matched-path": "/"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "src": "/((?!index$).*?)(?:/)?",
+      "headers": {
+        "x-matched-path": "/$1"
+      },
+      "continue": true,
+      "important": true
+    },
+    {
+      "handle": "error"
+    },
+    {
+      "src": "/.*",
+      "dest": "/404",
+      "status": 404,
+      "headers": {
+        "x-next-error-status": "404"
+      }
+    },
+    {
+      "src": "/.*",
+      "dest": "/500",
+      "status": 500,
+      "headers": {
+        "x-next-error-status": "500"
+      }
+    }
+  ],
+  "images": {
+    "domains": [],
+    "sizes": [
+      640,
+      750,
+      828,
+      1080,
+      1200,
+      1920,
+      2048,
+      3840,
+      16,
+      32,
+      48,
+      64,
+      96,
+      128,
+      256,
+      384
+    ],
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "^(?:^(?:lh3\\.googleusercontent\\.com)$)$",
+        "pathname": "^(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)\\/?)$"
+      },
+      {
+        "protocol": "https",
+        "hostname": "^(?:(?!\\.)(?=.)[^/]*?\\.supabase\\.co\\/?)$",
+        "pathname": "^(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)\\/?)$"
+      }
+    ],
+    "minimumCacheTTL": 60,
+    "formats": [
+      "image/webp"
+    ],
+    "dangerouslyAllowSVG": false,
+    "contentSecurityPolicy": "script-src 'none'; frame-src 'none'; sandbox;",
+    "contentDispositionType": "attachment"
+  },
+  "overrides": {
+    "404.html": {
+      "path": "404",
+      "contentType": "text/html; charset=utf-8"
+    },
+    "500.html": {
+      "path": "500",
+      "contentType": "text/html; charset=utf-8"
+    },
+    "_error.rsc.json": {
+      "path": "_error.rsc",
+      "contentType": "application/json"
+    },
+    "_app.rsc.json": {
+      "path": "_app.rsc",
+      "contentType": "application/json"
+    },
+    "_document.rsc.json": {
+      "path": "_document.rsc",
+      "contentType": "application/json"
+    },
+    "404.rsc.json": {
+      "path": "404.rsc",
+      "contentType": "application/json"
+    },
+    "icon.svg": {
+      "contentType": "image/svg+xml"
+    },
+    "__next_data_catchall.json": {
+      "path": "__next_data_catchall",
+      "contentType": "application/json"
+    },
+    "_next/static/not-found.txt": {
+      "contentType": "text/plain"
+    }
+  },
+  "framework": {
+    "slug": "nextjs",
+    "version": "15.5.22"
+  },
+  "crons": [
+    {
+      "path": "/api/cron/keep-alive",
+      "schedule": "0 6 * * *"
+    }
+  ]
+}

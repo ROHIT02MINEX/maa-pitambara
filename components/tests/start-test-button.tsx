@@ -73,7 +73,7 @@ export function StartTestButton({
               <p>Once you start, the 30-minute timer runs on the server. To be clear:</p>
               <ul className="list-disc space-y-1 pl-5">
                 <li>{TEST_QUESTION_COUNT} randomly selected questions, one mark each.</li>
-                <li>No negative marking — answer everything.</li>
+                <li>No negative marking, so answer everything.</li>
                 <li>Refreshing or closing the tab does not reset the clock.</li>
                 <li>When time runs out your answers are submitted automatically.</li>
                 <li>You need {PASS_PERCENTAGE}% to pass, and answers are final once submitted.</li>

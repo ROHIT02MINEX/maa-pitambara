@@ -103,7 +103,7 @@ export default async function ProgressPage() {
               <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
                 {totals.totalTests === 0
                   ? "Complete a test to see which topics need work."
-                  : "Nothing below the pass mark — well done."}
+                  : "Nothing below the pass mark. Well done."}
               </p>
             ) : (
               <ul className="space-y-3">

@@ -136,7 +136,7 @@ export async function saveAnswerAction(input: unknown): Promise<ActionResult> {
   }
   if (test.expiresAt < new Date()) {
     await finalizeTest(testId, true);
-    return actionError("Time is up — your test has been submitted automatically.");
+    return actionError("Time is up. Your test has been submitted automatically.");
   }
 
   const answer = await prisma.testAnswer.findUnique({
@@ -186,5 +186,5 @@ export async function submitTestAction(
   revalidatePath("/tests");
   revalidatePath("/progress");
   revalidatePath("/dashboard");
-  return actionOk({ testId }, auto ? "Time is up — your test was submitted." : "Test submitted.");
+  return actionOk({ testId }, auto ? "Time is up. Your test was submitted." : "Test submitted.");
 }

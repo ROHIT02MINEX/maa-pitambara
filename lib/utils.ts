@@ -28,7 +28,7 @@ export function formatDuration(totalSeconds: number): string {
 
 export function formatDate(date: Date | string, withTime = false): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "-";
   return d.toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "short",

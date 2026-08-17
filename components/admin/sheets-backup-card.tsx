@@ -30,7 +30,7 @@ export function SheetsBackupCard({ configured }: { configured: boolean }) {
         </CardTitle>
         <CardDescription>
           Every submitted test is copied to your spreadsheet automatically. Use this to
-          re-send everything — rows already present are skipped, so it is safe to re-run.
+          re-send everything. Rows already present are skipped, so it is safe to re-run.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

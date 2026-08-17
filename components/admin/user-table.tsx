@@ -181,7 +181,7 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="whitespace-nowrap">{user.phone ?? "—"}</TableCell>
+              <TableCell className="whitespace-nowrap">{user.phone ?? "-"}</TableCell>
               <TableCell>
                 <Badge variant="secondary">{occupationLabel(user.occupation)}</Badge>
               </TableCell>
@@ -323,7 +323,7 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
             <AlertDialogTitle>Delete this user?</AlertDialogTitle>
             <AlertDialogDescription>
               {deleting?.email} will be permanently removed, along with their test attempts,
-              bookmarks and activity history. This cannot be undone — consider disabling the account
+              bookmarks and activity history. This cannot be undone. Consider disabling the account
               instead.
             </AlertDialogDescription>
           </AlertDialogHeader>

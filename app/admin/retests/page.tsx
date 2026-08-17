@@ -104,7 +104,7 @@ export default async function AdminRetestsPage({
       <header>
         <h1 className="text-2xl font-bold tracking-tight">Retest requests</h1>
         <p className="mt-1 text-muted-foreground">
-          Learners get one attempt. Approving a request grants exactly one more —
+          Learners get one attempt. Approving a request grants exactly one more,
           it is consumed the moment they start it.
           {pendingCount > 0 ? ` ${pendingCount} awaiting review.` : ""}
         </p>

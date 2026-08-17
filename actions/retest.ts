@@ -45,7 +45,7 @@ export async function requestRetestAction(input: unknown): Promise<ActionResult>
 
   const eligibility = await getTestEligibility(sessionUser.id);
   if (eligibility.allowed) {
-    return actionError("You can already start a test — no request is needed.");
+    return actionError("You can already start a test. No request is needed.");
   }
   if (eligibility.reason === "pending-request") {
     return actionError("You already have a request awaiting review.");

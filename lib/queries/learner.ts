@@ -1,5 +1,5 @@
 import "server-only";
-import { Prisma, TestStatus, type Occupation } from "@prisma/client";
+import { Prisma, TestStatus, type Occupation, type Subject } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import { renderOptions, weakTopicsFromAnswers } from "@/lib/test-engine";
@@ -110,28 +110,42 @@ export async function getPdfsForUser(
 
   const pdfs = await prisma.pdf.findMany({
     where,
-    orderBy: { createdAt: "desc" },
+    // Built-in NIMI banks first, then anything the institute has uploaded.
+    orderBy: [{ builtIn: "desc" }, { year: "asc" }, { createdAt: "desc" }],
     include: {
       bookmarks: { where: { userId }, select: { id: true } },
       views: { where: { userId }, select: { id: true } },
+      _count: { select: { questions: true } },
     },
   });
 
   return pdfs.map((pdf) => ({
     id: pdf.id,
     title: pdf.title,
+    titleHi: pdf.titleHi,
     description: pdf.description,
     topic: pdf.topic,
     occupation: pdf.occupation,
+    subject: pdf.subject,
+    year: pdf.year,
+    builtIn: pdf.builtIn,
     fileUrl: pdf.fileUrl,
     fileSize: pdf.fileSize,
     createdAt: pdf.createdAt,
     bookmarked: pdf.bookmarks.length > 0,
     viewed: pdf.views.length > 0,
+    questionCount: pdf._count.questions,
   }));
 }
 
-/** PDFs recommended after a test, matched against the topics that were missed. */
+/**
+ * PDFs recommended for a set of weak topics.
+ *
+ * The test result no longer needs this — a question carries its own source
+ * document, so the result page links straight to the page it came from. This
+ * remains for questions with no recorded source (anything an administrator
+ * added by hand) and for the dashboard's "what to read next" panel.
+ */
 export async function getSuggestedPdfs(occupation: Occupation, topics: string[], limit = 4) {
   if (topics.length === 0) return [];
 
@@ -177,11 +191,18 @@ export async function getActiveTest(testId: string, userId: string): Promise<Act
             select: {
               id: true,
               type: true,
+              subject: true,
+              topic: true,
               question: true,
+              questionHi: true,
               optionA: true,
               optionB: true,
               optionC: true,
               optionD: true,
+              optionAHi: true,
+              optionBHi: true,
+              optionCHi: true,
+              optionDHi: true,
             },
           },
         },
@@ -202,7 +223,10 @@ export async function getActiveTest(testId: string, userId: string): Promise<Act
       questionId: answer.questionId,
       index,
       type: answer.question.type,
+      subject: answer.question.subject,
+      topic: answer.question.topic,
       question: answer.question.question,
+      questionHi: answer.question.questionHi,
       options: renderOptions(answer.question, answer.optionOrder),
       selected: answer.selectedAnswer,
     })),
@@ -218,7 +242,13 @@ export async function getTestResult(
     include: {
       answers: {
         orderBy: { orderIndex: "asc" },
-        include: { question: true },
+        include: {
+          question: {
+            include: {
+              sourcePdf: { select: { id: true, title: true, titleHi: true, fileUrl: true } },
+            },
+          },
+        },
       },
     },
   });
@@ -227,6 +257,50 @@ export async function getTestResult(
 
   const correctCount = test.answers.filter((a) => a.correct).length;
   const answeredCount = test.answers.filter((a) => a.selectedAnswer !== null).length;
+
+  // Per-subject score, mirroring the four papers of the real trade test.
+  const subjectTotals = new Map<Subject, { correct: number; total: number }>();
+  for (const answer of test.answers) {
+    const bucket = subjectTotals.get(answer.question.subject) ?? { correct: 0, total: 0 };
+    bucket.total += 1;
+    if (answer.correct) bucket.correct += 1;
+    subjectTotals.set(answer.question.subject, bucket);
+  }
+
+  // Study plan: every document a missed question came from, with the pages to
+  // revise. Keyed by document id so one entry covers all misses from that PDF.
+  const plans = new Map<
+    string,
+    {
+      pdfId: string | null;
+      title: string;
+      titleHi: string | null;
+      fileUrl: string | null;
+      missed: number;
+      topics: Set<string>;
+      pages: Set<number>;
+    }
+  >();
+
+  for (const answer of test.answers) {
+    if (answer.correct) continue;
+    const pdf = answer.question.sourcePdf;
+    const key = pdf?.id ?? `topic:${answer.question.topic}`;
+
+    const entry = plans.get(key) ?? {
+      pdfId: pdf?.id ?? null,
+      title: pdf?.title ?? "Ask your instructor",
+      titleHi: pdf?.titleHi ?? null,
+      fileUrl: pdf?.fileUrl ?? null,
+      missed: 0,
+      topics: new Set<string>(),
+      pages: new Set<number>(),
+    };
+    entry.missed += 1;
+    entry.topics.add(answer.question.topic);
+    if (answer.question.sourcePage) entry.pages.add(answer.question.sourcePage);
+    plans.set(key, entry);
+  }
 
   return {
     id: test.id,
@@ -241,16 +315,42 @@ export async function getTestResult(
     wrongCount: answeredCount - correctCount,
     unansweredCount: test.answers.length - answeredCount,
     weakTopics: weakTopicsFromAnswers(test.answers),
+    subjectBreakdown: [...subjectTotals.entries()]
+      .map(([subject, value]) => ({ subject, ...value }))
+      .sort((a, b) => b.total - a.total),
+    studyPlan: [...plans.values()]
+      .sort((a, b) => b.missed - a.missed)
+      .map((entry) => ({
+        pdfId: entry.pdfId,
+        title: entry.title,
+        titleHi: entry.titleHi,
+        fileUrl: entry.fileUrl,
+        missed: entry.missed,
+        topics: [...entry.topics],
+        pages: [...entry.pages].sort((a, b) => a - b),
+      })),
     breakdown: test.answers.map((answer) => ({
       questionId: answer.questionId,
       question: answer.question.question,
+      questionHi: answer.question.questionHi,
       topic: answer.question.topic,
+      subject: answer.question.subject,
       difficulty: answer.question.difficulty,
       selected: answer.selectedAnswer,
       correctAnswer: answer.question.correctAnswer,
       correct: answer.correct,
       explanation: answer.question.explanation,
+      explanationHi: answer.question.explanationHi,
       options: renderOptions(answer.question, answer.optionOrder),
+      source: {
+        pdfId: answer.question.sourcePdf?.id ?? null,
+        title: answer.question.sourcePdf?.title ?? null,
+        titleHi: answer.question.sourcePdf?.titleHi ?? null,
+        fileUrl: answer.question.sourcePdf?.fileUrl ?? null,
+        page: answer.question.sourcePage,
+        label: answer.question.sourceLabel,
+        syllabusWeek: answer.question.syllabusWeek,
+      },
     })),
   };
 }

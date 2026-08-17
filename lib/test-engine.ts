@@ -6,6 +6,7 @@ import { shuffle, round } from "@/lib/utils";
 import {
   MARKS_PER_QUESTION,
   PASS_PERCENTAGE,
+  TEST_BLUEPRINT,
   TEST_DURATION_SECONDS,
   TEST_QUESTION_COUNT,
 } from "@/lib/constants";
@@ -31,22 +32,47 @@ export function parseOptionOrder(order: string): AnswerOption[] {
     .filter((k) => MCQ_KEYS.includes(k));
 }
 
-type OptionSource = Pick<Question, "optionA" | "optionB" | "optionC" | "optionD" | "type">;
+type OptionSource = Pick<
+  Question,
+  | "optionA"
+  | "optionB"
+  | "optionC"
+  | "optionD"
+  | "optionAHi"
+  | "optionBHi"
+  | "optionCHi"
+  | "optionDHi"
+  | "type"
+>;
 
-/** Resolve the shuffled option keys into `{ value, label }` pairs for the UI. */
+/**
+ * Resolve the shuffled option keys into `{ value, label, labelHi }` triples for
+ * the UI. `labelHi` is null for the English-only banks, and the client falls
+ * back to `label` in that case rather than showing a blank option.
+ */
 export function renderOptions(
   question: OptionSource,
   optionOrder: string,
-): { value: AnswerOption; label: string }[] {
+): { value: AnswerOption; label: string; labelHi: string | null }[] {
   const labels: Record<AnswerOption, string | null> = {
     A: question.optionA,
     B: question.optionB,
     C: question.optionC,
     D: question.optionD,
   };
+  const hindi: Record<AnswerOption, string | null> = {
+    A: question.optionAHi,
+    B: question.optionBHi,
+    C: question.optionCHi,
+    D: question.optionDHi,
+  };
 
   return parseOptionOrder(optionOrder)
-    .map((value) => ({ value, label: labels[value] ?? "" }))
+    .map((value) => ({
+      value,
+      label: labels[value] ?? "",
+      labelHi: hindi[value]?.trim() || null,
+    }))
     .filter((option) => option.label.trim().length > 0);
 }
 
@@ -60,16 +86,44 @@ export function computeStatus(percentage: number): TestStatus {
 }
 
 /**
- * Picks `TEST_QUESTION_COUNT` random active questions for an occupation.
+ * Picks `TEST_QUESTION_COUNT` random active questions for an occupation,
+ * following `TEST_BLUEPRINT` so a generated paper has the same subject mix as
+ * the real AITT paper. Any subject that cannot fill its share (a trade with no
+ * engineering drawing questions, say) leaves its shortfall to be taken up by
+ * the rest, so a full-length test is still produced whenever the bank is big
+ * enough overall.
+ *
  * Selection happens in the application layer so the behaviour is identical on
  * any Postgres version and easy to unit test.
  */
 export async function pickRandomQuestionIds(occupation: Question["occupation"]) {
-  const ids = await prisma.question.findMany({
+  const rows = await prisma.question.findMany({
     where: { occupation, active: true },
-    select: { id: true },
+    select: { id: true, subject: true },
   });
-  return shuffle(ids.map((row) => row.id)).slice(0, TEST_QUESTION_COUNT);
+
+  const pools = new Map<string, string[]>();
+  for (const row of rows) {
+    const pool = pools.get(row.subject) ?? [];
+    pool.push(row.id);
+    pools.set(row.subject, pool);
+  }
+  for (const [subject, pool] of pools) pools.set(subject, shuffle(pool));
+
+  const picked: string[] = [];
+  for (const { subject, weight } of TEST_BLUEPRINT) {
+    const pool = pools.get(subject) ?? [];
+    const want = Math.round(TEST_QUESTION_COUNT * weight);
+    picked.push(...pool.splice(0, Math.min(want, pool.length)));
+  }
+
+  // Top up from whatever is left — rounding, and thin subjects, both leave gaps.
+  if (picked.length < TEST_QUESTION_COUNT) {
+    const remainder = shuffle([...pools.values()].flat());
+    picked.push(...remainder.slice(0, TEST_QUESTION_COUNT - picked.length));
+  }
+
+  return shuffle(picked).slice(0, TEST_QUESTION_COUNT);
 }
 
 /**

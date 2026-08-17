@@ -6,6 +6,7 @@ import {
   BookOpen,
   CheckCircle2,
   Clock,
+  ExternalLink,
   FileText,
   MinusCircle,
   Target,
@@ -13,10 +14,12 @@ import {
 } from "lucide-react";
 
 import { currentUser } from "@/lib/auth";
-import { getSuggestedPdfs, getTestResult } from "@/lib/queries/learner";
-import { PASS_PERCENTAGE } from "@/lib/constants";
+import { getTestResult } from "@/lib/queries/learner";
+import { PASS_PERCENTAGE, SUBJECT_LABELS } from "@/lib/constants";
 import { formatDate, formatDuration } from "@/lib/utils";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { AnswerReview } from "@/components/tests/answer-review";
+import { InstituteLogo } from "@/components/brand/institute-logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -24,6 +27,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Test result" };
+
+/** "3, 7, 8, 12" — the pages to revise, capped so the line stays readable. */
+function pageList(pages: number[]) {
+  if (pages.length === 0) return null;
+  const shown = pages.slice(0, 8).join(", ");
+  return pages.length > 8 ? `${shown} +${pages.length - 8} more` : shown;
+}
 
 export default async function TestResultPage({
   params,
@@ -39,73 +49,84 @@ export default async function TestResultPage({
   if (!result) notFound();
 
   const passed = result.status === "PASSED";
-  const suggestions = await getSuggestedPdfs(result.occupation, result.weakTopics);
 
   return (
     <div className="space-y-6">
-      <section
-        className={cn(
-          "glass rounded-xl p-6 sm:p-8",
-          passed ? "ring-1 ring-success/30" : "ring-1 ring-destructive/30",
-        )}
-      >
-        <div className="flex flex-wrap items-start justify-between gap-5">
-          <div className="flex items-start gap-4">
-            <span
-              className={cn(
-                "grid h-16 w-16 shrink-0 place-items-center rounded-2xl",
-                passed ? "bg-success/15 text-success" : "bg-destructive/10 text-destructive",
-              )}
-            >
-              {passed ? (
-                <CheckCircle2 className="h-8 w-8" aria-hidden />
-              ) : (
-                <XCircle className="h-8 w-8" aria-hidden />
-              )}
-            </span>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                {passed ? "You passed!" : "Not this time"}
-              </h1>
-              <p className="mt-1 text-muted-foreground">
-                {passed
-                  ? `You scored ${result.percentage}% — comfortably above the ${PASS_PERCENTAGE}% pass mark.`
-                  : `You scored ${result.percentage}%. You need ${PASS_PERCENTAGE}% to pass — review the topics below and try again.`}
-              </p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Submitted {result.submittedAt ? formatDate(result.submittedAt, true) : "—"}
-              </p>
+      {/* ------------------------------------------------------------------ */}
+      {/* Headline                                                            */}
+      {/* ------------------------------------------------------------------ */}
+      <section className="overflow-hidden rounded-xl border">
+        <div className="crest-band p-6 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-5">
+            <div className="flex items-start gap-4">
+              <span
+                className={cn(
+                  "grid h-16 w-16 shrink-0 place-items-center rounded-2xl",
+                  passed ? "bg-white/15 text-white" : "bg-black/25 text-white",
+                )}
+              >
+                {passed ? (
+                  <CheckCircle2 className="h-8 w-8" aria-hidden />
+                ) : (
+                  <XCircle className="h-8 w-8" aria-hidden />
+                )}
+              </span>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">
+                  {passed ? "You passed!" : "Not this time"}
+                </h1>
+                <p className="mt-1 max-w-xl text-primary-foreground/85">
+                  {passed
+                    ? `You scored ${result.percentage}%, above the ${PASS_PERCENTAGE}% pass mark.`
+                    : `You scored ${result.percentage}%. You need ${PASS_PERCENTAGE}% to pass. The study plan below is built from the questions you missed.`}
+                </p>
+                <p className="mt-2 text-xs text-primary-foreground/70">
+                  Submitted {result.submittedAt ? formatDate(result.submittedAt, true) : "-"}
+                </p>
+              </div>
             </div>
+
+            <InstituteLogo
+                size={64}
+                className="hidden h-16 w-16 shrink-0 rounded-full bg-white/95 p-1 sm:block"
+                title={null}
+              />
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline">
-              <Link href="/learn">
-                <BookOpen className="h-4 w-4" /> Study material
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link href="/tests">
-                Take another test <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+          <div className="mt-7 space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">
+                Score {result.score} / {result.totalQuestions}
+              </span>
+              <span className="text-primary-foreground/75">Pass mark {PASS_PERCENTAGE}%</span>
+            </div>
+            <div
+              className="h-2.5 w-full overflow-hidden rounded-full bg-white/20"
+              role="progressbar"
+              aria-valuenow={Math.round(result.percentage)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Score ${result.percentage} percent`}
+            >
+              <div
+                className={cn("h-full rounded-full", passed ? "bg-leaf" : "bg-saffron")}
+                style={{ width: `${Math.min(100, result.percentage)}%` }}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="mt-7 space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">
-              Score {result.score} / {result.totalQuestions}
-            </span>
-            <span className="text-muted-foreground">
-              Pass mark {PASS_PERCENTAGE}%
-            </span>
-          </div>
-          <Progress
-            value={result.percentage}
-            indicatorClassName={passed ? "bg-success" : "bg-destructive"}
-            aria-label={`Score ${result.percentage} percent`}
-          />
+        <div className="flex flex-wrap gap-2 border-t bg-card p-4">
+          <Button asChild variant="outline">
+            <Link href="/learn">
+              <BookOpen className="h-4 w-4" /> Study material
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/tests">
+              Take another test <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </section>
 
@@ -127,133 +148,136 @@ export default async function TestResultPage({
         />
       </section>
 
-      {result.weakTopics.length > 0 ? (
+      {/* ------------------------------------------------------------------ */}
+      {/* Score by subject                                                    */}
+      {/* ------------------------------------------------------------------ */}
+      {result.subjectBreakdown.length > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-primary" aria-hidden /> Recommended reading
-            </CardTitle>
+            <CardTitle>Score by subject</CardTitle>
             <CardDescription>
-              You lost marks on: {result.weakTopics.slice(0, 5).join(", ")}. These documents cover
-              those areas.
+              How you did across the four papers of the trade test.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {suggestions.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No material has been published for those topics yet.
-              </p>
-            ) : (
-              <ul className="grid gap-3 sm:grid-cols-2">
-                {suggestions.map((pdf) => (
-                  <li key={pdf.id}>
-                    <Link
-                      href={`/learn?highlight=${pdf.id}`}
-                      className="flex items-start gap-3 rounded-lg border p-4 transition-colors hover:border-primary/50 hover:bg-accent/40"
-                    >
-                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                        <FileText className="h-5 w-5" aria-hidden />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block truncate font-medium">{pdf.title}</span>
-                        {pdf.topic ? (
-                          <span className="block truncate text-xs text-muted-foreground">
-                            {pdf.topic}
-                          </span>
-                        ) : null}
-                      </span>
-                    </Link>
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {result.subjectBreakdown.map((row) => {
+                const percent = row.total ? Math.round((row.correct / row.total) * 100) : 0;
+                return (
+                  <li key={row.subject} className="rounded-lg border p-4">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <p className="text-sm font-medium">{SUBJECT_LABELS[row.subject]}</p>
+                      <p className="shrink-0 text-sm tabular-nums text-muted-foreground">
+                        {row.correct}/{row.total}
+                      </p>
+                    </div>
+                    <Progress
+                      className="mt-3"
+                      value={percent}
+                      indicatorClassName={percent >= PASS_PERCENTAGE ? "bg-success" : "bg-saffron"}
+                      aria-label={`${SUBJECT_LABELS[row.subject]}: ${percent} percent`}
+                    />
                   </li>
-                ))}
-              </ul>
-            )}
+                );
+              })}
+            </ul>
           </CardContent>
         </Card>
       ) : null}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Answer review</CardTitle>
-          <CardDescription>
-            Every question with your answer, the correct answer and an explanation.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ol className="space-y-4">
-            {result.breakdown.map((item, index) => {
-              const wasAnswered = item.selected !== null;
-              return (
-                <li
-                  key={item.questionId}
-                  className={cn(
-                    "rounded-xl border p-5",
-                    item.correct
-                      ? "border-success/30 bg-success/5"
-                      : wasAnswered
-                        ? "border-destructive/30 bg-destructive/5"
-                        : "border-warning/40 bg-warning/5",
-                  )}
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <p className="font-medium">
-                      <span className="mr-2 text-muted-foreground">Q{index + 1}.</span>
-                      {item.question}
-                    </p>
-                    <Badge
-                      variant={item.correct ? "success" : wasAnswered ? "destructive" : "warning"}
-                    >
-                      {item.correct ? "Correct" : wasAnswered ? "Wrong" : "Not answered"}
-                    </Badge>
-                  </div>
+      {/* ------------------------------------------------------------------ */}
+      {/* Study plan                                                          */}
+      {/* ------------------------------------------------------------------ */}
+      {result.studyPlan.length > 0 ? (
+        <Card className="border-gold/40">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-gold" aria-hidden /> Your study plan
+            </CardTitle>
+            <CardDescription>
+              Built from the {result.wrongCount + result.unansweredCount} question
+              {result.wrongCount + result.unansweredCount === 1 ? "" : "s"} you missed. Each one
+              points back to the document and pages it came from.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="grid gap-3 lg:grid-cols-2">
+              {result.studyPlan.map((entry) => {
+                const pages = pageList(entry.pages);
+                return (
+                  <li
+                    key={entry.pdfId ?? entry.title}
+                    className="flex flex-col rounded-lg border p-4"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold">
+                        <FileText className="h-5 w-5" aria-hidden />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium leading-snug">{entry.title}</p>
+                        {entry.titleHi ? (
+                          <p lang="hi" className="font-devanagari text-xs text-muted-foreground">
+                            {entry.titleHi}
+                          </p>
+                        ) : null}
+                      </div>
+                      <Badge variant="secondary" className="shrink-0">
+                        {entry.missed} missed
+                      </Badge>
+                    </div>
 
-                  <ul className="mt-4 space-y-2">
-                    {item.options.map((option) => {
-                      const isCorrect = option.value === item.correctAnswer;
-                      const isChosen = option.value === item.selected;
-                      return (
-                        <li
-                          key={option.value}
-                          className={cn(
-                            "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm",
-                            isCorrect && "border-success bg-success/10 font-medium",
-                            isChosen && !isCorrect && "border-destructive bg-destructive/10",
-                          )}
-                        >
-                          {isCorrect ? (
-                            <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden />
-                          ) : isChosen ? (
-                            <XCircle className="h-4 w-4 shrink-0 text-destructive" aria-hidden />
-                          ) : (
-                            <span className="h-4 w-4 shrink-0" aria-hidden />
-                          )}
-                          <span>{option.label}</span>
-                          {isChosen ? (
-                            <span className="ml-auto text-xs text-muted-foreground">
-                              your answer
-                            </span>
-                          ) : null}
-                        </li>
-                      );
-                    })}
-                  </ul>
+                    {pages ? (
+                      <p className="mt-3 text-sm">
+                        <span className="text-muted-foreground">Read page{entry.pages.length === 1 ? "" : "s"}: </span>
+                        <span className="font-medium tabular-nums">{pages}</span>
+                      </p>
+                    ) : null}
 
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    <Badge variant="secondary">{item.topic}</Badge>
-                    <Badge variant="outline">{item.difficulty.toLowerCase()}</Badge>
-                  </div>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {entry.topics.slice(0, 4).map((topic) => (
+                        <Badge key={topic} variant="outline" className="text-xs">
+                          {topic}
+                        </Badge>
+                      ))}
+                      {entry.topics.length > 4 ? (
+                        <Badge variant="outline" className="text-xs">
+                          +{entry.topics.length - 4}
+                        </Badge>
+                      ) : null}
+                    </div>
 
-                  {item.explanation ? (
-                    <p className="mt-3 rounded-lg bg-background/60 p-3 text-sm">
-                      <strong className="font-semibold">Why: </strong>
-                      {item.explanation}
-                    </p>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
-        </CardContent>
-      </Card>
+                    {entry.fileUrl ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <Button asChild size="sm">
+                          <a
+                            href={
+                              entry.pages[0]
+                                ? `${entry.fileUrl}#page=${entry.pages[0]}`
+                                : entry.fileUrl
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            {entry.pages[0] ? `Start at page ${entry.pages[0]}` : "Open document"}
+                          </a>
+                        </Button>
+                        {entry.pdfId ? (
+                          <Button asChild size="sm" variant="outline">
+                            <Link href={`/learn?highlight=${entry.pdfId}`}>Find in library</Link>
+                          </Button>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ul>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      <AnswerReview breakdown={result.breakdown} />
     </div>
   );
 }

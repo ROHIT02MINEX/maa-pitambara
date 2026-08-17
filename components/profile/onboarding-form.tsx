@@ -106,7 +106,7 @@ export function OnboardingForm({
         <p className="text-sm text-muted-foreground">
           {lockedOccupation
             ? "Your occupation has already been set and cannot be changed."
-            : "Choose carefully — each learner belongs to exactly one trade, and this cannot be changed later."}
+            : "Choose carefully. Each learner belongs to exactly one trade, and this cannot be changed later."}
         </p>
 
         <div className="grid gap-3 sm:grid-cols-2">

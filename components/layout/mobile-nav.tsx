@@ -3,8 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import * as Dialog from "@radix-ui/react-dialog";
-import { GraduationCap, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
+import { InstituteLogo } from "@/components/brand/institute-logo";
 import { Button } from "@/components/ui/button";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import type { NavItem } from "@/components/layout/nav-items";
@@ -32,13 +33,11 @@ export function MobileNav({ items, title }: { items: NavItem[]; title: string })
           <div className="mb-6 flex items-center justify-between">
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 font-semibold"
+              className="flex min-w-0 items-center gap-2 font-semibold"
               onClick={() => setOpen(false)}
             >
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-                <GraduationCap className="h-4 w-4" />
-              </span>
-              {title}
+              <InstituteLogo size={36} className="h-9 w-9 shrink-0" title={null} />
+              <span className="truncate">{title}</span>
             </Link>
             <Dialog.Close asChild>
               <Button variant="ghost" size="icon" aria-label="Close navigation">

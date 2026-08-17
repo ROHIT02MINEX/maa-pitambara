@@ -77,8 +77,10 @@ export type AdminPdfRow = {
   fileUrl: string;
   fileSize: number;
   createdAt: Date;
+  /** Official NIMI banks shipped with the portal — managed by the importer. */
+  builtIn: boolean;
   uploadedBy: { name: string | null; email: string } | null;
-  _count: { views: number; bookmarks: number };
+  _count: { views: number; bookmarks: number; questions: number };
 };
 
 type FormState = {
@@ -184,7 +186,7 @@ export function PdfManager({
         return;
       }
       if (form.file.size > MAX_PDF_BYTES) {
-        setError(`That file is ${formatBytes(form.file.size)} — the limit is 25 MB.`);
+        setError(`That file is ${formatBytes(form.file.size)}. The limit is 25 MB.`);
         return;
       }
     }
@@ -281,11 +283,23 @@ export function PdfManager({
                   {pdf.description ? (
                     <p className="truncate text-xs text-muted-foreground">{pdf.description}</p>
                   ) : null}
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {pdf.builtIn ? (
+                      <Badge variant="outline" className="text-[11px]">
+                        Official, read only
+                      </Badge>
+                    ) : null}
+                    {pdf._count.questions > 0 ? (
+                      <Badge variant="outline" className="text-[11px]">
+                        {pdf._count.questions} question(s)
+                      </Badge>
+                    ) : null}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary">{OCCUPATION_LABELS[pdf.occupation]}</Badge>
                 </TableCell>
-                <TableCell className="text-sm">{pdf.topic ?? "—"}</TableCell>
+                <TableCell className="text-sm">{pdf.topic ?? "-"}</TableCell>
                 <TableCell className="whitespace-nowrap text-sm">
                   {formatBytes(pdf.fileSize)}
                 </TableCell>
@@ -297,7 +311,7 @@ export function PdfManager({
                 <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                   {formatDate(pdf.createdAt)}
                   <br />
-                  {pdf.uploadedBy?.name ?? pdf.uploadedBy?.email ?? "—"}
+                  {pdf.uploadedBy?.name ?? pdf.uploadedBy?.email ?? "-"}
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
@@ -318,10 +332,14 @@ export function PdfManager({
                         </a>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onSelect={() => openEdit(pdf)}>
+                      {/* Built-in banks are owned by `npm run db:import-material`;
+                          the server rejects edits to them, so the UI does not
+                          offer an action that can only fail. */}
+                      <DropdownMenuItem disabled={pdf.builtIn} onSelect={() => openEdit(pdf)}>
                         <Pencil /> Edit / replace file
                       </DropdownMenuItem>
                       <DropdownMenuItem
+                        disabled={pdf.builtIn}
                         className="text-destructive focus:text-destructive"
                         onSelect={() => setDeleting(pdf)}
                       >
@@ -361,7 +379,7 @@ export function PdfManager({
                 required
                 value={form.title}
                 onChange={(event) => setForm((f) => ({ ...f, title: event.target.value }))}
-                placeholder="Safety practices — module 1"
+                placeholder="Safety practices, module 1"
               />
             </div>
 

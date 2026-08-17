@@ -32,7 +32,8 @@ yarn-error.log*
 .env.production
 
 # vercel
-.vercel
+.vercel/cache
+.vercel/*.local
 
 # netlify
 .netlify
@@ -51,5 +52,4 @@ prisma/*.db-journal
 
 # MCP config
 .mcp.json
-.vercel
 .env*

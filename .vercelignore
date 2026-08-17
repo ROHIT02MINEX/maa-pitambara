@@ -1,0 +1,10 @@
+.git
+.github
+node_modules
+.next
+.netlify
+Dockerfile
+docker-compose.yml
+.dockerignore
+.claude
+google-apps-script

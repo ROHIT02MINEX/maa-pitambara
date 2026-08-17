@@ -17,6 +17,7 @@
     "db:deploy": "npx prisma migrate deploy",
     "db:studio": "npx prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:import-material": "tsx prisma/import-material.ts",
     "check-deploy": "node scripts/check-deploy.js"
   },
   "prisma": {

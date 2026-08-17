@@ -86,7 +86,7 @@ export default async function TestsPage() {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>You have a test in progress</AlertTitle>
           <AlertDescription>
-            Started {formatDate(inProgress.startedAt, true)}. The timer is still running — resume it
+            Started {formatDate(inProgress.startedAt, true)}. The timer is still running, so resume it
             before it expires and is submitted automatically.
           </AlertDescription>
         </Alert>
@@ -156,7 +156,7 @@ export default async function TestsPage() {
                 {history.map((test) => (
                   <TableRow key={test.id}>
                     <TableCell className="whitespace-nowrap">
-                      {test.submittedAt ? formatDate(test.submittedAt, true) : "—"}
+                      {test.submittedAt ? formatDate(test.submittedAt, true) : "-"}
                     </TableCell>
                     <TableCell className="font-medium">
                       {test.score}/{test.totalQuestions}

@@ -37,6 +37,16 @@ enum QuestionType {
   TRUE_FALSE
 }
 
+/// The four papers that make up an AITT trade test. Tests are assembled to the
+/// same subject mix as the real paper rather than by drawing uniformly from the
+/// whole bank (see TEST_BLUEPRINT in lib/constants.ts).
+enum Subject {
+  TRADE_THEORY
+  WORKSHOP_CALCULATION
+  ENGINEERING_DRAWING
+  EMPLOYABILITY_SKILLS
+}
+
 enum Difficulty {
   EASY
   MEDIUM
@@ -179,6 +189,8 @@ model PasswordResetToken {
 model Pdf {
   id           String     @id @default(cuid())
   title        String
+  /// Devanagari title, shown when the learner reads the portal in Hindi.
+  titleHi      String?
   description  String?
   occupation   Occupation
   topic        String?
@@ -186,6 +198,14 @@ model Pdf {
   storagePath  String
   fileSize     Int        @default(0)
   mimeType     String     @default("application/pdf")
+  pageCount    Int?
+  /// Set on the official NIMI banks shipped with the portal. Those rows are
+  /// re-created by `npm run db:import-material`, so the admin panel marks them
+  /// read-only rather than letting someone delete a file it does not own.
+  slug         String?
+  builtIn      Boolean    @default(false)
+  subject      Subject?
+  year         String?
   uploadedById String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -193,7 +213,9 @@ model Pdf {
   uploadedBy User?      @relation("PdfUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
   bookmarks  Bookmark[]
   views      PdfView[]
+  questions  Question[] @relation("QuestionSource")
 
+  @@unique([slug, occupation])
   @@index([occupation])
   @@index([createdAt])
   @@map("pdfs")
@@ -235,6 +257,7 @@ model PdfView {
 model Question {
   id            String       @id @default(cuid())
   occupation    Occupation
+  subject       Subject      @default(TRADE_THEORY)
   topic         String
   type          QuestionType @default(MCQ)
   question      String
@@ -246,13 +269,39 @@ model Question {
   explanation   String?
   difficulty    Difficulty   @default(EASY)
   active        Boolean      @default(true)
+
+  // -- Hindi ---------------------------------------------------------------
+  // Populated for questions taken from the bilingual AITT papers. A learner
+  // reading in Hindi falls back to the English text wherever these are null,
+  // which is why they are nullable rather than defaulted to "".
+  questionHi    String?
+  optionAHi     String?
+  optionBHi     String?
+  optionCHi     String?
+  optionDHi     String?
+  explanationHi String?
+
+  // -- Provenance ----------------------------------------------------------
+  // Where the question came from, so a wrong answer can point the learner at
+  // the exact document and page to revise from.
+  sourcePdfId   String?
+  sourcePage    Int?
+  sourceLabel   String?
+  syllabusWeek  String?
+  /// Stable hash of the question + options; makes the importer idempotent.
+  importKey     String?
+
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
-  answers TestAnswer[]
+  answers   TestAnswer[]
+  sourcePdf Pdf?         @relation("QuestionSource", fields: [sourcePdfId], references: [id], onDelete: SetNull)
 
+  @@unique([occupation, importKey])
   @@index([occupation, active])
+  @@index([occupation, subject, active])
   @@index([topic])
+  @@index([sourcePdfId])
   @@map("questions")
 }
 

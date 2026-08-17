@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { AnswerOption, Difficulty, Occupation, QuestionType } from "@prisma/client";
+import { AnswerOption, Difficulty, Occupation, QuestionType, Subject } from "@prisma/client";
 import Papa from "papaparse";
 import { z } from "zod";
 
@@ -162,6 +162,26 @@ function parseType(value?: string): QuestionType {
   return QuestionType.MCQ;
 }
 
+const SUBJECT_ALIASES: Record<string, Subject> = {
+  TRADE_THEORY: Subject.TRADE_THEORY,
+  THEORY: Subject.TRADE_THEORY,
+  TRADE: Subject.TRADE_THEORY,
+  WORKSHOP_CALCULATION: Subject.WORKSHOP_CALCULATION,
+  WORKSHOP: Subject.WORKSHOP_CALCULATION,
+  CALCULATION: Subject.WORKSHOP_CALCULATION,
+  WORKSHOP_CALCULATION_AND_SCIENCE: Subject.WORKSHOP_CALCULATION,
+  ENGINEERING_DRAWING: Subject.ENGINEERING_DRAWING,
+  DRAWING: Subject.ENGINEERING_DRAWING,
+  EMPLOYABILITY_SKILLS: Subject.EMPLOYABILITY_SKILLS,
+  EMPLOYABILITY: Subject.EMPLOYABILITY_SKILLS,
+};
+
+/** Blank or unrecognised subjects fall back to trade theory, the largest paper. */
+function parseSubject(value?: string): Subject {
+  const key = (value ?? "").trim().toUpperCase().replace(/[\s/&-]+/g, "_");
+  return SUBJECT_ALIASES[key] ?? Subject.TRADE_THEORY;
+}
+
 export type ImportSummary = {
   inserted: number;
   skipped: number;
@@ -172,7 +192,10 @@ export type ImportSummary = {
  * Bulk-imports questions from CSV text.
  *
  * Expected header:
- * `occupation,topic,type,question,option_a,option_b,option_c,option_d,correct_answer,explanation,difficulty`
+ * `occupation,subject,topic,type,question,option_a,option_b,option_c,option_d,correct_answer,explanation,difficulty`
+ *
+ * `subject` is optional for backwards compatibility with sheets exported before
+ * the AITT subject split; those rows import as trade theory.
  */
 export async function importQuestionsAction(csvText: string): Promise<ActionResult<ImportSummary>> {
   const gate = await guard();
@@ -219,6 +242,7 @@ export async function importQuestionsAction(csvText: string): Promise<ActionResu
     const type = parseType(shape.data.type);
     const candidate = questionSchema.safeParse({
       occupation,
+      subject: parseSubject(shape.data.subject),
       topic: shape.data.topic,
       type,
       question: shape.data.question,
@@ -248,7 +272,7 @@ export async function importQuestionsAction(csvText: string): Promise<ActionResu
   if (records.length === 0) {
     return actionError(
       summary.errors[0]
-        ? `No rows could be imported. First problem — row ${summary.errors[0].row}: ${summary.errors[0].message}`
+        ? `No rows could be imported. First problem at row ${summary.errors[0].row}: ${summary.errors[0].message}`
         : "No rows could be imported.",
     );
   }

@@ -65,7 +65,7 @@ async function send(to: string, subject: string, html: string, text: string) {
     // No SMTP configured (typical for local development): log the message so
     // the flow remains fully usable instead of silently failing.
     console.warn(
-      `[mail] SMTP is not configured — e-mail not sent.\n  to: ${to}\n  subject: ${subject}\n  ${text}`,
+      `[mail] SMTP is not configured, e-mail not sent.\n  to: ${to}\n  subject: ${subject}\n  ${text}`,
     );
     return { delivered: false as const };
   }
@@ -82,7 +82,7 @@ export async function sendVerificationEmail(to: string, name: string, url: strin
      <p>Thanks for signing up. Please confirm this e-mail address to activate your account. The link is valid for 24 hours.</p>`,
     { label: "Verify e-mail", url },
   );
-  return send(to, `${title} — Skill Portal`, html, `Verify your e-mail: ${url}`);
+  return send(to, `${title} | Skill Portal`, html, `Verify your e-mail: ${url}`);
 }
 
 export async function sendPasswordResetEmail(to: string, name: string, url: string) {
@@ -91,10 +91,10 @@ export async function sendPasswordResetEmail(to: string, name: string, url: stri
     title,
     `<p>Hi ${esc(name || "there")},</p>
      <p>We received a request to reset your password. This link expires in 1 hour and can be used once.</p>
-     <p>If you did not request this, you can safely ignore this e-mail — your password will not change.</p>`,
+     <p>If you did not request this, you can safely ignore this e-mail; your password will not change.</p>`,
     { label: "Choose a new password", url },
   );
-  return send(to, `${title} — Skill Portal`, html, `Reset your password: ${url}`);
+  return send(to, `${title} | Skill Portal`, html, `Reset your password: ${url}`);
 }
 
 export async function sendPasswordChangedEmail(to: string, name: string) {
@@ -105,7 +105,7 @@ export async function sendPasswordChangedEmail(to: string, name: string) {
      <p>This is a confirmation that the password for your Skill Portal account was just changed.</p>
      <p>If this wasn't you, reset your password immediately and contact your administrator.</p>`,
   );
-  return send(to, `${title} — Skill Portal`, html, "Your Skill Portal password was changed.");
+  return send(to, `${title} | Skill Portal`, html, "Your Skill Portal password was changed.");
 }
 
 export async function sendAdminResetEmail(to: string, name: string, url: string) {
@@ -116,5 +116,5 @@ export async function sendAdminResetEmail(to: string, name: string, url: string)
      <p>An administrator has issued a password reset for your account. Use the link below to set a new password. It expires in 1 hour.</p>`,
     { label: "Set a new password", url },
   );
-  return send(to, `${title} — Skill Portal`, html, `Set a new password: ${url}`);
+  return send(to, `${title} | Skill Portal`, html, `Set a new password: ${url}`);
 }

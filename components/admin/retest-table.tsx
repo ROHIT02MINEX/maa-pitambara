@@ -95,7 +95,7 @@ export function RetestTable({ rows }: { rows: AdminRetestRow[] }) {
               {row.reason ? (
                 <p className="line-clamp-3 text-sm">{row.reason}</p>
               ) : (
-                <span className="text-sm text-muted-foreground">—</span>
+                <span className="text-sm text-muted-foreground">-</span>
               )}
               {row.adminNote ? (
                 <p className="mt-1 text-xs text-muted-foreground">Note: {row.adminNote}</p>
@@ -164,7 +164,7 @@ export function RetestTable({ rows }: { rows: AdminRetestRow[] }) {
                 </div>
               ) : (
                 <span className="text-xs text-muted-foreground">
-                  {row.reviewedAt ? formatDate(row.reviewedAt, true) : "—"}
+                  {row.reviewedAt ? formatDate(row.reviewedAt, true) : "-"}
                 </span>
               )}
             </TableCell>

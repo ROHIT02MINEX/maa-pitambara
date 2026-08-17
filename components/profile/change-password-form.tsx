@@ -61,7 +61,7 @@ export function ChangePasswordForm({ hasPassword }: { hasPassword: boolean }) {
         <Alert variant="info">
           <AlertDescription>
             You signed up with Google. Set a password here if you also want to sign in with your
-            e-mail address — type anything in the first field, it is not checked for accounts
+            e-mail address, so type anything in the first field; it is not checked for accounts
             without an existing password.
           </AlertDescription>
         </Alert>

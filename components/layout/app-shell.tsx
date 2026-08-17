@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { GraduationCap } from "lucide-react";
 
+import { InstituteLogo } from "@/components/brand/institute-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -39,17 +39,18 @@ export function AppShell({
     <div className="app-shell-bg min-h-dvh">
       <div className="flex min-h-dvh">
         <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-border/60 bg-background/60 p-4 backdrop-blur-xl lg:flex">
-          <Link href="/dashboard" className="mb-6 flex items-center gap-2 px-2 font-semibold">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
-              <GraduationCap className="h-5 w-5" />
-            </span>
-            <span className="flex flex-col leading-tight">
-              <span>{title}</span>
+          <Link href="/dashboard" className="flex items-center gap-2.5 px-2 font-semibold">
+            <InstituteLogo size={40} className="h-10 w-10 shrink-0" title={null} />
+            <span className="flex min-w-0 flex-col leading-tight">
+              <span className="truncate">{title}</span>
               {subtitle ? (
-                <span className="text-xs font-normal text-muted-foreground">{subtitle}</span>
+                <span className="truncate text-xs font-normal text-muted-foreground">
+                  {subtitle}
+                </span>
               ) : null}
             </span>
           </Link>
+          <div className="gold-rule my-4" aria-hidden />
 
           <SidebarNav items={items} />
 

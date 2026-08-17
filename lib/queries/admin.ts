@@ -227,7 +227,7 @@ export async function listPdfs(filter: ListFilterLike) {
       take,
       include: {
         uploadedBy: { select: { name: true, email: true } },
-        _count: { select: { views: true, bookmarks: true } },
+        _count: { select: { views: true, bookmarks: true, questions: true } },
       },
     }),
     prisma.pdf.count({ where }),
@@ -258,7 +258,13 @@ export async function listQuestions(filter: ListFilterLike) {
   if (filter.status === "inactive") where.active = false;
 
   const [items, total, topics] = await Promise.all([
-    prisma.question.findMany({ where, orderBy: { createdAt: "desc" }, skip, take }),
+    prisma.question.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+      include: { sourcePdf: { select: { title: true } } },
+    }),
     prisma.question.count({ where }),
     prisma.question.findMany({
       where: filter.occupation ? { occupation: filter.occupation } : {},

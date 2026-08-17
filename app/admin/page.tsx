@@ -20,10 +20,10 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { isSheetsBackupConfigured } from "@/lib/sheets-backup";
 import { OccupationScoresChart, OccupationUsersChart } from "@/components/admin/admin-charts";
 import { SheetsBackupCard } from "@/components/admin/sheets-backup-card";
+import { OptionalSetupNotice } from "@/components/admin/optional-setup-notice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = { title: "Admin overview" };
@@ -46,16 +46,7 @@ export default async function AdminDashboardPage() {
         </p>
       </header>
 
-      {missing.length > 0 ? (
-        <Alert variant="warning">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Optional integrations not configured</AlertTitle>
-          <AlertDescription>
-            {missing.join(", ")}. The portal runs without them, but those features stay disabled
-            until the environment variables are set. See the README for the full list.
-          </AlertDescription>
-        </Alert>
-      ) : null}
+      <OptionalSetupNotice missing={missing} />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
@@ -160,7 +151,7 @@ export default async function AdminDashboardPage() {
                     <div className="text-right">
                       <Badge variant="secondary">{occupationLabel(user.occupation)}</Badge>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {user.lastLoginAt ? formatDate(user.lastLoginAt, true) : "—"}
+                        {user.lastLoginAt ? formatDate(user.lastLoginAt, true) : "-"}
                       </p>
                     </div>
                   </li>
@@ -191,7 +182,7 @@ export default async function AdminDashboardPage() {
                       <p className="truncate font-medium">{test.user.name ?? test.user.email}</p>
                       <p className="truncate text-xs text-muted-foreground">
                         {occupationLabel(test.occupation)} ·{" "}
-                        {test.submittedAt ? formatDate(test.submittedAt, true) : "—"}
+                        {test.submittedAt ? formatDate(test.submittedAt, true) : "-"}
                       </p>
                     </div>
                     <p className="text-sm font-semibold">
@@ -225,7 +216,7 @@ export default async function AdminDashboardPage() {
                     {entry.user ? (
                       <span className="text-muted-foreground">
                         {" "}
-                        — {entry.user.name ?? entry.user.email}
+                        by {entry.user.name ?? entry.user.email}
                       </span>
                     ) : null}
                     {entry.detail ? (

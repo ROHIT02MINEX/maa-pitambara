@@ -106,7 +106,7 @@ export default async function AdminAnalyticsPage({
                       <p className="truncate font-medium">{row.name ?? "Unnamed"}</p>
                       <p className="truncate text-xs text-muted-foreground">{row.email}</p>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap">{row.phone ?? "—"}</TableCell>
+                    <TableCell className="whitespace-nowrap">{row.phone ?? "-"}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{occupationLabel(row.occupation)}</Badge>
                     </TableCell>

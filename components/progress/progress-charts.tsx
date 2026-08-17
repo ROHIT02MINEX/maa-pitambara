@@ -86,7 +86,7 @@ export function TopicAccuracyChart({ data }: { data: TopicPoint[] }) {
     <Card>
       <CardHeader>
         <CardTitle>Accuracy by topic</CardTitle>
-        <CardDescription>Weakest topics first — these are worth revising.</CardDescription>
+        <CardDescription>Weakest topics first. These are worth revising.</CardDescription>
       </CardHeader>
       <CardContent>
         {top.length === 0 ? (

@@ -86,6 +86,11 @@ export async function updatePdfAction(input: unknown): Promise<ActionResult> {
 
   const existing = await prisma.pdf.findUnique({ where: { id: parsed.data.id } });
   if (!existing) return actionError("That document no longer exists.");
+  if (existing.builtIn) {
+    return actionError(
+      "This is an official question bank that ships with the portal. Re-run the material import to change it.",
+    );
+  }
 
   let fileFields: { storagePath: string; fileUrl: string; fileSize: number; mimeType: string } | null =
     null;
@@ -135,6 +140,14 @@ export async function deletePdfAction(id: string): Promise<ActionResult> {
 
   const existing = await prisma.pdf.findUnique({ where: { id } });
   if (!existing) return actionError("That document no longer exists.");
+  // Built-in banks are served from `public/`, not object storage, and questions
+  // reference them for the "where to learn this" links. Deleting the row would
+  // orphan those links while leaving the file on disk.
+  if (existing.builtIn) {
+    return actionError(
+      "Official question banks cannot be deleted. Test questions link back to them.",
+    );
+  }
 
   await prisma.pdf.delete({ where: { id } });
   await deletePdf(existing.storagePath).catch((error) => {

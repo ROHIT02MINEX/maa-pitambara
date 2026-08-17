@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { AnswerOption, Difficulty, Occupation, QuestionType } from "@prisma/client";
+import { AnswerOption, Difficulty, Occupation, QuestionType, Subject } from "@prisma/client";
 import { MoreHorizontal, Pencil, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
@@ -19,6 +19,9 @@ import {
   OCCUPATIONS,
   OCCUPATION_LABELS,
   QUESTION_TYPE_LABELS,
+  SUBJECTS,
+  SUBJECT_LABELS,
+  SUBJECT_SHORT_LABELS,
 } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,6 +73,7 @@ import {
 export type AdminQuestionRow = {
   id: string;
   occupation: Occupation;
+  subject: Subject;
   topic: string;
   type: QuestionType;
   question: string;
@@ -81,10 +85,14 @@ export type AdminQuestionRow = {
   explanation: string | null;
   difficulty: Difficulty;
   active: boolean;
+  /** Null for questions added by hand rather than imported from a PDF. */
+  sourcePdf: { title: string } | null;
+  sourcePage: number | null;
 };
 
 type FormState = {
   occupation: Occupation;
+  subject: Subject;
   topic: string;
   type: QuestionType;
   question: string;
@@ -100,6 +108,7 @@ type FormState = {
 
 const EMPTY: FormState = {
   occupation: Occupation.FITTER,
+  subject: Subject.TRADE_THEORY,
   topic: "",
   type: QuestionType.MCQ,
   question: "",
@@ -113,9 +122,10 @@ const EMPTY: FormState = {
   active: true,
 };
 
-const CSV_TEMPLATE = `occupation,topic,type,question,option_a,option_b,option_c,option_d,correct_answer,explanation,difficulty
-FITTER,Measurement,MCQ,"What is the least count of a standard vernier caliper?","0.01 mm","0.02 mm","0.1 mm","1 mm",B,"A standard vernier caliper reads to 0.02 mm.",EASY
-ELECTRICIAN,Safety,TRUE_FALSE,"An earth connection protects against electric shock.",True,False,,,A,"Earthing gives fault current a safe path.",EASY`;
+const CSV_TEMPLATE = `occupation,subject,topic,type,question,option_a,option_b,option_c,option_d,correct_answer,explanation,difficulty
+FITTER,TRADE_THEORY,Measurement,MCQ,"What is the least count of a standard vernier caliper?","0.01 mm","0.02 mm","0.1 mm","1 mm",B,"A standard vernier caliper reads to 0.02 mm.",EASY
+FITTER,WORKSHOP_CALCULATION,Mensuration,MCQ,"What is the area of a circle of radius 7 cm?","154 cm2","144 cm2","49 cm2","22 cm2",A,"Area = pi r^2 = 22/7 x 49 = 154 cm2.",EASY
+ELECTRICIAN,TRADE_THEORY,Safety,TRUE_FALSE,"An earth connection protects against electric shock.",True,False,,,A,"Earthing gives fault current a safe path.",EASY`;
 
 export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }) {
   const router = useRouter();
@@ -140,6 +150,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
   function openEdit(question: AdminQuestionRow) {
     setForm({
       occupation: question.occupation,
+      subject: question.subject,
       topic: question.topic,
       type: question.type,
       question: question.question,
@@ -250,8 +261,8 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
 
   const answerOptions = isTrueFalse
     ? [
-        { value: AnswerOption.A, label: "A — True" },
-        { value: AnswerOption.B, label: "B — False" },
+        { value: AnswerOption.A, label: "A (True)" },
+        { value: AnswerOption.B, label: "B (False)" },
       ]
     : [
         { value: AnswerOption.A, label: "A" },
@@ -294,11 +305,22 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
               <TableRow key={question.id}>
                 <TableCell className="max-w-[420px]">
                   <p className="line-clamp-2 font-medium">{question.question}</p>
+                  {question.sourcePdf ? (
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      {question.sourcePdf.title}
+                      {question.sourcePage ? ` · p.${question.sourcePage}` : ""}
+                    </p>
+                  ) : null}
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary">{OCCUPATION_LABELS[question.occupation]}</Badge>
                 </TableCell>
-                <TableCell className="text-sm">{question.topic}</TableCell>
+                <TableCell className="text-sm">
+                  {question.topic}
+                  <span className="mt-0.5 block text-xs text-muted-foreground">
+                    {SUBJECT_SHORT_LABELS[question.subject]}
+                  </span>
+                </TableCell>
                 <TableCell className="whitespace-nowrap text-sm">
                   {QUESTION_TYPE_LABELS[question.type]}
                 </TableCell>
@@ -380,6 +402,27 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                 </Select>
               </div>
 
+              {/* The subject decides which slice of the test blueprint this
+                  question competes for, so it is not a cosmetic label. */}
+              <div className="space-y-2">
+                <Label htmlFor="q-subject">Subject</Label>
+                <Select
+                  value={form.subject}
+                  onValueChange={(value) => setForm((f) => ({ ...f, subject: value as Subject }))}
+                >
+                  <SelectTrigger id="q-subject">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SUBJECTS.map((subject) => (
+                      <SelectItem key={subject} value={subject}>
+                        {SUBJECT_LABELS[subject]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="q-type">Type</Label>
                 <Select
@@ -453,7 +496,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
             {isTrueFalse ? (
               <Alert variant="info">
                 <AlertDescription>
-                  True/False questions use fixed options — choose whether the statement is true (A)
+                  True/False questions use fixed options. Choose whether the statement is true (A)
                   or false (B) below.
                 </AlertDescription>
               </Alert>
