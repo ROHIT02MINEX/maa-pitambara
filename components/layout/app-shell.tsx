@@ -7,6 +7,7 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { UserMenu } from "@/components/layout/user-menu";
 import { Badge } from "@/components/ui/badge";
 import type { NavItem } from "@/components/layout/nav-items";
+import { AdminPresence } from "@/components/layout/admin-presence";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -72,6 +73,7 @@ export function AppShell({
               </div>
 
               {headerActions}
+              <AdminPresence isAdmin={user.isAdmin} />
               <ThemeToggle />
               <UserMenu
                 name={user.name}

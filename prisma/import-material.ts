@@ -24,6 +24,10 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import { AnswerOption, Difficulty, Occupation, PrismaClient, Subject } from "@prisma/client";
+import {
+  OFFICIAL_SOURCE_DOCUMENTS,
+  OFFICIAL_SOURCE_LINKS,
+} from "./data/official-source-links";
 
 const prisma = new PrismaClient();
 
@@ -39,6 +43,7 @@ type BankDocument = {
   year: string;
   subject: Subject;
   minedForQuestions: boolean;
+  pageCount?: number;
 };
 
 type BankSource = { doc: string; page: number; label: string; week: string | null };
@@ -70,9 +75,16 @@ async function main() {
   const raw = await readFile(BANK_FILE, "utf8");
   const bank = JSON.parse(raw) as { documents: BankDocument[]; questions: BankQuestion[] };
 
-  console.log(
-    `→ Importing ${bank.documents.length} documents and ${bank.questions.length} questions…`,
-  );
+  const documents: BankDocument[] = [
+    ...bank.documents,
+    ...OFFICIAL_SOURCE_DOCUMENTS.map((document) => ({
+      ...document,
+      occupations: [...document.occupations] as Occupation[],
+      subject: document.subject as Subject,
+    })),
+  ];
+
+  console.log(`→ Importing ${documents.length} documents and ${bank.questions.length} parsed questions…`);
 
   // -------------------------------------------------------------------------
   // Study material
@@ -82,7 +94,7 @@ async function main() {
   // `pdfIds` maps "<document slug>::<occupation>" onto the row id.
   const pdfIds = new Map<string, string>();
 
-  for (const document of bank.documents) {
+  for (const document of documents) {
     const file = `${document.slug}.pdf`;
     const absolute = path.join(PUBLIC_DIR, file);
 
@@ -94,9 +106,9 @@ async function main() {
       continue;
     }
 
-    const questionCount = bank.questions.filter((q) =>
-      q.sources.some((source) => source.doc === document.slug),
-    ).length;
+    const questionCount =
+      bank.questions.filter((q) => q.sources.some((source) => source.doc === document.slug)).length +
+      OFFICIAL_SOURCE_LINKS.filter((link) => link.documentSlug === document.slug).length;
 
     for (const occupation of document.occupations) {
       const row = await prisma.pdf.upsert({
@@ -111,6 +123,7 @@ async function main() {
           fileSize,
           subject: document.subject,
           year: document.year,
+          pageCount: document.pageCount,
           builtIn: true,
         },
         create: {
@@ -125,6 +138,7 @@ async function main() {
           fileSize,
           subject: document.subject,
           year: document.year,
+          pageCount: document.pageCount,
           builtIn: true,
         },
         select: { id: true },
@@ -185,6 +199,27 @@ async function main() {
   }
 
   console.log(`  ✓ ${written} question rows written`);
+
+  // The two official Bharat Skills theory books are image-based. Link the
+  // curated starter questions to their exact lesson pages without claiming
+  // that OCR extracted those questions verbatim from the scans.
+  let linked = 0;
+  for (const link of OFFICIAL_SOURCE_LINKS) {
+    const sourcePdfId = pdfIds.get(`${link.documentSlug}::${link.occupation}`);
+    if (!sourcePdfId) continue;
+
+    const result = await prisma.question.updateMany({
+      where: { occupation: link.occupation, question: link.question },
+      data: {
+        sourcePdfId,
+        sourcePage: link.page,
+        sourceLabel: link.label,
+      },
+    });
+    linked += result.count;
+    if (result.count === 0) console.warn(`  ! Starter question not found: ${link.question}`);
+  }
+  console.log(`  ✓ ${linked} Solar/Cosmetology questions linked to official theory pages`);
 
   // -------------------------------------------------------------------------
   // Summary

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npx prisma generate && next build",
+    "vercel-build": "npx tsx prisma/recover-failed-migration.ts && npx prisma migrate deploy && npx tsx prisma/provision-common-admin.ts && npx tsx prisma/sync-official-sources.ts && npm run build",
     "build:standalone": "NEXT_OUTPUT=standalone next build",
     "start": "next start",
     "lint": "eslint .",

@@ -20,16 +20,19 @@ import { GoogleButton } from "@/components/auth/google-button";
 export function LoginForm({
   callbackUrl,
   googleEnabled,
+  initiallyPending = false,
 }: {
   callbackUrl?: string;
   /** False when the deployment has no Google OAuth credentials configured. */
   googleEnabled: boolean;
+  initiallyPending?: boolean;
 }) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [needsVerification, setNeedsVerification] = React.useState(false);
   const [resending, setResending] = React.useState(false);
   const [redirecting, setRedirecting] = React.useState(false);
+  const [approvalPending, setApprovalPending] = React.useState(initiallyPending);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -48,12 +51,19 @@ export function LoginForm({
   async function onSubmit(values: LoginInput) {
     setFormError(null);
     setNeedsVerification(false);
+    setApprovalPending(false);
 
     const result = await runAction(() => loginAction(values));
 
     if (!result.ok) {
       setFormError(result.error);
       if (result.error.toLowerCase().includes("verify")) setNeedsVerification(true);
+      return;
+    }
+
+    if (result.data?.approvalRequired) {
+      setApprovalPending(true);
+      toast.success(result.message ?? "Login request submitted.");
       return;
     }
 
@@ -97,6 +107,15 @@ export function LoginForm({
                 <Mail className="h-4 w-4" /> Resend verification e-mail
               </Button>
             ) : null}
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
+      {approvalPending ? (
+        <Alert>
+          <AlertDescription>
+            Request submitted. Wait for an administrator to approve it, then press Sign in again.
+            Approval is valid for 15 minutes and one login only.
           </AlertDescription>
         </Alert>
       ) : null}

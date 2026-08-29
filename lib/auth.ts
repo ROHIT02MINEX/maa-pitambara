@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/lib/auth.config";
 import { emailVerificationRequired } from "@/lib/env";
 import { loginSchema } from "@/lib/validations/auth";
+import { consumeLoginApproval, ensurePendingLoginRequest } from "@/lib/login-approval";
 
 /** How long a JWT may go without being re-checked against the database. */
 const TOKEN_REFRESH_MS = 60 * 1000;
@@ -44,6 +45,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // link; see `emailVerificationRequired()`.
         if (emailVerificationRequired() && !user.emailVerified) return null;
 
+        if (user.role !== Role.ADMIN) {
+          const approved = await consumeLoginApproval(user.id);
+          if (!approved) {
+            await ensurePendingLoginRequest(user.id);
+            return null;
+          }
+        }
+
         return {
           id: user.id,
           name: user.name,
@@ -61,13 +70,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig.callbacks,
 
     /** Final gate: disabled accounts can never establish a session. */
-    async signIn({ user }) {
+    async signIn({ user, account }) {
       if (!user?.email) return false;
-      const record = await prisma.user.findUnique({
+      let record = await prisma.user.findUnique({
         where: { email: user.email.toLowerCase() },
-        select: { disabled: true },
       });
       if (record?.disabled) return false;
+
+      // Credentials are gated atomically inside authorize(). OAuth needs the
+      // same queue here because it does not pass through that provider.
+      if (account?.provider !== "credentials") {
+        record ??= await prisma.user.create({
+          data: {
+            email: user.email.toLowerCase(),
+            name: user.name,
+            image: user.image,
+            emailVerified: new Date(),
+          },
+        });
+
+        if (record.role !== Role.ADMIN) {
+          const approved = await consumeLoginApproval(record.id);
+          if (!approved) {
+            await ensurePendingLoginRequest(record.id);
+            return "/login?approval=pending";
+          }
+        }
+      }
+
+      if (record?.role === Role.ADMIN) {
+        await prisma.user.update({ where: { id: record.id }, data: { lastLoginAt: new Date() } });
+      }
       return true;
     },
 

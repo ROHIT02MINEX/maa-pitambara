@@ -3,7 +3,7 @@
 // the pooled connection (PgBouncer) is bypassed when DDL is executed.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   // `native` covers local development. The RHEL targets are for serverless
   // hosts (Netlify/Vercel functions run on Amazon Linux), where the engine
   // built on the Ubuntu build image would not load.
@@ -91,17 +91,17 @@ model User {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
-  accounts     Account[]
-  sessions     Session[]
-  tests        Test[]
-  bookmarks    Bookmark[]
-  pdfViews     PdfView[]
-  activityLogs ActivityLog[]
-  uploadedPdfs Pdf[]         @relation("PdfUploader")
-  resetTokens  PasswordResetToken[]
-  verifyTokens EmailVerificationToken[]
-  retestRequests  RetestRequest[] @relation("RetestRequester")
-  retestsReviewed RetestRequest[] @relation("RetestReviewer")
+  accounts        Account[]
+  sessions        Session[]
+  tests           Test[]
+  bookmarks       Bookmark[]
+  pdfViews        PdfView[]
+  activityLogs    ActivityLog[]
+  uploadedPdfs    Pdf[]                    @relation("PdfUploader")
+  resetTokens     PasswordResetToken[]
+  verifyTokens    EmailVerificationToken[]
+  retestRequests  RetestRequest[]          @relation("RetestRequester")
+  retestsReviewed RetestRequest[]          @relation("RetestReviewer")
 
   @@index([occupation])
   @@index([role])
@@ -284,15 +284,15 @@ model Question {
   // -- Provenance ----------------------------------------------------------
   // Where the question came from, so a wrong answer can point the learner at
   // the exact document and page to revise from.
-  sourcePdfId   String?
-  sourcePage    Int?
-  sourceLabel   String?
-  syllabusWeek  String?
+  sourcePdfId  String?
+  sourcePage   Int?
+  sourceLabel  String?
+  syllabusWeek String?
   /// Stable hash of the question + options; makes the importer idempotent.
-  importKey     String?
+  importKey    String?
 
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   answers   TestAnswer[]
   sourcePdf Pdf?         @relation("QuestionSource", fields: [sourcePdfId], references: [id], onDelete: SetNull)

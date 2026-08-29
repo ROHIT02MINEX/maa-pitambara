@@ -53,3 +53,5 @@ prisma/*.db-journal
 # MCP config
 .mcp.json
 .env*
+.vercel
+tmp/

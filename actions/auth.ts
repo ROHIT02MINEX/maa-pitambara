@@ -21,6 +21,7 @@ import { downgradeSessionCookieToBrowserSession } from "@/lib/session-cookie";
 import { ACTIVITY, logActivity } from "@/lib/activity";
 import { absoluteUrl } from "@/lib/utils";
 import { emailVerificationRequired } from "@/lib/env";
+import { ensurePendingLoginRequest, hasUsableLoginApproval } from "@/lib/login-approval";
 import {
   changePasswordSchema,
   forgotPasswordSchema,
@@ -124,7 +125,7 @@ export async function registerAction(
 
 export async function loginAction(
   input: unknown,
-): Promise<ActionResult<{ redirectTo: string; needsVerification?: boolean }>> {
+): Promise<ActionResult<{ redirectTo?: string; approvalRequired?: boolean }>> {
   const parsed = loginSchema.safeParse(input);
   if (!parsed.success) {
     return actionError("Please fix the highlighted fields.", parsed.error.flatten().fieldErrors);
@@ -159,6 +160,19 @@ export async function loginAction(
     );
   }
 
+  if (user.role !== "ADMIN" && !(await hasUsableLoginApproval(user.id))) {
+    const request = await ensurePendingLoginRequest(user.id);
+    await logActivity({
+      userId: user.id,
+      action: ACTIVITY.LOGIN_APPROVAL_REQUESTED,
+      detail: request.id,
+    });
+    return actionOk(
+      { approvalRequired: true },
+      "Login request submitted. An administrator must approve it before you can sign in.",
+    );
+  }
+
   try {
     await signIn("credentials", { email, password, redirect: false });
   } catch (error) {
@@ -175,7 +189,9 @@ export async function loginAction(
   await logActivity({ userId: user.id, action: ACTIVITY.LOGIN, detail: email });
 
   const profileComplete = Boolean(user.name && user.phone && user.occupation);
-  return actionOk({ redirectTo: profileComplete ? "/dashboard" : "/onboarding" });
+  return actionOk({
+    redirectTo: user.role === "ADMIN" ? "/admin" : profileComplete ? "/dashboard" : "/onboarding",
+  });
 }
 
 export async function googleSignInAction(callbackUrl?: string) {

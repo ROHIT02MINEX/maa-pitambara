@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   ListChecks,
   RotateCcw,
+  LogIn,
   UserRound,
   Users,
   type LucideIcon,
@@ -30,6 +31,7 @@ const ICONS: Record<NavIconName, LucideIcon> = {
   questions: FileQuestion,
   analytics: BarChart3,
   retests: RotateCcw,
+  loginRequests: LogIn,
 };
 
 function isActive(pathname: string, href: string) {
