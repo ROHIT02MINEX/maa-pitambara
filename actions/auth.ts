@@ -161,12 +161,7 @@ export async function loginAction(
   }
 
   if (user.role !== "ADMIN" && !(await hasUsableLoginApproval(user.id))) {
-    const request = await ensurePendingLoginRequest(user.id);
-    await logActivity({
-      userId: user.id,
-      action: ACTIVITY.LOGIN_APPROVAL_REQUESTED,
-      detail: request.id,
-    });
+    await ensurePendingLoginRequest(user.id);
     return actionOk(
       { approvalRequired: true },
       "Login request submitted. An administrator must approve it before you can sign in.",

@@ -24,23 +24,26 @@ export async function hasUsableLoginApproval(userId: string) {
 }
 
 export async function ensurePendingLoginRequest(userId: string) {
-  const existing = await prisma.activityLog.findFirst({
-    where: { userId, action: ACTIVITY.LOGIN_APPROVAL_REQUESTED },
-    orderBy: { createdAt: "desc" },
-  });
-  if (existing) {
-    const decision = await prisma.activityLog.findFirst({
-      where: {
-        userId,
-        action: { in: [ACTIVITY.LOGIN_APPROVAL_APPROVED, ACTIVITY.LOGIN_APPROVAL_REJECTED] },
-        detail: { startsWith: `${existing.id}|` },
-      },
-      select: { id: true },
+  return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${`login-request:${userId}`}))`;
+    const existing = await tx.activityLog.findFirst({
+      where: { userId, action: ACTIVITY.LOGIN_APPROVAL_REQUESTED },
+      orderBy: { createdAt: "desc" },
     });
-    if (!decision) return existing;
-  }
-  return prisma.activityLog.create({
-    data: { userId, action: ACTIVITY.LOGIN_APPROVAL_REQUESTED },
+    if (existing) {
+      const decision = await tx.activityLog.findFirst({
+        where: {
+          userId,
+          action: { in: [ACTIVITY.LOGIN_APPROVAL_APPROVED, ACTIVITY.LOGIN_APPROVAL_REJECTED] },
+          detail: { startsWith: `${existing.id}|` },
+        },
+        select: { id: true },
+      });
+      if (!decision) return existing;
+    }
+    return tx.activityLog.create({
+      data: { userId, action: ACTIVITY.LOGIN_APPROVAL_REQUESTED },
+    });
   });
 }
 
@@ -48,6 +51,7 @@ export async function consumeLoginApproval(userId: string) {
   const approval = await latestUsableApproval(userId);
   if (!approval) return false;
   return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${`login-approval:${userId}`}))`;
     const consumed = await tx.activityLog.findFirst({
       where: { userId, action: ACTIVITY.LOGIN_APPROVAL_CONSUMED, detail: approval.id },
       select: { id: true },
