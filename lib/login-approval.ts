@@ -25,7 +25,9 @@ export async function hasUsableLoginApproval(userId: string) {
 
 export async function ensurePendingLoginRequest(userId: string) {
   return prisma.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${`login-request:${userId}`}))`;
+    await tx.$queryRaw<Array<{ locked: boolean }>>`
+      SELECT pg_advisory_xact_lock(hashtextextended(${`login-request:${userId}`}, 0)) IS NULL AS locked
+    `;
     const existing = await tx.activityLog.findFirst({
       where: { userId, action: ACTIVITY.LOGIN_APPROVAL_REQUESTED },
       orderBy: { createdAt: "desc" },
@@ -51,7 +53,9 @@ export async function consumeLoginApproval(userId: string) {
   const approval = await latestUsableApproval(userId);
   if (!approval) return false;
   return prisma.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${`login-approval:${userId}`}))`;
+    await tx.$queryRaw<Array<{ locked: boolean }>>`
+      SELECT pg_advisory_xact_lock(hashtextextended(${`login-approval:${userId}`}, 0)) IS NULL AS locked
+    `;
     const consumed = await tx.activityLog.findFirst({
       where: { userId, action: ACTIVITY.LOGIN_APPROVAL_CONSUMED, detail: approval.id },
       select: { id: true },

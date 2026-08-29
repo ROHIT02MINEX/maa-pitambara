@@ -67,8 +67,19 @@ export function SignupForm({
         loginAction({ email: values.email, password: values.password, remember: true }),
       );
 
-      if (loginRes.ok) {
+      if (loginRes.ok && !loginRes.data?.approvalRequired) {
         window.location.assign(loginRes.data?.redirectTo || "/onboarding");
+        return;
+      }
+
+      if (loginRes.ok && loginRes.data?.approvalRequired) {
+        toast.success("Account created. Login request submitted for administrator approval.");
+        setDone({
+          email: values.email,
+          emailSent: false,
+          verificationRequired: false,
+        });
+        setRedirecting(false);
         return;
       }
     }
