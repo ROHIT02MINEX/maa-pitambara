@@ -5,6 +5,11 @@ const prisma = new PrismaClient();
 const migration = "20260829090000_login_approval_and_admin_presence";
 
 async function main() {
+  const history = await prisma.$queryRaw<Array<{ name: string | null }>>`
+    SELECT to_regclass('public._prisma_migrations')::text AS name
+  `;
+  if (!history[0]?.name) return;
+
   const rows = await prisma.$queryRaw<Array<{ migration_name: string }>>`
     SELECT migration_name
     FROM "_prisma_migrations"

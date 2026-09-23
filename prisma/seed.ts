@@ -783,13 +783,14 @@ async function main() {
   ];
 
   for (const [occupation, questions] of banks) {
-    const existing = await prisma.question.count({ where: { occupation } });
-    if (existing > 0) {
-      console.log(`  • ${occupation}: ${existing} question(s) already present, skipped`);
-      continue;
-    }
-
-    const result = await prisma.question.createMany({ data: toRecords(occupation, questions) });
+    const records = toRecords(occupation, questions);
+    const existing = await prisma.question.findMany({
+      where: { occupation, question: { in: records.map((row) => row.question) } },
+      select: { question: true },
+    });
+    const existingText = new Set(existing.map((row) => row.question));
+    const missing = records.filter((row) => !existingText.has(row.question));
+    const result = await prisma.question.createMany({ data: missing });
     console.log(`  ✓ ${occupation}: ${result.count} question(s) inserted`);
   }
 

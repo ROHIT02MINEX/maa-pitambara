@@ -19,6 +19,7 @@ const eslintConfig = [
       "node_modules/**",
       "prisma/migrations/**",
       "next-env.d.ts",
+      "tmp/**",
     ],
   },
   {
@@ -29,6 +30,10 @@ const eslintConfig = [
       ],
       "@typescript-eslint/no-explicit-any": "warn",
     },
+  },
+  {
+    files: ["scripts/**/*.js"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
   },
 ];
 
