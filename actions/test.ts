@@ -15,7 +15,6 @@ import {
   finalizeTest,
   pickRandomQuestionIds,
 } from "@/lib/test-engine";
-import { getTestEligibility } from "@/lib/retest";
 import { backupTestResult } from "@/lib/sheets-backup";
 import { actionError, actionOk, type ActionResult } from "@/types";
 
@@ -56,10 +55,6 @@ export async function startTestAction(): Promise<ActionResult<{ testId: string }
   });
   if (active) return actionOk({ testId: active.id }, "Resuming your test in progress.");
 
-  // One attempt by default; anything further needs an approved retest. This is
-  // the enforcement point — the UI hides the button, but that is only a hint.
-  const eligibility = await getTestEligibility(sessionUser.id);
-  if (!eligibility.allowed) return actionError(eligibility.message);
 
   const questionIds = await pickRandomQuestionIds(sessionUser.occupation);
   if (questionIds.length < TEST_QUESTION_COUNT) {
@@ -75,10 +70,14 @@ export async function startTestAction(): Promise<ActionResult<{ testId: string }
   const typeById = new Map(questions.map((q) => [q.id, q.type]));
 
   const now = new Date();
-  const test = await prisma.test.create({
+  const test = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${sessionUser.id}, 0)) IS NULL AS locked`;
+    const existing = await tx.test.findFirst({ where: { userId: sessionUser.id, status: TestStatus.IN_PROGRESS }, select: { id: true } });
+    if (existing) return existing;
+    return tx.test.create({
     data: {
       userId: sessionUser.id,
-      occupation: sessionUser.occupation,
+      occupation: sessionUser.occupation!,
       totalQuestions: questionIds.length,
       durationSec: TEST_DURATION_SECONDS,
       startedAt: now,
@@ -92,16 +91,9 @@ export async function startTestAction(): Promise<ActionResult<{ testId: string }
       },
     },
     select: { id: true },
-  });
-
-  // Spend the retest grant only once the attempt actually exists, so a failure
-  // above can never burn the learner's approval.
-  if (eligibility.reason === "approved-retest") {
-    await prisma.retestRequest.update({
-      where: { id: eligibility.grantId },
-      data: { consumedAt: new Date() },
     });
-  }
+  }, { timeout: 15000 });
+
 
   await logActivity({ userId: sessionUser.id, action: ACTIVITY.TEST_STARTED, detail: test.id });
   revalidatePath("/tests");

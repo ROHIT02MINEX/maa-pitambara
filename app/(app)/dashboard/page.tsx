@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -41,41 +43,36 @@ export default async function DashboardPage() {
       <section className="glass rounded-xl p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-sm text-muted-foreground">Welcome back,</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">{firstName} 👋</h1>
+            <p className="text-sm text-muted-foreground"><T>{"Welcome back,"}</T></p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight"><T>{firstName}</T><T>{" 👋"}</T></h1>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Badge>{occupationLabel(user.occupation)}</Badge>
-              <Badge variant="secondary">Pass mark {PASS_PERCENTAGE}%</Badge>
+              <Badge><T>{occupationLabel(user.occupation)}</T></Badge>
+              <Badge variant="secondary"><T>{"Pass mark "}</T><T>{PASS_PERCENTAGE}</T><T>{"%"}</T></Badge>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <Button asChild>
-              <Link href="/tests">
-                Take a test <ArrowRight className="h-4 w-4" />
+              <Link href="/tests"><T>{" Take a test "}</T><ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/learn">
-                <BookOpen className="h-4 w-4" /> Study material
-              </Link>
+                <BookOpen className="h-4 w-4" /><T>{" Study material "}</T></Link>
             </Button>
           </div>
         </div>
 
         <div className="mt-7 space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">Course completion</span>
-            <span className="text-muted-foreground">{stats.completionPercentage}%</span>
+            <span className="font-medium"><T>{"Course completion"}</T></span>
+            <span className="text-muted-foreground"><T>{stats.completionPercentage}</T><T>{"%"}</T></span>
           </div>
           <Progress
             value={stats.completionPercentage}
             aria-label={`Course completion ${stats.completionPercentage} percent`}
           />
-          <p className="text-xs text-muted-foreground">
-            Based on the material you have opened ({stats.pdfsViewed}/{stats.pdfsAvailable}) and
-            your best test result ({stats.highestScore}%).
-          </p>
+          <p className="text-xs text-muted-foreground"><T>{" Based on the material you have opened ("}</T><T>{stats.pdfsViewed}</T><T>{"/"}</T><T>{stats.pdfsAvailable}</T><T>{") and your best test result ("}</T><T>{stats.highestScore}</T><T>{"%). "}</T></p>
         </div>
       </section>
 
@@ -114,20 +111,17 @@ export default async function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div>
-              <CardTitle>Latest study material</CardTitle>
-              <CardDescription>Newest PDFs for {occupationLabel(user.occupation)}</CardDescription>
+              <CardTitle><T>{"Latest study material"}</T></CardTitle>
+              <CardDescription><T>{"Newest PDFs for "}</T><T>{occupationLabel(user.occupation)}</T></CardDescription>
             </div>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/learn">
-                View all <ArrowRight className="h-4 w-4" />
+              <Link href="/learn"><T>{" View all "}</T><ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </CardHeader>
           <CardContent>
             {latestPdfs.length === 0 ? (
-              <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-                No material has been published for your trade yet. Check back soon.
-              </p>
+              <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground"><T>{" No material has been published for your trade yet. Check back soon. "}</T></p>
             ) : (
               <ul className="divide-y">
                 {latestPdfs.map((pdf) => (
@@ -136,14 +130,14 @@ export default async function DashboardPage() {
                       <FileText className="h-5 w-5" aria-hidden />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{pdf.title}</p>
+                      <p className="truncate font-medium"><T>{pdf.title}</T></p>
                       <p className="truncate text-xs text-muted-foreground">
-                        {pdf.topic ? `${pdf.topic} · ` : ""}
-                        {formatBytes(pdf.fileSize)} · {formatDate(pdf.createdAt)}
+                        <T>{pdf.topic ? `${pdf.topic} · ` : ""}</T>
+                        <T>{formatBytes(pdf.fileSize)}</T><T>{" · "}</T><T>{formatDate(pdf.createdAt)}</T>
                       </p>
                     </div>
                     <Button asChild variant="ghost" size="sm">
-                      <Link href={`/learn?highlight=${pdf.id}`}>Open</Link>
+                      <Link href={`/learn?highlight=${pdf.id}`}><T>{"Open"}</T></Link>
                     </Button>
                   </li>
                 ))}
@@ -154,12 +148,12 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent activity</CardTitle>
-            <CardDescription>Your last actions on the portal</CardDescription>
+            <CardTitle><T>{"Recent activity"}</T></CardTitle>
+            <CardDescription><T>{"Your last actions on the portal"}</T></CardDescription>
           </CardHeader>
           <CardContent>
             {activity.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nothing here yet.</p>
+              <p className="text-sm text-muted-foreground"><T>{"Nothing here yet."}</T></p>
             ) : (
               <ol className="space-y-4">
                 {activity.map((entry) => (
@@ -169,9 +163,9 @@ export default async function DashboardPage() {
                       className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary/60"
                     />
                     <div className="min-w-0">
-                      <p className="text-sm font-medium">{activityLabel(entry.action)}</p>
+                      <p className="text-sm font-medium"><T>{activityLabel(entry.action)}</T></p>
                       <p className="text-xs text-muted-foreground">
-                        {formatDate(entry.createdAt, true)}
+                        <T>{formatDate(entry.createdAt, true)}</T>
                       </p>
                     </div>
                   </li>
@@ -185,23 +179,20 @@ export default async function DashboardPage() {
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">
           <div>
-            <CardTitle>Recent test results</CardTitle>
-            <CardDescription>Your five most recent attempts</CardDescription>
+            <CardTitle><T>{"Recent test results"}</T></CardTitle>
+            <CardDescription><T>{"Your five most recent attempts"}</T></CardDescription>
           </div>
           <Button asChild variant="ghost" size="sm">
-            <Link href="/progress">
-              Full progress <ArrowRight className="h-4 w-4" />
+            <Link href="/progress"><T>{" Full progress "}</T><ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </CardHeader>
         <CardContent>
           {recentTests.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                You haven&apos;t taken a test yet. Twenty questions, thirty minutes. Give it a go.
-              </p>
+              <p className="text-sm text-muted-foreground"><T>{" You haven't taken a test yet. Twenty questions, thirty minutes. Give it a go. "}</T></p>
               <Button asChild className="mt-4">
-                <Link href="/tests">Start your first test</Link>
+                <Link href="/tests"><T>{"Start your first test"}</T></Link>
               </Button>
             </div>
           ) : (
@@ -219,18 +210,17 @@ export default async function DashboardPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="font-medium">
-                      {test.score}/{test.totalQuestions} · {test.percentage}%
-                    </p>
+                      <T>{test.score}</T><T>{"/"}</T><T>{test.totalQuestions}</T><T>{" · "}</T><T>{test.percentage}</T><T>{"% "}</T></p>
                     <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" aria-hidden /> {formatDuration(test.timeTaken)} ·{" "}
-                      {test.submittedAt ? formatDate(test.submittedAt, true) : "-"}
+                      <Clock className="h-3 w-3" aria-hidden /> <T>{formatDuration(test.timeTaken)}</T><T>{" ·"}</T><T>{" "}</T>
+                      <T>{test.submittedAt ? formatDate(test.submittedAt, true) : "-"}</T>
                     </p>
                   </div>
                   <Badge variant={test.status === "PASSED" ? "success" : "destructive"}>
-                    {test.status === "PASSED" ? "Passed" : "Failed"}
+                    <T>{test.status === "PASSED" ? "Passed" : "Failed"}</T>
                   </Badge>
                   <Button asChild variant="ghost" size="sm">
-                    <Link href={`/tests/result/${test.id}`}>Review</Link>
+                    <Link href={`/tests/result/${test.id}`}><T>{"Review"}</T></Link>
                   </Button>
                 </li>
               ))}

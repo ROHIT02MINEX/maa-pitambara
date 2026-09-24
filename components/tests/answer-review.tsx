@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import Link from "next/link";
@@ -32,46 +34,41 @@ function StudyReference({ item }: { item: Item }) {
   const { source } = item;
   if (!source.fileUrl || !source.title) {
     return (
-      <p className="mt-3 rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
-        Revise <strong className="font-medium text-foreground">{item.topic}</strong> from the
-        study material for your trade.
-      </p>
+      <p className="mt-3 rounded-lg border border-dashed p-3 text-sm text-muted-foreground"><T>{" Revise "}</T><strong className="font-medium text-foreground"><T>{item.topic}</T></strong><T>{" from the study material for your trade. "}</T></p>
     );
   }
 
   return (
     <div className="mt-3 rounded-lg border border-gold/40 bg-gold/[0.07] p-4">
       <p className="flex items-center gap-2 text-sm font-semibold">
-        <BookOpen className="h-4 w-4 shrink-0 text-gold" aria-hidden />
-        Where to learn this
-      </p>
+        <BookOpen className="h-4 w-4 shrink-0 text-gold" aria-hidden /><T>{" Where to learn this "}</T></p>
 
       <p className="mt-2 text-sm">
-        <span className="font-medium">{source.title}</span>
+        <span className="font-medium"><T>{source.title}</T></span>
         {source.page ? (
           <>
-            {", "}
-            <span className="whitespace-nowrap">page {source.page}</span>
+            <T>{", "}</T>
+            <span className="whitespace-nowrap"><T>{"page "}</T><T>{source.page}</T></span>
           </>
         ) : null}
       </p>
 
       <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-        <span>Topic: {item.topic}</span>
-        {source.label ? <span>{source.label}</span> : null}
-        {source.syllabusWeek ? <span>Syllabus week {source.syllabusWeek}</span> : null}
+        <span><T>{"Topic: "}</T><T>{item.topic}</T></span>
+        {source.label ? <span><T>{source.label}</T></span> : null}
+        {source.syllabusWeek ? <span><T>{"Syllabus week "}</T><T>{source.syllabusWeek}</T></span> : null}
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">
         <Button asChild size="sm">
           <a href={sourceHref(source.fileUrl, source.page)} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-3.5 w-3.5" />
-            {source.page ? `Open page ${source.page}` : "Open document"}
+            <T>{source.page ? `Open page ${source.page}` : "Open document"}</T>
           </a>
         </Button>
         {source.pdfId ? (
           <Button asChild size="sm" variant="outline">
-            <Link href={`/learn?highlight=${source.pdfId}`}>Find in library</Link>
+            <Link href={`/learn?highlight=${source.pdfId}`}><T>{"Find in library"}</T></Link>
           </Button>
         ) : null}
       </div>
@@ -91,11 +88,8 @@ export function AnswerReview({ breakdown }: { breakdown: TestResultView["breakdo
     <Card>
       <CardHeader className="gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <CardTitle>Answer review</CardTitle>
-          <CardDescription>
-            Every question with your answer, the correct answer, and, where you went wrong, the
-            document and page that explains it.
-          </CardDescription>
+          <CardTitle><T>{"Answer review"}</T></CardTitle>
+          <CardDescription><T>{" Every question with your answer, the correct answer, and, where you went wrong, the document and page that explains it. "}</T></CardDescription>
         </div>
         <LanguageToggle value={language} onChange={setLanguage} className="shrink-0" />
       </CardHeader>
@@ -103,15 +97,13 @@ export function AnswerReview({ breakdown }: { breakdown: TestResultView["breakdo
       <CardContent className="space-y-4">
         <Tabs value={filter} onValueChange={(value) => setFilter(value as Filter)}>
           <TabsList>
-            <TabsTrigger value="all">All {breakdown.length}</TabsTrigger>
-            <TabsTrigger value="wrong">To revise {wrongCount}</TabsTrigger>
+            <TabsTrigger value="all"><T>{"All "}</T><T>{breakdown.length}</T></TabsTrigger>
+            <TabsTrigger value="wrong"><T>{"To revise "}</T><T>{wrongCount}</T></TabsTrigger>
           </TabsList>
         </Tabs>
 
         {items.length === 0 ? (
-          <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            Nothing to revise. Every answer was correct.
-          </p>
+          <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground"><T>{" Nothing to revise. Every answer was correct. "}</T></p>
         ) : (
           <ol className="space-y-4">
             {items.map((item) => {
@@ -136,13 +128,13 @@ export function AnswerReview({ breakdown }: { breakdown: TestResultView["breakdo
                       lang={stemInHindi ? "hi" : "en"}
                       className={cn("font-medium", stemInHindi && "font-devanagari")}
                     >
-                      <span className="mr-2 text-muted-foreground">Q{number}.</span>
-                      {stemInHindi ? item.questionHi : item.question}
+                      <span className="mr-2 text-muted-foreground"><T>{"Q"}</T><T>{number}</T><T>{"."}</T></span>
+                      <T>{stemInHindi ? item.questionHi : item.question}</T>
                     </p>
                     <Badge
                       variant={item.correct ? "success" : wasAnswered ? "destructive" : "warning"}
                     >
-                      {item.correct ? "Correct" : wasAnswered ? "Wrong" : "Not answered"}
+                      <T>{item.correct ? "Correct" : wasAnswered ? "Wrong" : "Not answered"}</T>
                     </Badge>
                   </div>
 
@@ -171,12 +163,10 @@ export function AnswerReview({ breakdown }: { breakdown: TestResultView["breakdo
                             lang={optionInHindi ? "hi" : "en"}
                             className={cn(optionInHindi && "font-devanagari")}
                           >
-                            {optionInHindi ? option.labelHi : option.label}
+                            <T>{optionInHindi ? option.labelHi : option.label}</T>
                           </span>
                           {isChosen ? (
-                            <span className="ml-auto shrink-0 text-xs text-muted-foreground">
-                              your answer
-                            </span>
+                            <span className="ml-auto shrink-0 text-xs text-muted-foreground"><T>{" your answer "}</T></span>
                           ) : null}
                         </li>
                       );
@@ -185,16 +175,16 @@ export function AnswerReview({ breakdown }: { breakdown: TestResultView["breakdo
 
                   <div className="mt-3 flex flex-wrap items-center gap-2">
                     <Badge variant="secondary">
-                      {hindi ? SUBJECT_LABELS_HI[item.subject] : SUBJECT_LABELS[item.subject]}
+                      <T>{hindi ? SUBJECT_LABELS_HI[item.subject] : SUBJECT_LABELS[item.subject]}</T>
                     </Badge>
-                    <Badge variant="outline">{item.topic}</Badge>
-                    <Badge variant="outline">{DIFFICULTY_LABELS[item.difficulty]}</Badge>
+                    <Badge variant="outline"><T>{item.topic}</T></Badge>
+                    <Badge variant="outline"><T>{DIFFICULTY_LABELS[item.difficulty]}</T></Badge>
                   </div>
 
                   {item.explanation ? (
                     <p className="mt-3 rounded-lg bg-background/70 p-3 text-sm">
-                      <strong className="font-semibold">Why: </strong>
-                      {hindi && item.explanationHi ? item.explanationHi : item.explanation}
+                      <strong className="font-semibold"><T>{"Why: "}</T></strong>
+                      <T>{hindi && item.explanationHi ? item.explanationHi : item.explanation}</T>
                     </p>
                   ) : null}
 

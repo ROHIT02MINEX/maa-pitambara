@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, MailQuestion, XCircle } from "lucide-react";
@@ -25,14 +27,12 @@ export default async function VerifyEmailPage({
           <MailQuestion className="h-7 w-7" aria-hidden />
         </span>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Verify your e-mail</h1>
-          <p className="text-sm text-muted-foreground">
-            Open the link we sent you. If it has expired, request a fresh one below.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight"><T>{"Verify your e-mail"}</T></h1>
+          <p className="text-sm text-muted-foreground"><T>{" Open the link we sent you. If it has expired, request a fresh one below. "}</T></p>
         </div>
         <ResendVerification />
         <Button asChild variant="ghost" className="w-full">
-          <Link href="/login">Back to sign in</Link>
+          <Link href="/login"><T>{"Back to sign in"}</T></Link>
         </Button>
       </div>
     );
@@ -56,22 +56,22 @@ export default async function VerifyEmailPage({
 
       <div className="space-y-2">
         <h1 className="text-2xl font-bold tracking-tight">
-          {result.ok ? "E-mail verified" : "Verification failed"}
+          <T>{result.ok ? "E-mail verified" : "Verification failed"}</T>
         </h1>
         <p className="text-sm text-muted-foreground">
-          {result.ok ? result.message : result.error}
+          <T>{result.ok ? result.message : result.error}</T>
         </p>
       </div>
 
       {result.ok ? (
         <Button asChild className="w-full">
-          <Link href="/login">Sign in</Link>
+          <Link href="/login"><T>{"Sign in"}</T></Link>
         </Button>
       ) : (
         <>
           <ResendVerification />
           <Button asChild variant="ghost" className="w-full">
-            <Link href="/login">Back to sign in</Link>
+            <Link href="/login"><T>{"Back to sign in"}</T></Link>
           </Button>
         </>
       )}

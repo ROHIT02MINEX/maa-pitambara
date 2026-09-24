@@ -1,11 +1,13 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Lock } from "lucide-react";
 import type { Occupation } from "@prisma/client";
 
@@ -64,19 +66,19 @@ export function ProfileForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       {formError ? (
         <Alert variant="destructive">
-          <AlertDescription>{formError}</AlertDescription>
+          <AlertDescription><T>{formError}</T></AlertDescription>
         </Alert>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="name">Full name</Label>
+          <Label htmlFor="name"><T>{"Full name"}</T></Label>
           <Input id="name" autoComplete="name" aria-invalid={Boolean(errors.name)} {...register("name")} />
-          {errors.name ? <p className="text-sm text-destructive">{errors.name.message}</p> : null}
+          {errors.name ? <p className="text-sm text-destructive"><T>{errors.name.message}</T></p> : null}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone">Mobile number</Label>
+          <Label htmlFor="phone"><T>{"Mobile number"}</T></Label>
           <Input
             id="phone"
             type="tel"
@@ -85,19 +87,18 @@ export function ProfileForm({
             aria-invalid={Boolean(errors.phone)}
             {...register("phone")}
           />
-          {errors.phone ? <p className="text-sm text-destructive">{errors.phone.message}</p> : null}
+          {errors.phone ? <p className="text-sm text-destructive"><T>{errors.phone.message}</T></p> : null}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">E-mail address</Label>
+          <Label htmlFor="email"><T>{"E-mail address"}</T></Label>
           <Input id="email" value={email} readOnly disabled />
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Lock className="h-3 w-3" aria-hidden /> Your sign-in address cannot be changed here.
-          </p>
+            <Lock className="h-3 w-3" aria-hidden /><T>{" Your sign-in address cannot be changed here. "}</T></p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="occupation">Occupation</Label>
+          <Label htmlFor="occupation"><T>{"Occupation"}</T></Label>
           <Input
             id="occupation"
             value={occupation ? OCCUPATION_LABELS[occupation] : "Not set"}
@@ -105,14 +106,11 @@ export function ProfileForm({
             disabled
           />
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Lock className="h-3 w-3" aria-hidden /> Each learner belongs to exactly one trade.
-          </p>
+            <Lock className="h-3 w-3" aria-hidden /><T>{" Each learner belongs to exactly one trade. "}</T></p>
         </div>
       </div>
 
-      <Button type="submit" loading={isSubmitting} disabled={!isDirty}>
-        Save changes
-      </Button>
+      <Button type="submit" loading={isSubmitting} disabled={!isDirty}><T>{" Save changes "}</T></Button>
     </form>
   );
 }

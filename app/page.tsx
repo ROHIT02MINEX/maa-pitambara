@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -17,6 +19,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PortalLanguageToggle } from "@/components/portal-language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InstituteLogo } from "@/components/brand/institute-logo";
 import {
@@ -64,7 +67,7 @@ const FEATURES = [
   {
     icon: GraduationCap,
     title: "Built for the institute",
-    body: "Verified sign-in, role-based access, retest approvals, and an admin panel for trainees, material, question banks and exports.",
+    body: "Instant sign-in, unlimited practice tests, and an admin panel for users, study material, question banks and exports.",
   },
 ];
 
@@ -78,28 +81,28 @@ export default async function LandingPage() {
           <Link href="/" className="flex items-center gap-2.5 font-semibold">
             <InstituteLogo size={44} className="h-11 w-11 shrink-0" title={null} priority />
             <span className="hidden flex-col leading-tight sm:flex">
-              <span>{INSTITUTE.shortName}</span>
+              <span><T>{INSTITUTE.shortName}</T></span>
               <span className="text-xs font-normal text-muted-foreground">
-                {INSTITUTE.city} · ITI code {INSTITUTE.scvtCode}
+                <T>{INSTITUTE.city}</T><T>{" · ITI code "}</T><T>{INSTITUTE.scvtCode}</T>
               </span>
             </span>
           </Link>
 
           <nav className="flex items-center gap-2" aria-label="Primary">
-            <ThemeToggle />
+            <PortalLanguageToggle />
+              <ThemeToggle />
             {user ? (
               <Button asChild>
-                <Link href="/dashboard">
-                  Go to dashboard <ArrowRight className="h-4 w-4" />
+                <Link href="/dashboard"><T>{" Go to dashboard "}</T><ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             ) : (
               <>
                 <Button asChild variant="ghost">
-                  <Link href="/login">Sign in</Link>
+                  <Link href="/login"><T>{"Sign in"}</T></Link>
                 </Button>
                 <Button asChild>
-                  <Link href="/signup">Get started</Link>
+                  <Link href="/signup"><T>{"Get started"}</T></Link>
                 </Button>
               </>
             )}
@@ -114,38 +117,32 @@ export default async function LandingPage() {
         <section className="container py-14 md:py-20">
           <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
             <div className="text-center lg:text-left">
-              <Badge className="mb-5">{INSTITUTE.portalName}</Badge>
-              <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-                Skill Today,{" "}
-                <span className="text-saffron">Success Tomorrow</span>
+              <Badge className="mb-5"><T>{INSTITUTE.portalName}</T></Badge>
+              <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"><T>{" Skill Today,"}</T><T>{" "}</T>
+                <span className="text-saffron"><T>{"Success Tomorrow"}</T></span>
               </h1>
               <p
                 lang="hi"
                 className="mt-3 text-lg font-semibold text-primary dark:text-gold"
               >
-                {INSTITUTE.mottoHi}
+                <T>{INSTITUTE.mottoHi}</T>
               </p>
-              <p className="mx-auto mt-5 max-w-2xl text-pretty text-lg text-muted-foreground lg:mx-0">
-                Study the official NIMI and DGT material for your trade, then sit a timed
-                practice paper built to the same blueprint as the All India Trade Test,
-                in English or Hindi, with every wrong answer pointing you back to the page
-                that explains it.
-              </p>
+              <p className="mx-auto mt-5 max-w-2xl text-pretty text-lg text-muted-foreground lg:mx-0"><T>{" Study the official NIMI and DGT material for your trade, then sit a timed practice paper built to the same blueprint as the All India Trade Test, in English or Hindi, with every wrong answer pointing you back to the page that explains it. "}</T></p>
               <p className="mx-auto mt-4 max-w-xl text-xs text-muted-foreground lg:mx-0">
-                {INSTITUTE.name}, {INSTITUTE.city} · {INSTITUTE.affiliation} · ITI code{" "}
-                {INSTITUTE.scvtCode} · NCVT MIS {INSTITUTE.ncvtCode}
+                <T>{INSTITUTE.name}</T><T>{", "}</T><T>{INSTITUTE.city}</T><T>{" · "}</T><T>{INSTITUTE.affiliation}</T><T>{" · ITI code"}</T><T>{" "}</T>
+                <T>{INSTITUTE.scvtCode}</T><T>{" · NCVT MIS "}</T><T>{INSTITUTE.ncvtCode}</T>
               </p>
 
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
                 <Button asChild size="lg">
                   <Link href={user ? "/dashboard" : "/signup"}>
-                    {user ? "Open dashboard" : "Create your account"}{" "}
+                    <T>{user ? "Open dashboard" : "Create your account"}</T><T>{" "}</T>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
                   <Link href={user ? "/learn" : "/login"}>
-                    {user ? "Browse material" : "I already have an account"}
+                    <T>{user ? "Browse material" : "I already have an account"}</T>
                   </Link>
                 </Button>
               </div>
@@ -175,9 +172,9 @@ export default async function LandingPage() {
                   <span className="mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground">
                     <Icon className="h-5 w-5" aria-hidden />
                   </span>
-                  <p className="text-sm font-semibold">{pillar.label}</p>
+                  <p className="text-sm font-semibold"><T>{pillar.label}</T></p>
                   <p lang="hi" className="text-xs text-muted-foreground">
-                    {pillar.labelHi}
+                    <T>{pillar.labelHi}</T>
                   </p>
                 </li>
               );
@@ -191,13 +188,8 @@ export default async function LandingPage() {
         <section className="border-y border-border/60 bg-card/50 py-16" aria-labelledby="blueprint">
           <div className="container">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 id="blueprint" className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                A practice paper, not a random quiz
-              </h2>
-              <p className="mt-3 text-muted-foreground">
-                Each attempt draws {TEST_QUESTION_COUNT} questions in the same proportion as
-                the real trade test, so what you practise is what you sit.
-              </p>
+              <h2 id="blueprint" className="text-2xl font-semibold tracking-tight sm:text-3xl"><T>{" A practice paper, not a random quiz "}</T></h2>
+              <p className="mt-3 text-muted-foreground"><T>{" Each attempt draws "}</T><T>{TEST_QUESTION_COUNT}</T><T>{" questions in the same proportion as the real trade test, so what you practise is what you sit. "}</T></p>
             </div>
 
             <ul className="mx-auto mt-10 grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -207,14 +199,10 @@ export default async function LandingPage() {
                 return (
                   <li key={subject} className="glass rounded-xl p-5">
                     <p className="text-3xl font-bold text-primary dark:text-gold">
-                      {Math.round(weight * 100)}%
-                    </p>
+                      <T>{Math.round(weight * 100)}</T><T>{"% "}</T></p>
                     <div className="gold-rule my-3" aria-hidden />
-                    <p className="text-sm font-medium leading-snug">{SUBJECT_LABELS[subject]}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      ≈ {Math.round(TEST_QUESTION_COUNT * weight)} of {TEST_QUESTION_COUNT}{" "}
-                      questions
-                    </p>
+                    <p className="text-sm font-medium leading-snug"><T>{SUBJECT_LABELS[subject]}</T></p>
+                    <p className="mt-1 text-xs text-muted-foreground"><T>{" ≈ "}</T><T>{Math.round(TEST_QUESTION_COUNT * weight)}</T><T>{" of "}</T><T>{TEST_QUESTION_COUNT}</T><T>{" "}</T><T>{" questions "}</T></p>
                   </li>
                 );
               })}
@@ -228,9 +216,9 @@ export default async function LandingPage() {
               ].map((stat) => (
                 <div key={stat.label} className="glass rounded-xl p-4 text-center">
                   <stat.icon className="mx-auto mb-2 h-5 w-5 text-primary dark:text-gold" aria-hidden />
-                  <dt className="sr-only">{stat.label}</dt>
-                  <dd className="text-2xl font-bold">{stat.value}</dd>
-                  <p className="mt-1 text-xs text-muted-foreground">{stat.label}</p>
+                  <dt className="sr-only"><T>{stat.label}</T></dt>
+                  <dd className="text-2xl font-bold"><T>{stat.value}</T></dd>
+                  <p className="mt-1 text-xs text-muted-foreground"><T>{stat.label}</T></p>
                 </div>
               ))}
             </dl>
@@ -244,14 +232,8 @@ export default async function LandingPage() {
           <h2
             id="trades-heading"
             className="text-center text-2xl font-semibold tracking-tight sm:text-3xl"
-          >
-            Four trades, four separate question banks
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">
-            You pick one occupation when you create your profile. Everything after that,
-            material and assessments alike, belongs to that trade, with Employability
-            Skills shared across all four.
-          </p>
+          ><T>{" Four trades, four separate question banks "}</T></h2>
+          <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground"><T>{" You pick one occupation when you create your profile. Everything after that, material and assessments alike, belongs to that trade, with Employability Skills shared across all four. "}</T></p>
 
           <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {OCCUPATIONS.map((occupation) => (
@@ -263,9 +245,9 @@ export default async function LandingPage() {
                   className="mb-4 block h-1 w-12 rounded-full bg-gold transition-all group-hover:w-20"
                   aria-hidden
                 />
-                <h3 className="text-lg font-semibold">{OCCUPATION_LABELS[occupation]}</h3>
+                <h3 className="text-lg font-semibold"><T>{OCCUPATION_LABELS[occupation]}</T></h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {OCCUPATION_DESCRIPTIONS[occupation]}
+                  <T>{OCCUPATION_DESCRIPTIONS[occupation]}</T>
                 </p>
               </li>
             ))}
@@ -276,18 +258,16 @@ export default async function LandingPage() {
         {/* Features                                                          */}
         {/* ---------------------------------------------------------------- */}
         <section className="container pb-20" aria-labelledby="features-heading">
-          <h2 id="features-heading" className="sr-only">
-            Features
-          </h2>
+          <h2 id="features-heading" className="sr-only"><T>{" Features "}</T></h2>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((feature) => (
               <article key={feature.title} className="glass rounded-xl p-7">
                 <span className="mb-4 grid h-11 w-11 place-items-center rounded-lg bg-primary/10 text-primary dark:bg-gold/15 dark:text-gold">
                   <feature.icon className="h-5 w-5" aria-hidden />
                 </span>
-                <h3 className="text-lg font-semibold">{feature.title}</h3>
+                <h3 className="text-lg font-semibold"><T>{feature.title}</T></h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {feature.body}
+                  <T>{feature.body}</T>
                 </p>
               </article>
             ))}
@@ -302,26 +282,21 @@ export default async function LandingPage() {
             <div className="flex items-start gap-3 text-center sm:text-left">
               <InstituteLogo size={56} className="h-14 w-14 shrink-0 rounded-full bg-white/95 p-1" title={null} />
               <div>
-                <p className="font-semibold">{INSTITUTE.name}</p>
-                <p className="mt-1 text-sm text-primary-foreground/80">{INSTITUTE.address}</p>
-                <p className="mt-1 text-xs text-primary-foreground/70">{INSTITUTE.approval}</p>
+                <p className="font-semibold"><T>{INSTITUTE.name}</T></p>
+                <p className="mt-1 text-sm text-primary-foreground/80"><T>{INSTITUTE.address}</T></p>
+                <p className="mt-1 text-xs text-primary-foreground/70"><T>{INSTITUTE.approval}</T></p>
               </div>
             </div>
 
             <nav className="flex gap-5 text-sm" aria-label="Footer">
-              <Link href="/login" className="hover:text-gold">
-                Sign in
-              </Link>
-              <Link href="/signup" className="hover:text-gold">
-                Create account
-              </Link>
+              <Link href="/login" className="hover:text-gold"><T>{" Sign in "}</T></Link>
+              <Link href="/signup" className="hover:text-gold"><T>{" Create account "}</T></Link>
             </nav>
           </div>
 
           <div className="tiranga-rule mt-8 opacity-70" aria-hidden />
-          <p className="mt-4 text-center text-xs text-primary-foreground/70">
-            © {new Date().getFullYear()} {INSTITUTE.name}, {INSTITUTE.city} · ITI code{" "}
-            {INSTITUTE.scvtCode} · {INSTITUTE.phone}
+          <p className="mt-4 text-center text-xs text-primary-foreground/70"><T>{" © "}</T><T>{new Date().getFullYear()}</T> <T>{INSTITUTE.name}</T><T>{", "}</T><T>{INSTITUTE.city}</T><T>{" · ITI code"}</T><T>{" "}</T>
+            <T>{INSTITUTE.scvtCode}</T><T>{" · "}</T><T>{INSTITUTE.phone}</T>
           </p>
         </div>
       </footer>

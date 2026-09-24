@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import Link from "next/link";
@@ -6,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { resetPasswordAction } from "@/actions/auth";
 import { runAction } from "@/lib/run-action";
@@ -58,13 +60,11 @@ export function ResetPasswordForm({ token }: { token: string }) {
           <ShieldCheck className="h-7 w-7" aria-hidden />
         </span>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Password updated</h1>
-          <p className="text-sm text-muted-foreground">
-            You can now sign in with your new password.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight"><T>{"Password updated"}</T></h1>
+          <p className="text-sm text-muted-foreground"><T>{" You can now sign in with your new password. "}</T></p>
         </div>
         <Button asChild className="w-full">
-          <Link href="/login">Go to sign in</Link>
+          <Link href="/login"><T>{"Go to sign in"}</T></Link>
         </Button>
       </div>
     );
@@ -73,15 +73,13 @@ export function ResetPasswordForm({ token }: { token: string }) {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Choose a new password</h1>
-        <p className="text-sm text-muted-foreground">
-          Pick something you haven&apos;t used elsewhere.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Choose a new password"}</T></h1>
+        <p className="text-sm text-muted-foreground"><T>{" Pick something you haven't used elsewhere. "}</T></p>
       </header>
 
       {formError ? (
         <Alert variant="destructive">
-          <AlertDescription>{formError}</AlertDescription>
+          <AlertDescription><T>{formError}</T></AlertDescription>
         </Alert>
       ) : null}
 
@@ -89,7 +87,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         <input type="hidden" {...register("token")} />
 
         <div className="space-y-2">
-          <Label htmlFor="password">New password</Label>
+          <Label htmlFor="password"><T>{"New password"}</T></Label>
           <div className="relative">
             <Input
               id="password"
@@ -110,12 +108,12 @@ export function ResetPasswordForm({ token }: { token: string }) {
           </div>
           <PasswordStrength password={watch("password") ?? ""} />
           {errors.password ? (
-            <p className="text-sm text-destructive">{errors.password.message}</p>
+            <p className="text-sm text-destructive"><T>{errors.password.message}</T></p>
           ) : null}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm new password</Label>
+          <Label htmlFor="confirmPassword"><T>{"Confirm new password"}</T></Label>
           <Input
             id="confirmPassword"
             type={showPassword ? "text" : "password"}
@@ -124,13 +122,11 @@ export function ResetPasswordForm({ token }: { token: string }) {
             {...register("confirmPassword")}
           />
           {errors.confirmPassword ? (
-            <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+            <p className="text-sm text-destructive"><T>{errors.confirmPassword.message}</T></p>
           ) : null}
         </div>
 
-        <Button type="submit" className="w-full" loading={isSubmitting}>
-          Update password
-        </Button>
+        <Button type="submit" className="w-full" loading={isSubmitting}><T>{" Update password "}</T></Button>
       </form>
     </div>
   );

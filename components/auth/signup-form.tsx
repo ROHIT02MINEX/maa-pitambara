@@ -1,11 +1,13 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Eye, EyeOff } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { loginAction, registerAction } from "@/actions/auth";
 import { runAction } from "@/lib/run-action";
@@ -67,21 +69,11 @@ export function SignupForm({
         loginAction({ email: values.email, password: values.password, remember: true }),
       );
 
-      if (loginRes.ok && !loginRes.data?.approvalRequired) {
+      if (loginRes.ok) {
         window.location.assign(loginRes.data?.redirectTo || "/onboarding");
         return;
       }
 
-      if (loginRes.ok && loginRes.data?.approvalRequired) {
-        toast.success("Account created. Login request submitted for administrator approval.");
-        setDone({
-          email: values.email,
-          emailSent: false,
-          verificationRequired: false,
-        });
-        setRedirecting(false);
-        return;
-      }
     }
 
     toast.success(result.message ?? "Account created.");
@@ -100,35 +92,26 @@ export function SignupForm({
         </span>
         <div className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">
-            {done.verificationRequired ? "Check your inbox" : "Account created"}
+            <T>{done.verificationRequired ? "Check your inbox" : "Account created"}</T>
           </h1>
           <p className="text-sm text-muted-foreground">
             {done.verificationRequired ? (
-              <>
-                We sent a verification link to{" "}
-                <strong className="text-foreground">{done.email}</strong>. Confirm your address,
-                then sign in to set up your profile.
-              </>
+              <><T>{" We sent a verification link to"}</T><T>{" "}</T>
+                <strong className="text-foreground"><T>{done.email}</T></strong><T>{". Confirm your address, then sign in to set up your profile. "}</T></>
             ) : (
-              <>
-                Your account for <strong className="text-foreground">{done.email}</strong> is
-                ready. Sign in to choose your trade and set up your profile.
-              </>
+              <><T>{" Your account for "}</T><strong className="text-foreground"><T>{done.email}</T></strong><T>{" is ready. Sign in to choose your trade and set up your profile. "}</T></>
             )}
           </p>
         </div>
 
         {done.verificationRequired && !done.emailSent ? (
           <Alert variant="warning">
-            <AlertDescription>
-              E-mail delivery is not configured on this deployment, so the verification link was
-              written to the server log instead. Ask your administrator for it, or configure SMTP.
-            </AlertDescription>
+            <AlertDescription><T>{" E-mail delivery is not configured on this deployment, so the verification link was written to the server log instead. Ask your administrator for it, or configure SMTP. "}</T></AlertDescription>
           </Alert>
         ) : null}
 
         <Button asChild className="w-full">
-          <Link href="/login">Go to sign in</Link>
+          <Link href="/login"><T>{"Go to sign in"}</T></Link>
         </Button>
       </div>
     );
@@ -137,21 +120,19 @@ export function SignupForm({
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Create your account</h1>
-        <p className="text-sm text-muted-foreground">
-          You&apos;ll choose your trade right after signing up.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Create your account"}</T></h1>
+        <p className="text-sm text-muted-foreground"><T>{" You'll choose your trade right after signing up. "}</T></p>
       </header>
 
       {formError ? (
         <Alert variant="destructive">
-          <AlertDescription>{formError}</AlertDescription>
+          <AlertDescription><T>{formError}</T></AlertDescription>
         </Alert>
       ) : null}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-2">
-          <Label htmlFor="name">Full name</Label>
+          <Label htmlFor="name"><T>{"Full name"}</T></Label>
           <Input
             id="name"
             autoComplete="name"
@@ -159,11 +140,11 @@ export function SignupForm({
             aria-invalid={Boolean(errors.name)}
             {...register("name")}
           />
-          {errors.name ? <p className="text-sm text-destructive">{errors.name.message}</p> : null}
+          {errors.name ? <p className="text-sm text-destructive"><T>{errors.name.message}</T></p> : null}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">E-mail address</Label>
+          <Label htmlFor="email"><T>{"E-mail address"}</T></Label>
           <Input
             id="email"
             type="email"
@@ -172,11 +153,11 @@ export function SignupForm({
             aria-invalid={Boolean(errors.email)}
             {...register("email")}
           />
-          {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
+          {errors.email ? <p className="text-sm text-destructive"><T>{errors.email.message}</T></p> : null}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password"><T>{"Password"}</T></Label>
           <div className="relative">
             <Input
               id="password"
@@ -198,12 +179,12 @@ export function SignupForm({
           </div>
           <PasswordStrength password={password ?? ""} />
           {errors.password ? (
-            <p className="text-sm text-destructive">{errors.password.message}</p>
+            <p className="text-sm text-destructive"><T>{errors.password.message}</T></p>
           ) : null}
         </div>
 
         <Button type="submit" className="w-full" loading={isSubmitting || redirecting} disabled={isSubmitting || redirecting}>
-          {redirecting ? "Setting up account..." : "Create account"}
+          <T>{redirecting ? "Setting up account..." : "Create account"}</T>
         </Button>
       </form>
 
@@ -214,7 +195,7 @@ export function SignupForm({
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or</span>
+              <span className="bg-background px-2 text-muted-foreground"><T>{"or"}</T></span>
             </div>
           </div>
 
@@ -222,11 +203,8 @@ export function SignupForm({
         </>
       ) : null}
 
-      <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
-        <Link href="/login" className="font-medium text-primary hover:underline">
-          Sign in
-        </Link>
+      <p className="text-center text-sm text-muted-foreground"><T>{" Already have an account?"}</T><T>{" "}</T>
+        <Link href="/login" className="font-medium text-primary hover:underline"><T>{" Sign in "}</T></Link>
       </p>
     </div>
   );

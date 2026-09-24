@@ -1,4 +1,8 @@
 "use client";
+import { useLanguage } from "@/hooks/use-language";
+import { translate } from "@/lib/i18n";
+import { T } from "@/components/translated-text";
+
 
 import {
   Bar,
@@ -36,14 +40,14 @@ const tooltipStyle = {
 };
 
 export function ScoreTrendChart({ data }: { data: TimelinePoint[] }) {
+  const { language } = useLanguage();
+  const t = (text: string) => translate(text, language);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Score trend</CardTitle>
-        <CardDescription>
-          Percentage achieved in each attempt, oldest first. The dashed line is the{" "}
-          {PASS_PERCENTAGE}% pass mark.
-        </CardDescription>
+        <CardTitle><T>{"Score trend"}</T></CardTitle>
+        <CardDescription><T>{" Percentage achieved in each attempt, oldest first. The dashed line is the"}</T><T>{" "}</T>
+          <T>{PASS_PERCENTAGE}</T><T>{"% pass mark. "}</T></CardDescription>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
@@ -56,7 +60,7 @@ export function ScoreTrendChart({ data }: { data: TimelinePoint[] }) {
               <YAxis domain={[0, 100]} tickLine={false} axisLine={false} {...AXIS} />
               <Tooltip
                 contentStyle={tooltipStyle}
-                formatter={(value: number) => [`${value}%`, "Score"]}
+                formatter={(value: number) => [`${value}%`, t("Score")]}
               />
               <ReferenceLine
                 y={PASS_PERCENTAGE}
@@ -80,13 +84,15 @@ export function ScoreTrendChart({ data }: { data: TimelinePoint[] }) {
 }
 
 export function TopicAccuracyChart({ data }: { data: TopicPoint[] }) {
+  const { language } = useLanguage();
+  const t = (text: string) => translate(text, language);
   const top = data.slice(0, 8);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Accuracy by topic</CardTitle>
-        <CardDescription>Weakest topics first. These are worth revising.</CardDescription>
+        <CardTitle><T>{"Accuracy by topic"}</T></CardTitle>
+        <CardDescription><T>{"Weakest topics first. These are worth revising."}</T></CardDescription>
       </CardHeader>
       <CardContent>
         {top.length === 0 ? (
@@ -98,7 +104,7 @@ export function TopicAccuracyChart({ data }: { data: TopicPoint[] }) {
               <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} {...AXIS} />
               <YAxis
                 type="category"
-                dataKey="topic"
+                tickFormatter={t} dataKey="topic"
                 width={130}
                 tickLine={false}
                 axisLine={false}
@@ -134,16 +140,18 @@ export function TopicAccuracyChart({ data }: { data: TopicPoint[] }) {
 }
 
 export function PassFailChart({ passed, failed }: { passed: number; failed: number }) {
+  const { language } = useLanguage();
+  const t = (text: string) => translate(text, language);
   const data = [
-    { name: "Passed", value: passed, fill: "hsl(var(--chart-2))" },
-    { name: "Failed", value: failed, fill: "hsl(var(--chart-5))" },
+    { name: t("Passed"), value: passed, fill: "hsl(var(--chart-2))" },
+    { name: t("Failed"), value: failed, fill: "hsl(var(--chart-5))" },
   ].filter((slice) => slice.value > 0);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Pass / fail split</CardTitle>
-        <CardDescription>Across all your completed attempts.</CardDescription>
+        <CardTitle><T>{"Pass / fail split"}</T></CardTitle>
+        <CardDescription><T>{"Across all your completed attempts."}</T></CardDescription>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
@@ -176,7 +184,7 @@ export function PassFailChart({ passed, failed }: { passed: number; failed: numb
 function EmptyChart({ message }: { message: string }) {
   return (
     <div className="grid h-[220px] place-items-center rounded-lg border border-dashed">
-      <p className="px-6 text-center text-sm text-muted-foreground">{message}</p>
+      <p className="px-6 text-center text-sm text-muted-foreground"><T>{message}</T></p>
     </div>
   );
 }

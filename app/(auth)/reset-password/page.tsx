@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
@@ -24,13 +26,11 @@ export default async function ResetPasswordPage({
           <AlertTriangle className="h-7 w-7" aria-hidden />
         </span>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Reset link missing</h1>
-          <p className="text-sm text-muted-foreground">
-            This page needs a valid reset link. Request a new one to continue.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight"><T>{"Reset link missing"}</T></h1>
+          <p className="text-sm text-muted-foreground"><T>{" This page needs a valid reset link. Request a new one to continue. "}</T></p>
         </div>
         <Button asChild className="w-full">
-          <Link href="/forgot-password">Request a new link</Link>
+          <Link href="/forgot-password"><T>{"Request a new link"}</T></Link>
         </Button>
       </div>
     );

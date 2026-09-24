@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -27,16 +29,14 @@ export default async function AdminPdfsPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight">Learning material</h1>
-        <p className="mt-1 text-muted-foreground">
-          Upload, edit, replace and remove the PDFs each trade can see.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Learning material"}</T></h1>
+        <p className="mt-1 text-muted-foreground"><T>{" Upload, edit, replace and remove the PDFs each trade can see. "}</T></p>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle>Documents</CardTitle>
-          <CardDescription>{result.total} document(s) match the current filters.</CardDescription>
+          <CardTitle><T>{"Documents"}</T></CardTitle>
+          <CardDescription><T>{result.total}</T><T>{" document(s) match the current filters."}</T></CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <Suspense fallback={<TableSkeleton rows={1} cols={3} />}>

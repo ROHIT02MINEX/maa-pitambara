@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import { cn } from "@/lib/utils";
 
@@ -40,11 +42,11 @@ export function PasswordStrength({ password }: { password: string }) {
           "Use 8+ characters with upper- and lowercase letters and a number."
         ) : (
           <>
-            <span className="font-medium text-foreground">{LEVELS[level]}</span>
-            {". Missing: "}
-            {RULES.filter((rule) => !rule.test(password))
+            <span className="font-medium text-foreground"><T>{LEVELS[level]}</T></span>
+            <T>{". Missing: "}</T>
+            <T>{RULES.filter((rule) => !rule.test(password))
               .map((rule) => rule.label)
-              .join(", ") || "nothing, looks good"}
+              .join(", ") || "nothing, looks good"}</T>
           </>
         )}
       </p>

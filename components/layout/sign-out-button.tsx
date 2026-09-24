@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { LogOut } from "lucide-react";
@@ -26,7 +28,7 @@ export function SignOutButton({
       onClick={() => startTransition(() => void logoutAction())}
     >
       {!pending ? <LogOut className="h-4 w-4" /> : null}
-      {label}
+      <T>{label}</T>
     </Button>
   );
 }

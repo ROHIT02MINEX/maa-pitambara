@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { GraduationCap } from "lucide-react";
@@ -5,6 +7,7 @@ import { GraduationCap } from "lucide-react";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { OnboardingForm } from "@/components/profile/onboarding-form";
+import { PortalLanguageToggle } from "@/components/portal-language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SignOutButton } from "@/components/layout/sign-out-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,23 +35,19 @@ export default async function OnboardingPage() {
         <span className="flex items-center gap-2 font-semibold">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
             <GraduationCap className="h-5 w-5" />
-          </span>
-          Skill Portal
-        </span>
+          </span><T>{" Skill Portal "}</T></span>
         <div className="flex items-center gap-1">
           <SignOutButton />
-          <ThemeToggle />
+          <PortalLanguageToggle />
+              <ThemeToggle />
         </div>
       </header>
 
       <main id="main" className="container flex justify-center pb-20 pt-6">
         <Card className="w-full max-w-2xl animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-2xl">One last step</CardTitle>
-            <CardDescription>
-              We need a few details before your dashboard, learning material and assessments can be
-              set up for you.
-            </CardDescription>
+            <CardTitle className="text-2xl"><T>{"One last step"}</T></CardTitle>
+            <CardDescription><T>{" We need a few details before your dashboard, learning material and assessments can be set up for you. "}</T></CardDescription>
           </CardHeader>
           <CardContent>
             <OnboardingForm

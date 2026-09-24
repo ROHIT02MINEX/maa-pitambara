@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import Link from "next/link";
@@ -82,41 +84,31 @@ export default function ErrorBoundary({
 
         {diagnosis === "checking" ? (
           <>
-            <h1 className="text-xl font-bold tracking-tight">Checking connection…</h1>
-            <p className="mt-2 text-sm text-muted-foreground">One moment.</p>
+            <h1 className="text-xl font-bold tracking-tight"><T>{"Checking connection…"}</T></h1>
+            <p className="mt-2 text-sm text-muted-foreground"><T>{"One moment."}</T></p>
           </>
         ) : isDown ? (
           <>
-            <h1 className="text-xl font-bold tracking-tight">
-              The portal is temporarily offline
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              We can&apos;t reach the server right now. This is usually brief, so please wait a
-              minute and try again. Nothing you have already submitted has been lost.
-            </p>
+            <h1 className="text-xl font-bold tracking-tight"><T>{" The portal is temporarily offline "}</T></h1>
+            <p className="mt-2 text-sm text-muted-foreground"><T>{" We can't reach the server right now. This is usually brief, so please wait a minute and try again. Nothing you have already submitted has been lost. "}</T></p>
           </>
         ) : (
           <>
-            <h1 className="text-xl font-bold tracking-tight">Something went wrong</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              An unexpected error interrupted this page. Try again. If it keeps happening,
-              contact your institute.
-            </p>
+            <h1 className="text-xl font-bold tracking-tight"><T>{"Something went wrong"}</T></h1>
+            <p className="mt-2 text-sm text-muted-foreground"><T>{" An unexpected error interrupted this page. Try again. If it keeps happening, contact your institute. "}</T></p>
           </>
         )}
 
         {error.digest && !isDown ? (
-          <p className="mt-3 font-mono text-xs text-muted-foreground">
-            Reference: {error.digest}
+          <p className="mt-3 font-mono text-xs text-muted-foreground"><T>{" Reference: "}</T><T>{error.digest}</T>
           </p>
         ) : null}
 
         <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
           <Button onClick={reset}>
-            <RotateCcw className="h-4 w-4" /> Try again
-          </Button>
+            <RotateCcw className="h-4 w-4" /><T>{" Try again "}</T></Button>
           <Button asChild variant="outline">
-            <Link href="/dashboard">Go to dashboard</Link>
+            <Link href="/dashboard"><T>{"Go to dashboard"}</T></Link>
           </Button>
         </div>
       </div>

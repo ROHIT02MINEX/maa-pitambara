@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans_Devanagari } from "next/font/google";
 
@@ -73,10 +75,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${devanagari.variable} font-sans`}>
         <Providers>
-          <a href="#main" className="sr-only sr-only-focusable">
-            Skip to main content
-          </a>
-          {children}
+          <a href="#main" className="sr-only sr-only-focusable"><T>{" Skip to main content "}</T></a>
+          <T>{children}</T>
           <Toaster />
         </Providers>
       </body>

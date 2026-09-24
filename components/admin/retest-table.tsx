@@ -1,10 +1,12 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import type { Occupation, RetestStatus } from "@prisma/client";
 import { Check, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { reviewRetestAction } from "@/actions/retest";
 import { runAction } from "@/lib/run-action";
@@ -58,9 +60,7 @@ export function RetestTable({ rows }: { rows: AdminRetestRow[] }) {
 
   if (rows.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-        No retest requests match these filters.
-      </p>
+      <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground"><T>{" No retest requests match these filters. "}</T></p>
     );
   }
 
@@ -68,41 +68,41 @@ export function RetestTable({ rows }: { rows: AdminRetestRow[] }) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Learner</TableHead>
-          <TableHead>Occupation</TableHead>
-          <TableHead>Attempts</TableHead>
-          <TableHead className="w-[26%]">Reason</TableHead>
-          <TableHead>Requested</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="text-right">Decision</TableHead>
+          <TableHead><T>{"Learner"}</T></TableHead>
+          <TableHead><T>{"Occupation"}</T></TableHead>
+          <TableHead><T>{"Attempts"}</T></TableHead>
+          <TableHead className="w-[26%]"><T>{"Reason"}</T></TableHead>
+          <TableHead><T>{"Requested"}</T></TableHead>
+          <TableHead><T>{"Status"}</T></TableHead>
+          <TableHead className="text-right"><T>{"Decision"}</T></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {rows.map((row) => (
           <TableRow key={row.id}>
             <TableCell className="max-w-[200px]">
-              <p className="truncate font-medium">{row.user.name ?? "Unnamed"}</p>
-              <p className="truncate text-xs text-muted-foreground">{row.user.email}</p>
+              <p className="truncate font-medium"><T>{row.user.name ?? "Unnamed"}</T></p>
+              <p className="truncate text-xs text-muted-foreground"><T>{row.user.email}</T></p>
               {row.user.phone ? (
-                <p className="truncate text-xs text-muted-foreground">{row.user.phone}</p>
+                <p className="truncate text-xs text-muted-foreground"><T>{row.user.phone}</T></p>
               ) : null}
             </TableCell>
             <TableCell>
-              <Badge variant="secondary">{occupationLabel(row.occupation)}</Badge>
+              <Badge variant="secondary"><T>{occupationLabel(row.occupation)}</T></Badge>
             </TableCell>
-            <TableCell className="tabular-nums">{row.attemptsUsed}</TableCell>
+            <TableCell className="tabular-nums"><T>{row.attemptsUsed}</T></TableCell>
             <TableCell className="max-w-[280px]">
               {row.reason ? (
-                <p className="line-clamp-3 text-sm">{row.reason}</p>
+                <p className="line-clamp-3 text-sm"><T>{row.reason}</T></p>
               ) : (
-                <span className="text-sm text-muted-foreground">-</span>
+                <span className="text-sm text-muted-foreground"><T>{"-"}</T></span>
               )}
               {row.adminNote ? (
-                <p className="mt-1 text-xs text-muted-foreground">Note: {row.adminNote}</p>
+                <p className="mt-1 text-xs text-muted-foreground"><T>{"Note: "}</T><T>{row.adminNote}</T></p>
               ) : null}
             </TableCell>
             <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-              {formatDate(row.createdAt, true)}
+              <T>{formatDate(row.createdAt, true)}</T>
             </TableCell>
             <TableCell>
               <Badge
@@ -114,20 +114,19 @@ export function RetestTable({ rows }: { rows: AdminRetestRow[] }) {
                       : "warning"
                 }
               >
-                {row.status === "APPROVED"
+                <T>{row.status === "APPROVED"
                   ? "Approved"
                   : row.status === "REJECTED"
                     ? "Rejected"
-                    : "Pending"}
+                    : "Pending"}</T>
               </Badge>
               {row.status === "APPROVED" ? (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {row.consumedAt ? "Used" : "Not used yet"}
+                  <T>{row.consumedAt ? "Used" : "Not used yet"}</T>
                 </p>
               ) : null}
               {row.reviewedBy ? (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  by {row.reviewedBy.name ?? row.reviewedBy.email}
+                <p className="mt-1 text-xs text-muted-foreground"><T>{" by "}</T><T>{row.reviewedBy.name ?? row.reviewedBy.email}</T>
                 </p>
               ) : null}
             </TableCell>
@@ -150,21 +149,19 @@ export function RetestTable({ rows }: { rows: AdminRetestRow[] }) {
                       loading={busyId === row.id}
                       onClick={() => review(row.id, true)}
                     >
-                      <Check className="h-4 w-4" /> Approve
-                    </Button>
+                      <Check className="h-4 w-4" /><T>{" Approve "}</T></Button>
                     <Button
                       size="sm"
                       variant="outline"
                       disabled={busyId === row.id}
                       onClick={() => review(row.id, false)}
                     >
-                      <X className="h-4 w-4" /> Reject
-                    </Button>
+                      <X className="h-4 w-4" /><T>{" Reject "}</T></Button>
                   </div>
                 </div>
               ) : (
                 <span className="text-xs text-muted-foreground">
-                  {row.reviewedAt ? formatDate(row.reviewedAt, true) : "-"}
+                  <T>{row.reviewedAt ? formatDate(row.reviewedAt, true) : "-"}</T>
                 </span>
               )}
             </TableCell>

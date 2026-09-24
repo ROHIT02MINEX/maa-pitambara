@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
@@ -86,9 +88,7 @@ export function GlobalSearch() {
         className="hidden w-56 justify-start text-muted-foreground md:inline-flex"
         onClick={() => setOpen(true)}
       >
-        <Search className="h-4 w-4" />
-        Search…
-        <kbd className="ml-auto rounded border bg-muted px-1.5 font-mono text-[10px]">Ctrl K</kbd>
+        <Search className="h-4 w-4" /><T>{" Search… "}</T><kbd className="ml-auto rounded border bg-muted px-1.5 font-mono text-[10px]"><T>{"Ctrl K"}</T></kbd>
       </Button>
       <Button
         variant="ghost"
@@ -103,10 +103,8 @@ export function GlobalSearch() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>Global search</DialogTitle>
-            <DialogDescription>
-              Search users, documents and questions across the whole portal.
-            </DialogDescription>
+            <DialogTitle><T>{"Global search"}</T></DialogTitle>
+            <DialogDescription><T>{" Search users, documents and questions across the whole portal. "}</T></DialogDescription>
           </DialogHeader>
 
           <div className="relative">
@@ -132,20 +130,15 @@ export function GlobalSearch() {
 
           <div className="max-h-[50vh] space-y-5 overflow-y-auto" aria-live="polite">
             {query.trim().length < 2 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                Type at least two characters to search.
-              </p>
+              <p className="py-6 text-center text-sm text-muted-foreground"><T>{" Type at least two characters to search. "}</T></p>
             ) : total === 0 && !loading ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                Nothing found for “{query}”.
-              </p>
+              <p className="py-6 text-center text-sm text-muted-foreground"><T>{" Nothing found for “"}</T><T>{query}</T><T>{"”. "}</T></p>
             ) : null}
 
             {results.users.length > 0 ? (
               <section>
                 <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <Users className="h-3.5 w-3.5" aria-hidden /> Users
-                </h3>
+                  <Users className="h-3.5 w-3.5" aria-hidden /><T>{" Users "}</T></h3>
                 <ul className="space-y-1">
                   {results.users.map((user) => (
                     <li key={user.id}>
@@ -156,13 +149,13 @@ export function GlobalSearch() {
                       >
                         <span className="min-w-0 flex-1">
                           <span className="block truncate font-medium">
-                            {user.name ?? "Unnamed"}
+                            <T>{user.name ?? "Unnamed"}</T>
                           </span>
                           <span className="block truncate text-xs text-muted-foreground">
-                            {user.email}
+                            <T>{user.email}</T>
                           </span>
                         </span>
-                        <Badge variant="secondary">{occupationLabel(user.occupation)}</Badge>
+                        <Badge variant="secondary"><T>{occupationLabel(user.occupation)}</T></Badge>
                       </button>
                     </li>
                   ))}
@@ -173,8 +166,7 @@ export function GlobalSearch() {
             {results.pdfs.length > 0 ? (
               <section>
                 <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <FileText className="h-3.5 w-3.5" aria-hidden /> Documents
-                </h3>
+                  <FileText className="h-3.5 w-3.5" aria-hidden /><T>{" Documents "}</T></h3>
                 <ul className="space-y-1">
                   {results.pdfs.map((pdf) => (
                     <li key={pdf.id}>
@@ -183,8 +175,8 @@ export function GlobalSearch() {
                         onClick={() => go(`/admin/pdfs?q=${term}`)}
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"
                       >
-                        <span className="min-w-0 flex-1 truncate font-medium">{pdf.title}</span>
-                        <Badge variant="secondary">{occupationLabel(pdf.occupation)}</Badge>
+                        <span className="min-w-0 flex-1 truncate font-medium"><T>{pdf.title}</T></span>
+                        <Badge variant="secondary"><T>{occupationLabel(pdf.occupation)}</T></Badge>
                       </button>
                     </li>
                   ))}
@@ -195,8 +187,7 @@ export function GlobalSearch() {
             {results.questions.length > 0 ? (
               <section>
                 <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <FileQuestion className="h-3.5 w-3.5" aria-hidden /> Questions
-                </h3>
+                  <FileQuestion className="h-3.5 w-3.5" aria-hidden /><T>{" Questions "}</T></h3>
                 <ul className="space-y-1">
                   {results.questions.map((question) => (
                     <li key={question.id}>
@@ -206,12 +197,12 @@ export function GlobalSearch() {
                         className="flex w-full items-start gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"
                       >
                         <span className="min-w-0 flex-1">
-                          <span className="line-clamp-2">{question.question}</span>
+                          <span className="line-clamp-2"><T>{question.question}</T></span>
                           <span className="mt-0.5 block text-xs text-muted-foreground">
-                            {question.topic}
+                            <T>{question.topic}</T>
                           </span>
                         </span>
-                        <Badge variant="secondary">{occupationLabel(question.occupation)}</Badge>
+                        <Badge variant="secondary"><T>{occupationLabel(question.occupation)}</T></Badge>
                       </button>
                     </li>
                   ))}

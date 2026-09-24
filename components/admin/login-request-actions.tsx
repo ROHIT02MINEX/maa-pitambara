@@ -1,9 +1,11 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Check, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import {
   approveLoginRequestAction,
@@ -30,16 +32,14 @@ export function LoginRequestActions({ id }: { id: string }) {
   return (
     <div className="flex justify-end gap-2">
       <Button size="sm" onClick={() => review("approve")} loading={busy === "approve"}>
-        <Check className="h-4 w-4" /> Approve
-      </Button>
+        <Check className="h-4 w-4" /><T>{" Approve "}</T></Button>
       <Button
         size="sm"
         variant="outline"
         onClick={() => review("reject")}
         loading={busy === "reject"}
       >
-        <X className="h-4 w-4" /> Reject
-      </Button>
+        <X className="h-4 w-4" /><T>{" Reject "}</T></Button>
     </div>
   );
 }

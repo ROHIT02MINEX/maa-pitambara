@@ -34,6 +34,12 @@ const baseQuestionSchema = z.object({
   topic: z.string().trim().min(2, "Topic is required").max(80),
   type: z.nativeEnum(QuestionType).default(QuestionType.MCQ),
   question: z.string().trim().min(8, "Question must be at least 8 characters").max(1000),
+  questionHi: z.string().trim().max(1500).optional(),
+  optionAHi: z.string().trim().max(500).optional(),
+  optionBHi: z.string().trim().max(500).optional(),
+  optionCHi: z.string().trim().max(500).optional(),
+  optionDHi: z.string().trim().max(500).optional(),
+  explanationHi: z.string().trim().max(1500).optional(),
   optionA: z.string().trim().min(1, "Option A is required").max(300),
   optionB: z.string().trim().min(1, "Option B is required").max(300),
   optionC: z.string().trim().max(300).optional().or(z.literal("")),
@@ -79,6 +85,12 @@ export type QuestionInput = z.infer<typeof questionSchema>;
 
 /** Shape of a single row in the CSV bulk importer. */
 export const questionCsvRowSchema = z.object({
+  question_hi: z.string().trim().optional(),
+  option_a_hi: z.string().trim().optional(),
+  option_b_hi: z.string().trim().optional(),
+  option_c_hi: z.string().trim().optional(),
+  option_d_hi: z.string().trim().optional(),
+  explanation_hi: z.string().trim().optional(),
   occupation: z.string().trim(),
   subject: z.string().trim().optional(),
   topic: z.string().trim(),

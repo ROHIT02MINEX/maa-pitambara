@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -26,16 +28,14 @@ export default async function AdminUsersPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-        <p className="mt-1 text-muted-foreground">
-          Search, edit, disable or remove accounts and issue password resets.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Users"}</T></h1>
+        <p className="mt-1 text-muted-foreground"><T>{" Search, edit, disable or remove accounts and issue password resets. "}</T></p>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle>All accounts</CardTitle>
-          <CardDescription>{result.total} user(s) match the current filters.</CardDescription>
+          <CardTitle><T>{"All accounts"}</T></CardTitle>
+          <CardDescription><T>{result.total}</T><T>{" user(s) match the current filters."}</T></CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <Suspense fallback={<TableSkeleton rows={1} cols={4} />}>

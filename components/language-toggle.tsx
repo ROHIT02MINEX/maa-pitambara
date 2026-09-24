@@ -31,7 +31,7 @@ export function LanguageToggle({
         className,
       )}
       role="radiogroup"
-      aria-label="Reading language"
+      aria-label={value === "hi" ? "भाषा चुनें" : "Reading language"}
     >
       <Languages className="ml-1 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
       {LANGUAGES.map((option) => {
@@ -57,7 +57,7 @@ export function LanguageToggle({
         );
       })}
       {unavailable && value === "hi" ? (
-        <span className="px-1 text-[11px] text-muted-foreground">English only</span>
+        <span className="px-1 text-[11px] text-muted-foreground">हिन्दी उपलब्ध नहीं — English</span>
       ) : null}
     </div>
   );

@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { ChevronDown, Settings2, X } from "lucide-react";
@@ -55,10 +57,7 @@ export function OptionalSetupNotice({ missing }: { missing: string[] }) {
 
         <p className="min-w-0 flex-1 text-sm text-muted-foreground">
           <span className="font-medium text-foreground">
-            {missing.length} optional feature{missing.length === 1 ? "" : "s"} available
-          </span>{" "}
-          Everything else is working normally.
-        </p>
+            <T>{missing.length}</T><T>{" optional feature"}</T><T>{missing.length === 1 ? "" : "s"}</T><T>{" available "}</T></span><T>{" "}</T><T>{" Everything else is working normally. "}</T></p>
 
         <Button
           variant="ghost"
@@ -67,7 +66,7 @@ export function OptionalSetupNotice({ missing }: { missing: string[] }) {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
         >
-          {open ? "Hide" : "Details"}
+          <T>{open ? "Hide" : "Details"}</T>
           <ChevronDown
             className={cn("h-3 w-3 transition-transform", open && "rotate-180")}
             aria-hidden
@@ -87,21 +86,16 @@ export function OptionalSetupNotice({ missing }: { missing: string[] }) {
 
       {open ? (
         <div className="mt-3 border-t border-border/60 pt-3">
-          <p className="mb-2 text-xs text-muted-foreground">
-            These need credentials only you can obtain, so they are left unset. The portal is
-            fully usable without them:
-          </p>
+          <p className="mb-2 text-xs text-muted-foreground"><T>{" These need credentials only you can obtain, so they are left unset. The portal is fully usable without them: "}</T></p>
           <ul className="space-y-1.5">
             {missing.map((item) => (
               <li key={item} className="flex gap-2 text-xs text-muted-foreground">
                 <span aria-hidden className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-muted-foreground/50" />
-                <span>{item}</span>
+                <span><T>{item}</T></span>
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Setup steps for each are in the project README.
-          </p>
+          <p className="mt-3 text-xs text-muted-foreground"><T>{" Setup steps for each are in the project README. "}</T></p>
         </div>
       ) : null}
     </div>

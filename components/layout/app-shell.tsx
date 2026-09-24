@@ -1,6 +1,9 @@
+
+import { T } from "@/components/translated-text";
 import Link from "next/link";
 
 import { InstituteLogo } from "@/components/brand/institute-logo";
+import { PortalLanguageToggle } from "@/components/portal-language-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { MobileNav } from "@/components/layout/mobile-nav";
@@ -43,10 +46,10 @@ export function AppShell({
           <Link href="/dashboard" className="flex items-center gap-2.5 px-2 font-semibold">
             <InstituteLogo size={40} className="h-10 w-10 shrink-0" title={null} />
             <span className="flex min-w-0 flex-col leading-tight">
-              <span className="truncate">{title}</span>
+              <span className="text-sm"><T>{title}</T></span>
               {subtitle ? (
                 <span className="truncate text-xs font-normal text-muted-foreground">
-                  {subtitle}
+                  <T>{subtitle}</T>
                 </span>
               ) : null}
             </span>
@@ -55,7 +58,7 @@ export function AppShell({
 
           <SidebarNav items={items} />
 
-          <div className="mt-auto space-y-3 pt-6">{sidebarFooter}</div>
+          <div className="mt-auto space-y-3 pt-6"><T>{sidebarFooter}</T></div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -64,16 +67,17 @@ export function AppShell({
               <MobileNav items={items} title={title} />
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold lg:hidden">{title}</p>
+                <p className="truncate text-sm font-semibold lg:hidden"><T>{title}</T></p>
                 {subtitle ? (
                   <Badge variant="secondary" className="hidden lg:inline-flex">
-                    {subtitle}
+                    <T>{subtitle}</T>
                   </Badge>
                 ) : null}
               </div>
 
-              {headerActions}
+              <T>{headerActions}</T>
               <AdminPresence isAdmin={user.isAdmin} />
+              <PortalLanguageToggle />
               <ThemeToggle />
               <UserMenu
                 name={user.name}
@@ -85,7 +89,7 @@ export function AppShell({
           </header>
 
           <main id="main" className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mx-auto w-full max-w-7xl animate-fade-in">{children}</div>
+            <div className="mx-auto w-full max-w-7xl animate-fade-in"><T>{children}</T></div>
           </main>
         </div>
       </div>

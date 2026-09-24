@@ -1,7 +1,9 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { resendVerificationAction } from "@/actions/auth";
 import { runAction } from "@/lib/run-action";
@@ -24,7 +26,7 @@ export function ResendVerification() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 text-left">
-      <Label htmlFor="resend-email">Send a new verification link</Label>
+      <Label htmlFor="resend-email"><T>{"Send a new verification link"}</T></Label>
       <div className="flex gap-2">
         <Input
           id="resend-email"
@@ -34,9 +36,7 @@ export function ResendVerification() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
-        <Button type="submit" loading={loading}>
-          Send
-        </Button>
+        <Button type="submit" loading={loading}><T>{" Send "}</T></Button>
       </div>
     </form>
   );

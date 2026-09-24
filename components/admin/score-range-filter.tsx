@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -23,9 +25,7 @@ export function ScoreRangeFilter() {
   return (
     <div className="flex items-end gap-2">
       <div className="w-[90px] space-y-1.5">
-        <Label htmlFor="minScore" className="text-xs text-muted-foreground">
-          Min %
-        </Label>
+        <Label htmlFor="minScore" className="text-xs text-muted-foreground"><T>{" Min % "}</T></Label>
         <Input
           id="minScore"
           type="number"
@@ -36,9 +36,7 @@ export function ScoreRangeFilter() {
         />
       </div>
       <div className="w-[90px] space-y-1.5">
-        <Label htmlFor="maxScore" className="text-xs text-muted-foreground">
-          Max %
-        </Label>
+        <Label htmlFor="maxScore" className="text-xs text-muted-foreground"><T>{" Max % "}</T></Label>
         <Input
           id="maxScore"
           type="number"

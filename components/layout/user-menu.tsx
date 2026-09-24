@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import Link from "next/link";
@@ -36,27 +38,25 @@ export function UserMenu({
         <Button variant="ghost" size="icon" className="rounded-full" aria-label="Account menu">
           <Avatar>
             {image ? <AvatarImage src={image} alt="" /> : null}
-            <AvatarFallback>{initials(name)}</AvatarFallback>
+            <AvatarFallback><T>{initials(name)}</T></AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuLabel className="font-normal">
-          <p className="truncate text-sm font-semibold">{name ?? "Trainee"}</p>
-          <p className="truncate text-xs text-muted-foreground">{email}</p>
+          <p className="truncate text-sm font-semibold"><T>{name ?? "Trainee"}</T></p>
+          <p className="truncate text-xs text-muted-foreground"><T>{email}</T></p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
           <Link href="/profile">
-            <UserRound /> Profile
-          </Link>
+            <UserRound /><T>{" Profile "}</T></Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/profile#security">
-            <Settings /> Change password
-          </Link>
+            <Settings /><T>{" Change password "}</T></Link>
         </DropdownMenuItem>
 
         {isAdmin ? (
@@ -64,8 +64,7 @@ export function UserMenu({
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/admin">
-                <ShieldCheck /> Admin panel
-              </Link>
+                <ShieldCheck /><T>{" Admin panel "}</T></Link>
             </DropdownMenuItem>
           </>
         ) : null}
@@ -80,7 +79,7 @@ export function UserMenu({
             });
           }}
         >
-          <LogOut /> {pending ? "Signing out…" : "Sign out"}
+          <LogOut /> <T>{pending ? "Signing out…" : "Sign out"}</T>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

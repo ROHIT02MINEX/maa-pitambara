@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -76,9 +78,7 @@ export function FilterBar({
   return (
     <div className="flex flex-wrap items-end gap-3">
       <div className="min-w-[220px] flex-1 space-y-1.5">
-        <Label htmlFor="filter-search" className="text-xs text-muted-foreground">
-          Search
-        </Label>
+        <Label htmlFor="filter-search" className="text-xs text-muted-foreground"><T>{" Search "}</T></Label>
         <div className="relative">
           <Search
             className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -97,7 +97,7 @@ export function FilterBar({
       {selects.map((select) => (
         <div key={select.key} className="w-[190px] space-y-1.5">
           <Label htmlFor={`filter-${select.key}`} className="text-xs text-muted-foreground">
-            {select.label}
+            <T>{select.label}</T>
           </Label>
           <Select
             value={searchParams.get(select.key) ?? ALL}
@@ -107,10 +107,10 @@ export function FilterBar({
               <SelectValue placeholder={select.placeholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL}>{select.placeholder}</SelectItem>
+              <SelectItem value={ALL}><T>{select.placeholder}</T></SelectItem>
               {select.options.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+                  <T>{option.label}</T>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -121,9 +121,7 @@ export function FilterBar({
       {showDateRange ? (
         <>
           <div className="w-[160px] space-y-1.5">
-            <Label htmlFor="filter-from" className="text-xs text-muted-foreground">
-              From
-            </Label>
+            <Label htmlFor="filter-from" className="text-xs text-muted-foreground"><T>{" From "}</T></Label>
             <Input
               id="filter-from"
               type="date"
@@ -132,9 +130,7 @@ export function FilterBar({
             />
           </div>
           <div className="w-[160px] space-y-1.5">
-            <Label htmlFor="filter-to" className="text-xs text-muted-foreground">
-              To
-            </Label>
+            <Label htmlFor="filter-to" className="text-xs text-muted-foreground"><T>{" To "}</T></Label>
             <Input
               id="filter-to"
               type="date"
@@ -153,11 +149,10 @@ export function FilterBar({
             router.replace(pathname, { scroll: false });
           }}
         >
-          <X className="h-4 w-4" /> Clear
-        </Button>
+          <X className="h-4 w-4" /><T>{" Clear "}</T></Button>
       ) : null}
 
-      <div className="ml-auto flex flex-wrap items-end gap-2">{children}</div>
+      <div className="ml-auto flex flex-wrap items-end gap-2"><T>{children}</T></div>
     </div>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { loginAction, resendVerificationAction } from "@/actions/auth";
 import { runAction } from "@/lib/run-action";
@@ -20,19 +22,16 @@ import { GoogleButton } from "@/components/auth/google-button";
 export function LoginForm({
   callbackUrl,
   googleEnabled,
-  initiallyPending = false,
 }: {
   callbackUrl?: string;
   /** False when the deployment has no Google OAuth credentials configured. */
   googleEnabled: boolean;
-  initiallyPending?: boolean;
 }) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [needsVerification, setNeedsVerification] = React.useState(false);
   const [resending, setResending] = React.useState(false);
   const [redirecting, setRedirecting] = React.useState(false);
-  const [approvalPending, setApprovalPending] = React.useState(initiallyPending);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -51,7 +50,6 @@ export function LoginForm({
   async function onSubmit(values: LoginInput) {
     setFormError(null);
     setNeedsVerification(false);
-    setApprovalPending(false);
 
     const result = await runAction(() => loginAction(values));
 
@@ -61,11 +59,6 @@ export function LoginForm({
       return;
     }
 
-    if (result.data?.approvalRequired) {
-      setApprovalPending(true);
-      toast.success(result.message ?? "Login request submitted.");
-      return;
-    }
 
     setRedirecting(true);
     toast.success("Signed in! Redirecting...");
@@ -86,16 +79,14 @@ export function LoginForm({
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-        <p className="text-sm text-muted-foreground">
-          Sign in to continue your training and assessments.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Welcome back"}</T></h1>
+        <p className="text-sm text-muted-foreground"><T>{" Sign in to continue your training and assessments. "}</T></p>
       </header>
 
       {formError ? (
         <Alert variant="destructive">
           <AlertDescription className="space-y-3">
-            <p>{formError}</p>
+            <p><T>{formError}</T></p>
             {needsVerification ? (
               <Button
                 type="button"
@@ -104,25 +95,16 @@ export function LoginForm({
                 loading={resending}
                 onClick={handleResend}
               >
-                <Mail className="h-4 w-4" /> Resend verification e-mail
-              </Button>
+                <Mail className="h-4 w-4" /><T>{" Resend verification e-mail "}</T></Button>
             ) : null}
           </AlertDescription>
         </Alert>
       ) : null}
 
-      {approvalPending ? (
-        <Alert>
-          <AlertDescription>
-            Request submitted. Wait for an administrator to approve it, then press Sign in again.
-            Approval is valid for 15 minutes and one login only.
-          </AlertDescription>
-        </Alert>
-      ) : null}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-2">
-          <Label htmlFor="email">E-mail address</Label>
+          <Label htmlFor="email"><T>{"E-mail address"}</T></Label>
           <Input
             id="email"
             type="email"
@@ -134,20 +116,18 @@ export function LoginForm({
           />
           {errors.email ? (
             <p id="email-error" className="text-sm text-destructive">
-              {errors.email.message}
+              <T>{errors.email.message}</T>
             </p>
           ) : null}
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password"><T>{"Password"}</T></Label>
             <Link
               href="/forgot-password"
               className="text-sm font-medium text-primary hover:underline"
-            >
-              Forgot password?
-            </Link>
+            ><T>{" Forgot password? "}</T></Link>
           </div>
           <div className="relative">
             <Input
@@ -171,7 +151,7 @@ export function LoginForm({
           </div>
           {errors.password ? (
             <p id="password-error" className="text-sm text-destructive">
-              {errors.password.message}
+              <T>{errors.password.message}</T>
             </p>
           ) : null}
         </div>
@@ -182,13 +162,11 @@ export function LoginForm({
             checked={watch("remember")}
             onCheckedChange={(checked) => setValue("remember", checked === true)}
           />
-          <Label htmlFor="remember" className="cursor-pointer font-normal text-muted-foreground">
-            Remember me on this device
-          </Label>
+          <Label htmlFor="remember" className="cursor-pointer font-normal text-muted-foreground"><T>{" Remember me on this device "}</T></Label>
         </div>
 
         <Button type="submit" className="w-full" loading={isSubmitting || redirecting} disabled={isSubmitting || redirecting}>
-          {redirecting ? "Signing in..." : "Sign in"}
+          <T>{redirecting ? "Signing in..." : "Sign in"}</T>
         </Button>
       </form>
 
@@ -199,7 +177,7 @@ export function LoginForm({
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or</span>
+              <span className="bg-background px-2 text-muted-foreground"><T>{"or"}</T></span>
             </div>
           </div>
 
@@ -207,11 +185,8 @@ export function LoginForm({
         </>
       ) : null}
 
-      <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
-        <Link href="/signup" className="font-medium text-primary hover:underline">
-          Create one
-        </Link>
+      <p className="text-center text-sm text-muted-foreground"><T>{" Don't have an account?"}</T><T>{" "}</T>
+        <Link href="/signup" className="font-medium text-primary hover:underline"><T>{" Create one "}</T></Link>
       </p>
     </div>
   );

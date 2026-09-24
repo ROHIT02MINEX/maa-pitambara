@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import Link from "next/link";
@@ -44,13 +46,12 @@ export function ForgotPasswordForm() {
           <MailCheck className="h-7 w-7" aria-hidden />
         </span>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Check your e-mail</h1>
-          <p className="text-sm text-muted-foreground">{sent}</p>
+          <h1 className="text-2xl font-bold tracking-tight"><T>{"Check your e-mail"}</T></h1>
+          <p className="text-sm text-muted-foreground"><T>{sent}</T></p>
         </div>
         <Button asChild variant="outline" className="w-full">
           <Link href="/login">
-            <ArrowLeft className="h-4 w-4" /> Back to sign in
-          </Link>
+            <ArrowLeft className="h-4 w-4" /><T>{" Back to sign in "}</T></Link>
         </Button>
       </div>
     );
@@ -59,21 +60,19 @@ export function ForgotPasswordForm() {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Forgot your password?</h1>
-        <p className="text-sm text-muted-foreground">
-          Enter the e-mail address on your account and we&apos;ll send a reset link.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Forgot your password?"}</T></h1>
+        <p className="text-sm text-muted-foreground"><T>{" Enter the e-mail address on your account and we'll send a reset link. "}</T></p>
       </header>
 
       {formError ? (
         <Alert variant="destructive">
-          <AlertDescription>{formError}</AlertDescription>
+          <AlertDescription><T>{formError}</T></AlertDescription>
         </Alert>
       ) : null}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-2">
-          <Label htmlFor="email">E-mail address</Label>
+          <Label htmlFor="email"><T>{"E-mail address"}</T></Label>
           <Input
             id="email"
             type="email"
@@ -82,18 +81,15 @@ export function ForgotPasswordForm() {
             aria-invalid={Boolean(errors.email)}
             {...register("email")}
           />
-          {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
+          {errors.email ? <p className="text-sm text-destructive"><T>{errors.email.message}</T></p> : null}
         </div>
 
-        <Button type="submit" className="w-full" loading={isSubmitting}>
-          Send reset link
-        </Button>
+        <Button type="submit" className="w-full" loading={isSubmitting}><T>{" Send reset link "}</T></Button>
       </form>
 
       <Button asChild variant="ghost" className="w-full">
         <Link href="/login">
-          <ArrowLeft className="h-4 w-4" /> Back to sign in
-        </Link>
+          <ArrowLeft className="h-4 w-4" /><T>{" Back to sign in "}</T></Link>
       </Button>
     </div>
   );

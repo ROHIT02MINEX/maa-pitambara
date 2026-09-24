@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -41,15 +43,13 @@ export function PaginationNav({
       className="flex flex-wrap items-center justify-between gap-3 border-t pt-4"
       aria-label="Pagination"
     >
-      <p className="text-sm text-muted-foreground" aria-live="polite">
-        Showing <strong className="text-foreground">{first}</strong>–
-        <strong className="text-foreground">{last}</strong> of{" "}
-        <strong className="text-foreground">{total}</strong>
+      <p className="text-sm text-muted-foreground" aria-live="polite"><T>{" Showing "}</T><strong className="text-foreground"><T>{first}</T></strong><T>{"– "}</T><strong className="text-foreground"><T>{last}</T></strong><T>{" of"}</T><T>{" "}</T>
+        <strong className="text-foreground"><T>{total}</T></strong>
       </p>
 
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Rows</span>
+          <span className="text-sm text-muted-foreground"><T>{"Rows"}</T></span>
           <Select value={String(perPage)} onValueChange={(value) => go({ perPage: value, page: "1" })}>
             <SelectTrigger className="h-9 w-[80px]">
               <SelectValue />
@@ -57,7 +57,7 @@ export function PaginationNav({
             <SelectContent>
               {[10, 25, 50, 100].map((size) => (
                 <SelectItem key={size} value={String(size)}>
-                  {size}
+                  <T>{size}</T>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -75,7 +75,7 @@ export function PaginationNav({
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="px-2 text-sm tabular-nums">
-            {page} / {totalPages}
+            <T>{page}</T><T>{" / "}</T><T>{totalPages}</T>
           </span>
           <Button
             variant="outline"

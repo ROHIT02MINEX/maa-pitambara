@@ -1,10 +1,12 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Occupation, Role } from "@prisma/client";
 import { KeyRound, MoreHorizontal, Pencil, ShieldOff, ShieldCheck, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import {
   deleteUserAction,
@@ -146,9 +148,7 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
 
   if (users.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-        No users match these filters.
-      </p>
+      <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground"><T>{" No users match these filters. "}</T></p>
     );
   }
 
@@ -157,14 +157,14 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>User</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Occupation</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Tests</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Joined</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead><T>{"User"}</T></TableHead>
+            <TableHead><T>{"Phone"}</T></TableHead>
+            <TableHead><T>{"Occupation"}</T></TableHead>
+            <TableHead><T>{"Role"}</T></TableHead>
+            <TableHead><T>{"Tests"}</T></TableHead>
+            <TableHead><T>{"Status"}</T></TableHead>
+            <TableHead><T>{"Joined"}</T></TableHead>
+            <TableHead className="text-right"><T>{"Actions"}</T></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -173,39 +173,39 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
               <TableCell>
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback>{initials(user.name)}</AvatarFallback>
+                    <AvatarFallback><T>{initials(user.name)}</T></AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <p className="truncate font-medium">{user.name ?? "Unnamed"}</p>
-                    <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                    <p className="truncate font-medium"><T>{user.name ?? "Unnamed"}</T></p>
+                    <p className="truncate text-xs text-muted-foreground"><T>{user.email}</T></p>
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="whitespace-nowrap">{user.phone ?? "-"}</TableCell>
+              <TableCell className="whitespace-nowrap"><T>{user.phone ?? "-"}</T></TableCell>
               <TableCell>
-                <Badge variant="secondary">{occupationLabel(user.occupation)}</Badge>
+                <Badge variant="secondary"><T>{occupationLabel(user.occupation)}</T></Badge>
               </TableCell>
               <TableCell>
                 <Badge variant={user.role === "ADMIN" ? "warning" : "outline"}>
-                  {user.role === "ADMIN" ? "Admin" : "Learner"}
+                  <T>{user.role === "ADMIN" ? "Admin" : "Learner"}</T>
                 </Badge>
               </TableCell>
-              <TableCell className="tabular-nums">{user.testsTaken}</TableCell>
+              <TableCell className="tabular-nums"><T>{user.testsTaken}</T></TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-1">
                   <Badge variant={user.disabled ? "destructive" : "success"}>
-                    {user.disabled ? "Disabled" : "Active"}
+                    <T>{user.disabled ? "Disabled" : "Active"}</T>
                   </Badge>
-                  {!user.emailVerified ? <Badge variant="warning">Unverified</Badge> : null}
+                  {!user.emailVerified ? <Badge variant="warning"><T>{"Unverified"}</T></Badge> : null}
                 </div>
               </TableCell>
               <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-                {formatDate(user.createdAt)}
+                <T>{formatDate(user.createdAt)}</T>
                 <br />
-                {user.lastLoginAt ? `last seen ${formatDate(user.lastLoginAt)}` : "never signed in"}
+                <T>{user.lastLoginAt ? `last seen ${formatDate(user.lastLoginAt)}` : "never signed in"}</T>
               </TableCell>
               <TableCell className="text-right">
-                <DropdownMenu>
+                <div className="flex items-center justify-end gap-1"><Button type="button" size="sm" variant="ghost" className="text-destructive" disabled={user.id === currentAdminId} onClick={() => setDeleting(user)}><Trash2 className="h-4 w-4" /><T>Delete</T></Button><DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon-sm" aria-label={`Actions for ${user.email}`}>
                       <MoreHorizontal className="h-4 w-4" />
@@ -213,28 +213,25 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onSelect={() => openEdit(user)}>
-                      <Pencil /> Edit details
-                    </DropdownMenuItem>
+                      <Pencil /><T>{" Edit details "}</T></DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => sendReset(user)}>
-                      <KeyRound /> Send password reset
-                    </DropdownMenuItem>
+                      <KeyRound /><T>{" Send password reset "}</T></DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       disabled={user.id === currentAdminId}
                       onSelect={() => toggleDisabled(user)}
                     >
                       {user.disabled ? <ShieldCheck /> : <ShieldOff />}
-                      {user.disabled ? "Enable account" : "Disable account"}
+                      <T>{user.disabled ? "Enable account" : "Disable account"}</T>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       disabled={user.id === currentAdminId}
                       className="text-destructive focus:text-destructive"
                       onSelect={() => setDeleting(user)}
                     >
-                      <Trash2 /> Delete user
-                    </DropdownMenuItem>
+                      <Trash2 /><T>{" Delete user "}</T></DropdownMenuItem>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu></div>
               </TableCell>
             </TableRow>
           ))}
@@ -244,13 +241,13 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
       <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && setEditing(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit user</DialogTitle>
-            <DialogDescription>{editing?.email}</DialogDescription>
+            <DialogTitle><T>{"Edit user"}</T></DialogTitle>
+            <DialogDescription><T>{editing?.email}</T></DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="edit-name">Full name</Label>
+              <Label htmlFor="edit-name"><T>{"Full name"}</T></Label>
               <Input
                 id="edit-name"
                 value={form.name}
@@ -259,7 +256,7 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-phone">Mobile number</Label>
+              <Label htmlFor="edit-phone"><T>{"Mobile number"}</T></Label>
               <Input
                 id="edit-phone"
                 value={form.phone}
@@ -269,7 +266,7 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="edit-occupation">Occupation</Label>
+                <Label htmlFor="edit-occupation"><T>{"Occupation"}</T></Label>
                 <Select
                   value={form.occupation}
                   onValueChange={(value) => setForm((f) => ({ ...f, occupation: value }))}
@@ -278,10 +275,10 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={NO_OCCUPATION}>Not set</SelectItem>
+                    <SelectItem value={NO_OCCUPATION}><T>{"Not set"}</T></SelectItem>
                     {OCCUPATIONS.map((occupation) => (
                       <SelectItem key={occupation} value={occupation}>
-                        {OCCUPATION_LABELS[occupation]}
+                        <T>{OCCUPATION_LABELS[occupation]}</T>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -289,7 +286,7 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-role">Role</Label>
+                <Label htmlFor="edit-role"><T>{"Role"}</T></Label>
                 <Select
                   value={form.role}
                   onValueChange={(value) => setForm((f) => ({ ...f, role: value as Role }))}
@@ -298,8 +295,8 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={Role.USER}>Learner</SelectItem>
-                    <SelectItem value={Role.ADMIN}>Administrator</SelectItem>
+                    <SelectItem value={Role.USER}><T>{"Learner"}</T></SelectItem>
+                    <SelectItem value={Role.ADMIN}><T>{"Administrator"}</T></SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -307,12 +304,8 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditing(null)}>
-              Cancel
-            </Button>
-            <Button onClick={saveEdit} loading={busy}>
-              Save changes
-            </Button>
+            <Button variant="outline" onClick={() => setEditing(null)}><T>{" Cancel "}</T></Button>
+            <Button onClick={saveEdit} loading={busy}><T>{" Save changes "}</T></Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -320,15 +313,12 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
       <AlertDialog open={Boolean(deleting)} onOpenChange={(open) => !open && setDeleting(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this user?</AlertDialogTitle>
+            <AlertDialogTitle><T>{"Delete this user?"}</T></AlertDialogTitle>
             <AlertDialogDescription>
-              {deleting?.email} will be permanently removed, along with their test attempts,
-              bookmarks and activity history. This cannot be undone. Consider disabling the account
-              instead.
-            </AlertDialogDescription>
+              <T>{deleting?.email}</T><T>{" will be permanently removed, along with their test attempts, bookmarks and activity history. This cannot be undone. Consider disabling the account instead. "}</T></AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel><T>{"Cancel"}</T></AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(event) => {
@@ -336,7 +326,7 @@ export function UserTable({ users, currentAdminId }: { users: AdminUserRow[]; cu
                 void confirmDelete();
               }}
             >
-              {busy ? "Deleting…" : "Delete permanently"}
+              <T>{busy ? "Deleting…" : "Delete permanently"}</T>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

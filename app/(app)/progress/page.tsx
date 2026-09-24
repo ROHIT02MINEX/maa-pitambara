@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -30,14 +32,13 @@ export default async function ProgressPage() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Your progress</h1>
+          <h1 className="text-2xl font-bold tracking-tight"><T>{"Your progress"}</T></h1>
           <p className="mt-1 text-muted-foreground">
-            {occupationLabel(user.occupation)} · {totals.totalTests} completed attempt
-            {totals.totalTests === 1 ? "" : "s"}
+            <T>{occupationLabel(user.occupation)}</T><T>{" · "}</T><T>{totals.totalTests}</T><T>{" completed attempt "}</T><T>{totals.totalTests === 1 ? "" : "s"}</T>
           </p>
         </div>
         <Button asChild>
-          <Link href="/tests">Take a test</Link>
+          <Link href="/tests"><T>{"Take a test"}</T></Link>
         </Button>
       </header>
 
@@ -66,15 +67,13 @@ export default async function ProgressPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Course completion</CardTitle>
-          <CardDescription>
-            Half from the material you have opened, half from your best assessment result.
-          </CardDescription>
+          <CardTitle><T>{"Course completion"}</T></CardTitle>
+          <CardDescription><T>{" Half from the material you have opened, half from your best assessment result. "}</T></CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">Overall</span>
-            <span className="text-muted-foreground">{totals.completionPercentage}%</span>
+            <span className="font-medium"><T>{"Overall"}</T></span>
+            <span className="text-muted-foreground"><T>{totals.completionPercentage}</T><T>{"%"}</T></span>
           </div>
           <Progress
             value={totals.completionPercentage}
@@ -93,27 +92,24 @@ export default async function ProgressPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Focus areas</CardTitle>
-            <CardDescription>
-              Topics where your accuracy is below the {PASS_PERCENTAGE}% pass mark.
-            </CardDescription>
+            <CardTitle><T>{"Focus areas"}</T></CardTitle>
+            <CardDescription><T>{" Topics where your accuracy is below the "}</T><T>{PASS_PERCENTAGE}</T><T>{"% pass mark. "}</T></CardDescription>
           </CardHeader>
           <CardContent>
             {weakest.length === 0 ? (
               <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-                {totals.totalTests === 0
+                <T>{totals.totalTests === 0
                   ? "Complete a test to see which topics need work."
-                  : "Nothing below the pass mark. Well done."}
+                  : "Nothing below the pass mark. Well done."}</T>
               </p>
             ) : (
               <ul className="space-y-3">
                 {weakest.map((topic) => (
                   <li key={topic.topic} className="space-y-1.5">
                     <div className="flex items-center justify-between gap-3 text-sm">
-                      <span className="truncate font-medium">{topic.topic}</span>
+                      <span className="truncate font-medium"><T>{topic.topic}</T></span>
                       <Badge variant={topic.accuracy < 40 ? "destructive" : "warning"}>
-                        {topic.accuracy}%
-                      </Badge>
+                        <T>{topic.accuracy}</T><T>{"% "}</T></Badge>
                     </div>
                     <Progress
                       value={topic.accuracy}
@@ -123,16 +119,14 @@ export default async function ProgressPage() {
                       aria-label={`${topic.topic} accuracy ${topic.accuracy} percent`}
                     />
                     <p className="text-xs text-muted-foreground">
-                      {topic.attempts} question{topic.attempts === 1 ? "" : "s"} seen
-                    </p>
+                      <T>{topic.attempts}</T><T>{" question"}</T><T>{topic.attempts === 1 ? "" : "s"}</T><T>{" seen "}</T></p>
                   </li>
                 ))}
               </ul>
             )}
             <Button asChild variant="outline" className="mt-5 w-full">
               <Link href="/learn">
-                <BookOpen className="h-4 w-4" /> Revise the material
-              </Link>
+                <BookOpen className="h-4 w-4" /><T>{" Revise the material "}</T></Link>
             </Button>
           </CardContent>
         </Card>

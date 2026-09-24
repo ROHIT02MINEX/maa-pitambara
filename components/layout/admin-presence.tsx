@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { Circle } from "lucide-react";
@@ -39,8 +41,7 @@ export function AdminPresence({ isAdmin }: { isAdmin: boolean }) {
 
   return (
     <Badge variant={online ? "success" : "outline"} title="Administrator availability">
-      <Circle className={online ? "h-2.5 w-2.5 fill-current" : "h-2.5 w-2.5"} />
-      Admin {online ? "online" : "offline"}
+      <Circle className={online ? "h-2.5 w-2.5 fill-current" : "h-2.5 w-2.5"} /><T>{" Admin "}</T><T>{online ? "online" : "offline"}</T>
     </Badge>
   );
 }

@@ -30,6 +30,7 @@ export type NavItem = {
 export const LEARNER_NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard", description: "Your overview" },
   { href: "/learn", label: "Learning material", icon: "learn", description: "PDFs for your trade" },
+  { href: "/study", label: "Bilingual study notes", icon: "learn", description: "Read in Hindi or English" },
   { href: "/tests", label: "Tests", icon: "tests", description: "Take an assessment" },
   { href: "/progress", label: "Progress", icon: "progress", description: "Scores and trends" },
   { href: "/profile", label: "Profile", icon: "profile", description: "Your details" },
@@ -41,6 +42,4 @@ export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/pdfs", label: "PDFs", icon: "pdfs" },
   { href: "/admin/questions", label: "Questions", icon: "questions" },
   { href: "/admin/analytics", label: "Test analytics", icon: "analytics" },
-  { href: "/admin/retests", label: "Retest requests", icon: "retests" },
-  { href: "/admin/login-requests", label: "Login requests", icon: "loginRequests" },
 ];

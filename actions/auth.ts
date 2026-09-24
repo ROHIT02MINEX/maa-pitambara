@@ -21,7 +21,6 @@ import { downgradeSessionCookieToBrowserSession } from "@/lib/session-cookie";
 import { ACTIVITY, logActivity } from "@/lib/activity";
 import { absoluteUrl } from "@/lib/utils";
 import { emailVerificationRequired } from "@/lib/env";
-import { ensurePendingLoginRequest, hasUsableLoginApproval } from "@/lib/login-approval";
 import {
   changePasswordSchema,
   forgotPasswordSchema,
@@ -125,7 +124,7 @@ export async function registerAction(
 
 export async function loginAction(
   input: unknown,
-): Promise<ActionResult<{ redirectTo?: string; approvalRequired?: boolean }>> {
+): Promise<ActionResult<{ redirectTo?: string }>> {
   const parsed = loginSchema.safeParse(input);
   if (!parsed.success) {
     return actionError("Please fix the highlighted fields.", parsed.error.flatten().fieldErrors);
@@ -160,13 +159,6 @@ export async function loginAction(
     );
   }
 
-  if (user.role !== "ADMIN" && !(await hasUsableLoginApproval(user.id))) {
-    await ensurePendingLoginRequest(user.id);
-    return actionOk(
-      { approvalRequired: true },
-      "Login request submitted. An administrator must approve it before you can sign in.",
-    );
-  }
 
   try {
     await signIn("credentials", { email, password, redirect: false });

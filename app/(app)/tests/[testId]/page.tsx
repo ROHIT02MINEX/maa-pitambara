@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -42,10 +44,8 @@ export default async function TestAttemptPage({
   return (
     <div className="space-y-5">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight">Assessment in progress</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Answers save as you go. Refreshing the page will not give you more time.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Assessment in progress"}</T></h1>
+        <p className="mt-1 text-sm text-muted-foreground"><T>{" Answers save as you go. Refreshing the page will not give you more time. "}</T></p>
       </header>
 
       <TestRunner test={active} />

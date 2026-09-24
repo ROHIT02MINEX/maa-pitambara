@@ -1,10 +1,12 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { AnswerOption, Difficulty, Occupation, QuestionType, Subject } from "@prisma/client";
 import { MoreHorizontal, Pencil, Plus, Trash2, Upload } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import {
   createQuestionAction,
@@ -71,6 +73,12 @@ import {
 } from "@/components/ui/table";
 
 export type AdminQuestionRow = {
+  questionHi: string | null;
+  optionAHi: string | null;
+  optionBHi: string | null;
+  optionCHi: string | null;
+  optionDHi: string | null;
+  explanationHi: string | null;
   id: string;
   occupation: Occupation;
   subject: Subject;
@@ -91,6 +99,12 @@ export type AdminQuestionRow = {
 };
 
 type FormState = {
+  questionHi: string;
+  optionAHi: string;
+  optionBHi: string;
+  optionCHi: string;
+  optionDHi: string;
+  explanationHi: string;
   occupation: Occupation;
   subject: Subject;
   topic: string;
@@ -107,6 +121,12 @@ type FormState = {
 };
 
 const EMPTY: FormState = {
+  questionHi: "",
+  optionAHi: "",
+  optionBHi: "",
+  optionCHi: "",
+  optionDHi: "",
+  explanationHi: "",
   occupation: Occupation.FITTER,
   subject: Subject.TRADE_THEORY,
   topic: "",
@@ -149,6 +169,12 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
 
   function openEdit(question: AdminQuestionRow) {
     setForm({
+      questionHi: question.questionHi ?? "",
+      optionAHi: question.optionAHi ?? "",
+      optionBHi: question.optionBHi ?? "",
+      optionCHi: question.optionCHi ?? "",
+      optionDHi: question.optionDHi ?? "",
+      explanationHi: question.explanationHi ?? "",
       occupation: question.occupation,
       subject: question.subject,
       topic: question.topic,
@@ -275,60 +301,56 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
     <>
       <div className="flex flex-wrap justify-end gap-2">
         <Button variant="outline" onClick={() => setImportOpen(true)}>
-          <Upload className="h-4 w-4" /> Import CSV
-        </Button>
+          <Upload className="h-4 w-4" /><T>{" Import CSV "}</T></Button>
         <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" /> Add question
-        </Button>
+          <Plus className="h-4 w-4" /><T>{" Add question "}</T></Button>
       </div>
 
       {questions.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-          No questions match these filters.
-        </p>
+        <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground"><T>{" No questions match these filters. "}</T></p>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[40%]">Question</TableHead>
-              <TableHead>Occupation</TableHead>
-              <TableHead>Topic</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Answer</TableHead>
-              <TableHead>Difficulty</TableHead>
-              <TableHead>Active</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[40%]"><T>{"Question"}</T></TableHead>
+              <TableHead><T>{"Occupation"}</T></TableHead>
+              <TableHead><T>{"Topic"}</T></TableHead>
+              <TableHead><T>{"Type"}</T></TableHead>
+              <TableHead><T>{"Answer"}</T></TableHead>
+              <TableHead><T>{"Difficulty"}</T></TableHead>
+              <TableHead><T>{"Active"}</T></TableHead>
+              <TableHead className="text-right"><T>{"Actions"}</T></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {questions.map((question) => (
               <TableRow key={question.id}>
                 <TableCell className="max-w-[420px]">
-                  <p className="line-clamp-2 font-medium">{question.question}</p>
+                  <p className="line-clamp-2 font-medium"><T>{question.question}</T></p>
                   {question.sourcePdf ? (
                     <p className="mt-1 truncate text-xs text-muted-foreground">
-                      {question.sourcePdf.title}
-                      {question.sourcePage ? ` · p.${question.sourcePage}` : ""}
+                      <T>{question.sourcePdf.title}</T>
+                      <T>{question.sourcePage ? ` · p.${question.sourcePage}` : ""}</T>
                     </p>
                   ) : null}
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{OCCUPATION_LABELS[question.occupation]}</Badge>
+                  <Badge variant="secondary"><T>{OCCUPATION_LABELS[question.occupation]}</T></Badge>
                 </TableCell>
                 <TableCell className="text-sm">
-                  {question.topic}
+                  <T>{question.topic}</T>
                   <span className="mt-0.5 block text-xs text-muted-foreground">
-                    {SUBJECT_SHORT_LABELS[question.subject]}
+                    <T>{SUBJECT_SHORT_LABELS[question.subject]}</T>
                   </span>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-sm">
-                  {QUESTION_TYPE_LABELS[question.type]}
+                  <T>{QUESTION_TYPE_LABELS[question.type]}</T>
                 </TableCell>
                 <TableCell>
-                  <Badge>{question.correctAnswer}</Badge>
+                  <Badge><T>{question.correctAnswer}</T></Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{DIFFICULTY_LABELS[question.difficulty]}</Badge>
+                  <Badge variant="outline"><T>{DIFFICULTY_LABELS[question.difficulty]}</T></Badge>
                 </TableCell>
                 <TableCell>
                   <Switch
@@ -346,14 +368,12 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onSelect={() => openEdit(question)}>
-                        <Pencil /> Edit
-                      </DropdownMenuItem>
+                        <Pencil /><T>{" Edit "}</T></DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onSelect={() => setDeleting(question)}
                       >
-                        <Trash2 /> Delete
-                      </DropdownMenuItem>
+                        <Trash2 /><T>{" Delete "}</T></DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -367,22 +387,20 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
       <Dialog open={dialogOpen} onOpenChange={(open) => !busy && setDialogOpen(open)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit question" : "Add a question"}</DialogTitle>
-            <DialogDescription>
-              Questions are drawn at random from the bank for the matching occupation.
-            </DialogDescription>
+            <DialogTitle><T>{editingId ? "Edit question" : "Add a question"}</T></DialogTitle>
+            <DialogDescription><T>{" Questions are drawn at random from the bank for the matching occupation. "}</T></DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error ? (
               <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription><T>{error}</T></AlertDescription>
               </Alert>
             ) : null}
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="q-occupation">Occupation</Label>
+                <Label htmlFor="q-occupation"><T>{"Occupation"}</T></Label>
                 <Select
                   value={form.occupation}
                   onValueChange={(value) =>
@@ -395,7 +413,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                   <SelectContent>
                     {OCCUPATIONS.map((occupation) => (
                       <SelectItem key={occupation} value={occupation}>
-                        {OCCUPATION_LABELS[occupation]}
+                        <T>{OCCUPATION_LABELS[occupation]}</T>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -405,7 +423,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
               {/* The subject decides which slice of the test blueprint this
                   question competes for, so it is not a cosmetic label. */}
               <div className="space-y-2">
-                <Label htmlFor="q-subject">Subject</Label>
+                <Label htmlFor="q-subject"><T>{"Subject"}</T></Label>
                 <Select
                   value={form.subject}
                   onValueChange={(value) => setForm((f) => ({ ...f, subject: value as Subject }))}
@@ -416,7 +434,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                   <SelectContent>
                     {SUBJECTS.map((subject) => (
                       <SelectItem key={subject} value={subject}>
-                        {SUBJECT_LABELS[subject]}
+                        <T>{SUBJECT_LABELS[subject]}</T>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -424,7 +442,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="q-type">Type</Label>
+                <Label htmlFor="q-type"><T>{"Type"}</T></Label>
                 <Select
                   value={form.type}
                   onValueChange={(value) =>
@@ -444,14 +462,14 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={QuestionType.MCQ}>Multiple choice</SelectItem>
-                    <SelectItem value={QuestionType.TRUE_FALSE}>True / False</SelectItem>
+                    <SelectItem value={QuestionType.MCQ}><T>{"Multiple choice"}</T></SelectItem>
+                    <SelectItem value={QuestionType.TRUE_FALSE}><T>{"True / False"}</T></SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="q-difficulty">Difficulty</Label>
+                <Label htmlFor="q-difficulty"><T>{"Difficulty"}</T></Label>
                 <Select
                   value={form.difficulty}
                   onValueChange={(value) =>
@@ -464,7 +482,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                   <SelectContent>
                     {Object.entries(DIFFICULTY_LABELS).map(([value, label]) => (
                       <SelectItem key={value} value={value}>
-                        {label}
+                        <T>{label}</T>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -473,7 +491,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="q-topic">Topic</Label>
+              <Label htmlFor="q-topic"><T>{"Topic"}</T></Label>
               <Input
                 id="q-topic"
                 required
@@ -484,7 +502,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="q-question">Question</Label>
+              <Label htmlFor="q-question"><T>{"Question"}</T></Label>
               <Textarea
                 id="q-question"
                 required
@@ -493,12 +511,20 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
               />
             </div>
 
+
+            <fieldset className="space-y-3 rounded-lg border p-4">
+              <legend className="px-2 font-medium"><T>Hindi translation</T></legend>
+              <p className="text-xs text-muted-foreground"><T>Add Hindi text for both language modes. The English version is kept above.</T></p>
+              {([['questionHi', 'Question in Hindi'], ['optionAHi', 'Option A in Hindi'], ['optionBHi', 'Option B in Hindi'], ['optionCHi', 'Option C in Hindi'], ['optionDHi', 'Option D in Hindi'], ['explanationHi', 'Explanation in Hindi']] as const).map(([field, label]) => (
+                <div key={field} className="space-y-1">
+                  <Label htmlFor={field}><T>{label}</T></Label>
+                  <Textarea id={field} lang="hi" value={form[field]} onChange={e => setForm(f => ({...f, [field]: e.target.value}))} />
+                </div>
+              ))}
+            </fieldset>
             {isTrueFalse ? (
               <Alert variant="info">
-                <AlertDescription>
-                  True/False questions use fixed options. Choose whether the statement is true (A)
-                  or false (B) below.
-                </AlertDescription>
+                <AlertDescription><T>{" True/False questions use fixed options. Choose whether the statement is true (A) or false (B) below. "}</T></AlertDescription>
               </Alert>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
@@ -506,7 +532,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                   const key = `option${letter}` as "optionA" | "optionB" | "optionC" | "optionD";
                   return (
                     <div key={letter} className="space-y-2">
-                      <Label htmlFor={`q-option-${letter}`}>Option {letter}</Label>
+                      <Label htmlFor={`q-option-${letter}`}><T>{"Option "}</T><T>{letter}</T></Label>
                       <Input
                         id={`q-option-${letter}`}
                         required
@@ -523,7 +549,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="q-answer">Correct answer</Label>
+                <Label htmlFor="q-answer"><T>{"Correct answer"}</T></Label>
                 <Select
                   value={form.correctAnswer}
                   onValueChange={(value) =>
@@ -536,7 +562,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                   <SelectContent>
                     {answerOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        <T>{option.label}</T>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -549,14 +575,12 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                   checked={form.active}
                   onCheckedChange={(checked) => setForm((f) => ({ ...f, active: checked }))}
                 />
-                <Label htmlFor="q-active" className="cursor-pointer">
-                  Active (included in new tests)
-                </Label>
+                <Label htmlFor="q-active" className="cursor-pointer"><T>{" Active (included in new tests) "}</T></Label>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="q-explanation">Explanation (optional)</Label>
+              <Label htmlFor="q-explanation"><T>{"Explanation (optional)"}</T></Label>
               <Textarea
                 id="q-explanation"
                 value={form.explanation}
@@ -566,11 +590,9 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                Cancel
-              </Button>
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}><T>{" Cancel "}</T></Button>
               <Button type="submit" loading={busy}>
-                {editingId ? "Save changes" : "Add question"}
+                <T>{editingId ? "Save changes" : "Add question"}</T>
               </Button>
             </DialogFooter>
           </form>
@@ -581,31 +603,25 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
       <Dialog open={importOpen} onOpenChange={(open) => !busy && setImportOpen(open)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Bulk import questions</DialogTitle>
-            <DialogDescription>
-              Upload a CSV with the columns shown in the template. Rows that fail validation are
-              reported and skipped; valid rows are still imported.
-            </DialogDescription>
+            <DialogTitle><T>{"Bulk import questions"}</T></DialogTitle>
+            <DialogDescription><T>{" Upload a CSV with the columns shown in the template. Rows that fail validation are reported and skipped; valid rows are still imported. "}</T></DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleImport} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="csv">CSV file</Label>
+              <Label htmlFor="csv"><T>{"CSV file"}</T></Label>
               <Input id="csv" name="csv" type="file" accept=".csv,text/csv" required />
             </div>
 
-            <Button type="button" variant="outline" size="sm" onClick={downloadTemplate}>
-              Download template
-            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={downloadTemplate}><T>{" Download template "}</T></Button>
 
             {importErrors.length > 0 ? (
               <Alert variant="warning">
                 <AlertDescription>
-                  <p className="mb-2 font-medium">{importErrors.length} row(s) were skipped:</p>
+                  <p className="mb-2 font-medium"><T>{importErrors.length}</T><T>{" row(s) were skipped:"}</T></p>
                   <ul className="max-h-40 space-y-1 overflow-y-auto text-xs">
                     {importErrors.slice(0, 25).map((issue) => (
-                      <li key={issue.row}>
-                        Row {issue.row}: {issue.message}
+                      <li key={issue.row}><T>{" Row "}</T><T>{issue.row}</T><T>{": "}</T><T>{issue.message}</T>
                       </li>
                     ))}
                   </ul>
@@ -614,12 +630,9 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
             ) : null}
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setImportOpen(false)}>
-                Close
-              </Button>
+              <Button type="button" variant="outline" onClick={() => setImportOpen(false)}><T>{" Close "}</T></Button>
               <Button type="submit" loading={busy}>
-                <Upload className="h-4 w-4" /> Import
-              </Button>
+                <Upload className="h-4 w-4" /><T>{" Import "}</T></Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -628,14 +641,11 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
       <AlertDialog open={Boolean(deleting)} onOpenChange={(open) => !open && setDeleting(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this question?</AlertDialogTitle>
-            <AlertDialogDescription>
-              It will be removed from the bank and from any past attempts that included it.
-              Deactivating instead keeps historic results intact.
-            </AlertDialogDescription>
+            <AlertDialogTitle><T>{"Delete this question?"}</T></AlertDialogTitle>
+            <AlertDialogDescription><T>{" It will be removed from the bank and from any past attempts that included it. Deactivating instead keeps historic results intact. "}</T></AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel><T>{"Cancel"}</T></AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(event) => {
@@ -643,7 +653,7 @@ export function QuestionManager({ questions }: { questions: AdminQuestionRow[] }
                 void confirmDelete();
               }}
             >
-              {busy ? "Deleting…" : "Delete"}
+              <T>{busy ? "Deleting…" : "Delete"}</T>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
@@ -12,7 +14,7 @@ import {
   Flag,
   Send,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { saveAnswerAction, submitTestAction } from "@/actions/test";
 import { runAction } from "@/lib/run-action";
@@ -205,20 +207,18 @@ export function TestRunner({ test }: { test: ActiveTest }) {
                 aria-live="off"
                 aria-label={`Time remaining ${formatDuration(remaining)}`}
               >
-                {formatDuration(remaining)}
+                <T>{formatDuration(remaining)}</T>
               </span>
             </div>
 
             <div className="text-sm">
-              <p className="font-semibold">
-                Question {index + 1} of {total}
+              <p className="font-semibold"><T>{" Question "}</T><T>{index + 1}</T><T>{" of "}</T><T>{total}</T>
               </p>
               <p className="text-muted-foreground">
-                {answeredCount} answered · {total - answeredCount} left
-                {flaggedCount > 0 ? ` · ${flaggedCount} flagged` : ""}
+                <T>{answeredCount}</T><T>{" answered · "}</T><T>{total - answeredCount}</T><T>{" left "}</T><T>{flaggedCount > 0 ? ` · ${flaggedCount} flagged` : ""}</T>
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {hindi ? SUBJECT_LABELS_HI[current.subject] : SUBJECT_LABELS[current.subject]}
+                <T>{hindi ? SUBJECT_LABELS_HI[current.subject] : SUBJECT_LABELS[current.subject]}</T>
               </p>
             </div>
           </div>
@@ -230,8 +230,7 @@ export function TestRunner({ test }: { test: ActiveTest }) {
               unavailable={noHindi}
             />
             <Button onClick={() => setReviewOpen(true)} disabled={submitting}>
-              <Send className="h-4 w-4" /> Review &amp; submit
-            </Button>
+              <Send className="h-4 w-4" /><T>{" Review & submit "}</T></Button>
           </div>
         </div>
 
@@ -258,15 +257,14 @@ export function TestRunner({ test }: { test: ActiveTest }) {
         <Card className="p-6">
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <Badge variant="secondary">
-              {hindi ? SUBJECT_LABELS_HI[current.subject] : SUBJECT_LABELS[current.subject]}
+              <T>{hindi ? SUBJECT_LABELS_HI[current.subject] : SUBJECT_LABELS[current.subject]}</T>
             </Badge>
-            <Badge variant="outline">1 mark</Badge>
+            <Badge variant="outline"><T>{"1 mark"}</T></Badge>
             {saving === current.questionId ? (
-              <Badge variant="outline">Saving…</Badge>
+              <Badge variant="outline"><T>{"Saving…"}</T></Badge>
             ) : answers[current.questionId] ? (
               <Badge variant="success">
-                <Check className="h-3 w-3" /> Saved
-              </Badge>
+                <Check className="h-3 w-3" /><T>{" Saved "}</T></Badge>
             ) : null}
 
             <Button
@@ -282,7 +280,7 @@ export function TestRunner({ test }: { test: ActiveTest }) {
               }
             >
               <Flag className="h-4 w-4" />
-              {flagged[current.questionId] ? "Flagged" : "Flag for review"}
+              <T>{flagged[current.questionId] ? "Flagged" : "Flag for review"}</T>
             </Button>
           </div>
 
@@ -293,19 +291,17 @@ export function TestRunner({ test }: { test: ActiveTest }) {
               hindi && current.questionHi && "font-devanagari",
             )}
           >
-            {stem}
+            <T>{stem}</T>
           </h2>
 
           {/* When Hindi is selected but this question has none, show the
               English text and say so rather than falling back silently. */}
           {noHindi ? (
-            <p className="mt-2 text-xs text-muted-foreground">
-              इस प्रश्न का हिन्दी अनुवाद उपलब्ध नहीं है, इसलिए अंग्रेज़ी में दिखाया गया है.
-            </p>
+            <p className="mt-2 text-xs text-muted-foreground"><T>{" इस प्रश्न का हिन्दी अनुवाद उपलब्ध नहीं है, इसलिए अंग्रेज़ी में दिखाया गया है. "}</T></p>
           ) : null}
 
           <fieldset className="mt-6 space-y-3">
-            <legend className="sr-only">Choose one answer</legend>
+            <legend className="sr-only"><T>{"Choose one answer"}</T></legend>
             {current.options.map((option, optionIndex) => {
               const selected = answers[current.questionId] === option.value;
               const label = hindi ? (option.labelHi ?? option.label) : option.label;
@@ -338,26 +334,23 @@ export function TestRunner({ test }: { test: ActiveTest }) {
                         : "border-muted-foreground/40 text-muted-foreground",
                     )}
                   >
-                    {String.fromCharCode(65 + optionIndex)}
+                    <T>{String.fromCharCode(65 + optionIndex)}</T>
                   </span>
                   <span
                     lang={inHindi ? "hi" : "en"}
                     className={cn("text-sm leading-relaxed", inHindi && "font-devanagari")}
                   >
-                    {label}
+                    <T>{label}</T>
                   </span>
                 </label>
               );
             })}
           </fieldset>
 
-          <p className="mt-4 text-xs text-muted-foreground">
-            Shortcuts: press <kbd className="rounded border px-1">1</kbd>–
-            <kbd className="rounded border px-1">4</kbd> to answer,{" "}
-            <kbd className="rounded border px-1">←</kbd>{" "}
-            <kbd className="rounded border px-1">→</kbd> to move,{" "}
-            <kbd className="rounded border px-1">F</kbd> to flag.
-          </p>
+          <p className="mt-4 text-xs text-muted-foreground"><T>{" Shortcuts: press "}</T><kbd className="rounded border px-1"><T>{"1"}</T></kbd><T>{"– "}</T><kbd className="rounded border px-1"><T>{"4"}</T></kbd><T>{" to answer,"}</T><T>{" "}</T>
+            <kbd className="rounded border px-1"><T>{"←"}</T></kbd><T>{" "}</T>
+            <kbd className="rounded border px-1"><T>{"→"}</T></kbd><T>{" to move,"}</T><T>{" "}</T>
+            <kbd className="rounded border px-1"><T>{"F"}</T></kbd><T>{" to flag. "}</T></p>
 
           <div className="mt-6 flex items-center justify-between gap-3">
             <Button
@@ -365,16 +358,13 @@ export function TestRunner({ test }: { test: ActiveTest }) {
               onClick={() => setIndex((i) => Math.max(0, i - 1))}
               disabled={index === 0}
             >
-              <ChevronLeft className="h-4 w-4" /> Previous
-            </Button>
+              <ChevronLeft className="h-4 w-4" /><T>{" Previous "}</T></Button>
 
             {index === total - 1 ? (
               <Button onClick={() => setReviewOpen(true)}>
-                <Send className="h-4 w-4" /> Finish
-              </Button>
+                <Send className="h-4 w-4" /><T>{" Finish "}</T></Button>
             ) : (
-              <Button onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}>
-                Next <ChevronRight className="h-4 w-4" />
+              <Button onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}><T>{" Next "}</T><ChevronRight className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -384,8 +374,8 @@ export function TestRunner({ test }: { test: ActiveTest }) {
         {/* Palette                                                       */}
         {/* ------------------------------------------------------------ */}
         <Card className="h-fit p-5 lg:sticky lg:top-44">
-          <h2 className="text-sm font-semibold">Question palette</h2>
-          <p className="mt-1 text-xs text-muted-foreground">Jump to any question at any time.</p>
+          <h2 className="text-sm font-semibold"><T>{"Question palette"}</T></h2>
+          <p className="mt-1 text-xs text-muted-foreground"><T>{"Jump to any question at any time."}</T></p>
 
           <ol className="mt-4 grid grid-cols-5 gap-2">
             {test.questions.map((question, questionIndex) => {
@@ -410,7 +400,7 @@ export function TestRunner({ test }: { test: ActiveTest }) {
                         : "border-border text-muted-foreground hover:bg-accent",
                     )}
                   >
-                    {questionIndex + 1}
+                    <T>{questionIndex + 1}</T>
                   </button>
                   {isFlagged ? (
                     <span
@@ -428,44 +418,36 @@ export function TestRunner({ test }: { test: ActiveTest }) {
           <dl className="mt-5 space-y-2 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
               <span className="h-3 w-3 rounded border border-primary/50 bg-primary" aria-hidden />
-              <dt>Answered</dt>
-              <dd className="ml-auto font-medium text-foreground">{answeredCount}</dd>
+              <dt><T>{"Answered"}</T></dt>
+              <dd className="ml-auto font-medium text-foreground"><T>{answeredCount}</T></dd>
             </div>
             <div className="flex items-center gap-2">
               <Circle className="h-3 w-3" aria-hidden />
-              <dt>Not answered</dt>
-              <dd className="ml-auto font-medium text-foreground">{total - answeredCount}</dd>
+              <dt><T>{"Not answered"}</T></dt>
+              <dd className="ml-auto font-medium text-foreground"><T>{total - answeredCount}</T></dd>
             </div>
             <div className="flex items-center gap-2">
               <Flag className="h-3 w-3 text-gold" aria-hidden />
-              <dt>Flagged</dt>
-              <dd className="ml-auto font-medium text-foreground">{flaggedCount}</dd>
+              <dt><T>{"Flagged"}</T></dt>
+              <dd className="ml-auto font-medium text-foreground"><T>{flaggedCount}</T></dd>
             </div>
           </dl>
 
-          <Button className="mt-5 w-full" onClick={() => setReviewOpen(true)} disabled={submitting}>
-            Submit test
-          </Button>
+          <Button className="mt-5 w-full" onClick={() => setReviewOpen(true)} disabled={submitting}><T>{" Submit test "}</T></Button>
         </Card>
       </div>
 
       <AlertDialog open={reviewOpen} onOpenChange={setReviewOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Submit your test?</AlertDialogTitle>
+            <AlertDialogTitle><T>{"Submit your test?"}</T></AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
-                <p>
-                  You have answered <strong>{answeredCount}</strong> of {total} questions.
-                  {unanswered.length > 0 ? (
+                <p><T>{" You have answered "}</T><strong><T>{answeredCount}</T></strong><T>{" of "}</T><T>{total}</T><T>{" questions. "}</T>{unanswered.length > 0 ? (
                     <>
-                      {" "}
+                      <T>{" "}</T>
                       <span className="text-destructive">
-                        {unanswered.length} question{unanswered.length === 1 ? " is" : "s are"} still
-                        blank
-                      </span>{" "}
-                      and there is no negative marking, so it is always worth guessing.
-                    </>
+                        <T>{unanswered.length}</T><T>{" question"}</T><T>{unanswered.length === 1 ? " is" : "s are"}</T><T>{" still blank "}</T></span><T>{" "}</T><T>{" and there is no negative marking, so it is always worth guessing. "}</T></>
                   ) : (
                     " Everything is answered."
                   )}
@@ -482,8 +464,7 @@ export function TestRunner({ test }: { test: ActiveTest }) {
                           setReviewOpen(false);
                         }}
                         className="rounded-md border px-2 py-1 text-xs hover:bg-accent"
-                      >
-                        Q{question.index + 1}
+                      ><T>{" Q"}</T><T>{question.index + 1}</T>
                       </button>
                     ))}
                   </div>
@@ -492,27 +473,24 @@ export function TestRunner({ test }: { test: ActiveTest }) {
                 {flaggedCount > 0 ? (
                   <p className="flex items-center gap-2 text-xs">
                     <Flag className="h-3.5 w-3.5 shrink-0 text-gold" aria-hidden />
-                    {flaggedCount} question{flaggedCount === 1 ? " is" : "s are"} flagged for review.
-                  </p>
+                    <T>{flaggedCount}</T><T>{" question"}</T><T>{flaggedCount === 1 ? " is" : "s are"}</T><T>{" flagged for review. "}</T></p>
                 ) : null}
 
                 <p className="flex items-start gap-2 rounded-lg bg-muted p-3 text-xs">
-                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-                  Once submitted your answers are final and cannot be changed. You need{" "}
-                  {PASS_PERCENTAGE}% to pass.
-                </p>
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden /><T>{" Once submitted your answers are final and cannot be changed. You need"}</T><T>{" "}</T>
+                  <T>{PASS_PERCENTAGE}</T><T>{"% to pass. "}</T></p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Keep working</AlertDialogCancel>
+            <AlertDialogCancel><T>{"Keep working"}</T></AlertDialogCancel>
             <AlertDialogAction
               onClick={(event) => {
                 event.preventDefault();
                 void submit(false);
               }}
             >
-              {submitting ? "Submitting…" : "Submit now"}
+              <T>{submitting ? "Submitting…" : "Submit now"}</T>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

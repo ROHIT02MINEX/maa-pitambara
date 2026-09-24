@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useTheme } from "next-themes";
@@ -32,14 +34,11 @@ export function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
-          <Sun className="h-4 w-4" /> Light
-        </DropdownMenuItem>
+          <Sun className="h-4 w-4" /><T>{" Light "}</T></DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
-          <Moon className="h-4 w-4" /> Dark
-        </DropdownMenuItem>
+          <Moon className="h-4 w-4" /><T>{" Dark "}</T></DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
-          <Monitor className="h-4 w-4" /> System
-        </DropdownMenuItem>
+          <Monitor className="h-4 w-4" /><T>{" System "}</T></DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

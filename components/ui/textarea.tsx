@@ -1,4 +1,6 @@
+"use client";
 import * as React from "react";
+import { useTranslatedProps } from "@/hooks/use-translated-props";
 import { cn } from "@/lib/utils";
 
 export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
@@ -15,7 +17,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         className,
       )}
       ref={ref}
-      {...props}
+    {...useTranslatedProps(props)}
     />
   ),
 );

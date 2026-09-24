@@ -1,4 +1,8 @@
 "use client";
+import { useLanguage } from "@/hooks/use-language";
+import { translate } from "@/lib/i18n";
+import { T } from "@/components/translated-text";
+
 
 import {
   Bar,
@@ -39,8 +43,10 @@ export function OccupationUsersChart({
 }: {
   data: { occupation: Occupation; users: number }[];
 }) {
+  const { language } = useLanguage();
+  const t = (text: string) => translate(text, language);
   const chartData = data.map((row) => ({
-    name: OCCUPATION_LABELS[row.occupation],
+    name: t(OCCUPATION_LABELS[row.occupation]),
     value: row.users,
   }));
   const hasData = chartData.some((row) => row.value > 0);
@@ -48,8 +54,8 @@ export function OccupationUsersChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Users by occupation</CardTitle>
-        <CardDescription>How the cohort is distributed across the four trades.</CardDescription>
+        <CardTitle><T>{"Users by occupation"}</T></CardTitle>
+        <CardDescription><T>{"How the cohort is distributed across the four trades."}</T></CardDescription>
       </CardHeader>
       <CardContent>
         {!hasData ? (
@@ -84,8 +90,10 @@ export function OccupationScoresChart({
 }: {
   data: { occupation: Occupation; average: number; attempts: number }[];
 }) {
+  const { language } = useLanguage();
+  const t = (text: string) => translate(text, language);
   const chartData = data.map((row) => ({
-    name: OCCUPATION_LABELS[row.occupation],
+    name: t(OCCUPATION_LABELS[row.occupation]),
     average: row.average,
     attempts: row.attempts,
   }));
@@ -94,8 +102,8 @@ export function OccupationScoresChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Average score by occupation</CardTitle>
-        <CardDescription>Mean percentage across all completed attempts.</CardDescription>
+        <CardTitle><T>{"Average score by occupation"}</T></CardTitle>
+        <CardDescription><T>{"Mean percentage across all completed attempts."}</T></CardDescription>
       </CardHeader>
       <CardContent>
         {!hasData ? (
@@ -129,7 +137,7 @@ export function OccupationScoresChart({
 function Empty({ message }: { message: string }) {
   return (
     <div className="grid h-[220px] place-items-center rounded-lg border border-dashed">
-      <p className="px-6 text-center text-sm text-muted-foreground">{message}</p>
+      <p className="px-6 text-center text-sm text-muted-foreground"><T>{message}</T></p>
     </div>
   );
 }

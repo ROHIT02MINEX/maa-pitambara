@@ -1,9 +1,11 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { Download, FileSpreadsheet, FileText, Table2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -77,17 +79,16 @@ export function ExportButtons({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" loading={Boolean(busy)}>
-          <Download className="h-4 w-4" /> Export
-        </Button>
+          <Download className="h-4 w-4" /><T>{" Export "}</T></Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Download current view</DropdownMenuLabel>
+        <DropdownMenuLabel><T>{"Download current view"}</T></DropdownMenuLabel>
         <DropdownMenuSeparator />
         {formats.map((format) => {
           const Icon = meta[format].icon;
           return (
             <DropdownMenuItem key={format} onSelect={() => download(format)}>
-              <Icon /> {meta[format].label}
+              <Icon /> <T>{meta[format].label}</T>
             </DropdownMenuItem>
           );
         })}

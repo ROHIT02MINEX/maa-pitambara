@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
@@ -13,7 +15,7 @@ import {
   RefreshCw,
   Trash2,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { createPdfAction, deletePdfAction, updatePdfAction } from "@/actions/admin/pdfs";
 import { runAction } from "@/lib/run-action";
@@ -243,75 +245,64 @@ export function PdfManager({
     <>
       <div className="flex justify-end">
         <Button onClick={openCreate} disabled={!storageReady}>
-          <Plus className="h-4 w-4" /> Upload PDF
-        </Button>
+          <Plus className="h-4 w-4" /><T>{" Upload PDF "}</T></Button>
       </div>
 
       {!storageReady ? (
         <Alert variant="warning">
-          <AlertDescription>
-            Supabase Storage is not configured, so uploading is disabled. Set{" "}
-            <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> and{" "}
-            <code>SUPABASE_SERVICE_ROLE_KEY</code>, then create the storage bucket described in the
-            README.
-          </AlertDescription>
+          <AlertDescription><T>{" Supabase Storage is not configured, so uploading is disabled. Set"}</T><T>{" "}</T>
+            <code><T>{"NEXT_PUBLIC_SUPABASE_URL"}</T></code><T>{", "}</T><code><T>{"NEXT_PUBLIC_SUPABASE_ANON_KEY"}</T></code><T>{" and"}</T><T>{" "}</T>
+            <code><T>{"SUPABASE_SERVICE_ROLE_KEY"}</T></code><T>{", then create the storage bucket described in the README. "}</T></AlertDescription>
         </Alert>
       ) : null}
 
       {pdfs.length === 0 ? (
-        <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-          No documents match these filters.
-        </p>
+        <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground"><T>{" No documents match these filters. "}</T></p>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Occupation</TableHead>
-              <TableHead>Topic</TableHead>
-              <TableHead>Size</TableHead>
-              <TableHead>Engagement</TableHead>
-              <TableHead>Uploaded</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead><T>{"Title"}</T></TableHead>
+              <TableHead><T>{"Occupation"}</T></TableHead>
+              <TableHead><T>{"Topic"}</T></TableHead>
+              <TableHead><T>{"Size"}</T></TableHead>
+              <TableHead><T>{"Engagement"}</T></TableHead>
+              <TableHead><T>{"Uploaded"}</T></TableHead>
+              <TableHead className="text-right"><T>{"Actions"}</T></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {pdfs.map((pdf) => (
               <TableRow key={pdf.id}>
                 <TableCell className="max-w-[280px]">
-                  <p className="truncate font-medium">{pdf.title}</p>
+                  <p className="truncate font-medium"><T>{pdf.title}</T></p>
                   {pdf.description ? (
-                    <p className="truncate text-xs text-muted-foreground">{pdf.description}</p>
+                    <p className="truncate text-xs text-muted-foreground"><T>{pdf.description}</T></p>
                   ) : null}
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {pdf.builtIn ? (
-                      <Badge variant="outline" className="text-[11px]">
-                        Official, read only
-                      </Badge>
+                      <Badge variant="outline" className="text-[11px]"><T>{" Official, read only "}</T></Badge>
                     ) : null}
                     {pdf._count.questions > 0 ? (
                       <Badge variant="outline" className="text-[11px]">
-                        {pdf._count.questions} question(s)
-                      </Badge>
+                        <T>{pdf._count.questions}</T><T>{" question(s) "}</T></Badge>
                     ) : null}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{OCCUPATION_LABELS[pdf.occupation]}</Badge>
+                  <Badge variant="secondary"><T>{OCCUPATION_LABELS[pdf.occupation]}</T></Badge>
                 </TableCell>
-                <TableCell className="text-sm">{pdf.topic ?? "-"}</TableCell>
+                <TableCell className="text-sm"><T>{pdf.topic ?? "-"}</T></TableCell>
                 <TableCell className="whitespace-nowrap text-sm">
-                  {formatBytes(pdf.fileSize)}
+                  <T>{formatBytes(pdf.fileSize)}</T>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-                  {pdf._count.views} view(s)
-                  <br />
-                  {pdf._count.bookmarks} bookmark(s)
-                </TableCell>
+                  <T>{pdf._count.views}</T><T>{" view(s) "}</T><br />
+                  <T>{pdf._count.bookmarks}</T><T>{" bookmark(s) "}</T></TableCell>
                 <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-                  {formatDate(pdf.createdAt)}
+                  <T>{formatDate(pdf.createdAt)}</T>
                   <br />
-                  {pdf.uploadedBy?.name ?? pdf.uploadedBy?.email ?? "-"}
+                  <T>{pdf.uploadedBy?.name ?? pdf.uploadedBy?.email ?? "-"}</T>
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
@@ -323,28 +314,24 @@ export function PdfManager({
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild>
                         <a href={pdf.fileUrl} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink /> Open
-                        </a>
+                          <ExternalLink /><T>{" Open "}</T></a>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <a href={pdf.fileUrl} download target="_blank" rel="noopener noreferrer">
-                          <Download /> Download
-                        </a>
+                          <Download /><T>{" Download "}</T></a>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       {/* Built-in banks are owned by `npm run db:import-material`;
                           the server rejects edits to them, so the UI does not
                           offer an action that can only fail. */}
                       <DropdownMenuItem disabled={pdf.builtIn} onSelect={() => openEdit(pdf)}>
-                        <Pencil /> Edit / replace file
-                      </DropdownMenuItem>
+                        <Pencil /><T>{" Edit / replace file "}</T></DropdownMenuItem>
                       <DropdownMenuItem
                         disabled={pdf.builtIn}
                         className="text-destructive focus:text-destructive"
                         onSelect={() => setDeleting(pdf)}
                       >
-                        <Trash2 /> Delete
-                      </DropdownMenuItem>
+                        <Trash2 /><T>{" Delete "}</T></DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -357,23 +344,23 @@ export function PdfManager({
       <Dialog open={dialogOpen} onOpenChange={(open) => !busy && setDialogOpen(open)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit document" : "Upload a document"}</DialogTitle>
+            <DialogTitle><T>{editingId ? "Edit document" : "Upload a document"}</T></DialogTitle>
             <DialogDescription>
-              {editingId
+              <T>{editingId
                 ? "Update the details, and optionally replace the file itself."
-                : "The PDF is uploaded straight to storage; only its metadata passes through the server."}
+                : "The PDF is uploaded straight to storage; only its metadata passes through the server."}</T>
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error ? (
               <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription><T>{error}</T></AlertDescription>
               </Alert>
             ) : null}
 
             <div className="space-y-2">
-              <Label htmlFor="pdf-title">Title</Label>
+              <Label htmlFor="pdf-title"><T>{"Title"}</T></Label>
               <Input
                 id="pdf-title"
                 required
@@ -385,7 +372,7 @@ export function PdfManager({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="pdf-occupation">Occupation</Label>
+                <Label htmlFor="pdf-occupation"><T>{"Occupation"}</T></Label>
                 <Select
                   value={form.occupation}
                   onValueChange={(value) =>
@@ -398,7 +385,7 @@ export function PdfManager({
                   <SelectContent>
                     {OCCUPATIONS.map((occupation) => (
                       <SelectItem key={occupation} value={occupation}>
-                        {OCCUPATION_LABELS[occupation]}
+                        <T>{OCCUPATION_LABELS[occupation]}</T>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -406,22 +393,19 @@ export function PdfManager({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="pdf-topic">Topic (optional)</Label>
+                <Label htmlFor="pdf-topic"><T>{"Topic (optional)"}</T></Label>
                 <Input
                   id="pdf-topic"
                   value={form.topic}
                   onChange={(event) => setForm((f) => ({ ...f, topic: event.target.value }))}
                   placeholder="Safety"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Matching the topic used on questions powers the &ldquo;recommended
-                  reading&rdquo; after a test.
-                </p>
+                <p className="text-xs text-muted-foreground"><T>{" Matching the topic used on questions powers the “recommended reading” after a test. "}</T></p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="pdf-description">Description (optional)</Label>
+              <Label htmlFor="pdf-description"><T>{"Description (optional)"}</T></Label>
               <Textarea
                 id="pdf-description"
                 value={form.description}
@@ -432,7 +416,7 @@ export function PdfManager({
 
             <div className="space-y-2">
               <Label htmlFor="pdf-file">
-                {editingId ? "Replace file (optional)" : "PDF file"}
+                <T>{editingId ? "Replace file (optional)" : "PDF file"}</T>
               </Label>
               <Input
                 id="pdf-file"
@@ -443,19 +427,17 @@ export function PdfManager({
                   setForm((f) => ({ ...f, file: event.target.files?.[0] ?? null }))
                 }
               />
-              <p className="text-xs text-muted-foreground">PDF only, up to 25 MB.</p>
+              <p className="text-xs text-muted-foreground"><T>{"PDF only, up to 25 MB."}</T></p>
               {form.file ? (
                 <p className="flex items-center gap-1.5 text-xs">
-                  <FileUp className="h-3 w-3" aria-hidden /> {form.file.name} (
-                  {formatBytes(form.file.size)})
-                </p>
+                  <FileUp className="h-3 w-3" aria-hidden /> <T>{form.file.name}</T><T>{" ( "}</T><T>{formatBytes(form.file.size)}</T><T>{") "}</T></p>
               ) : null}
             </div>
 
             {uploadPct !== null ? (
               <div className="space-y-1.5">
                 <Progress value={uploadPct} aria-label="Upload progress" />
-                <p className="text-xs text-muted-foreground">Uploading…</p>
+                <p className="text-xs text-muted-foreground"><T>{"Uploading…"}</T></p>
               </div>
             ) : null}
 
@@ -465,18 +447,14 @@ export function PdfManager({
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
                 disabled={busy}
-              >
-                Cancel
-              </Button>
+              ><T>{" Cancel "}</T></Button>
               <Button type="submit" loading={busy}>
                 {editingId ? (
                   <>
-                    <RefreshCw className="h-4 w-4" /> Save changes
-                  </>
+                    <RefreshCw className="h-4 w-4" /><T>{" Save changes "}</T></>
                 ) : (
                   <>
-                    <FileUp className="h-4 w-4" /> Publish document
-                  </>
+                    <FileUp className="h-4 w-4" /><T>{" Publish document "}</T></>
                 )}
               </Button>
             </DialogFooter>
@@ -487,14 +465,11 @@ export function PdfManager({
       <AlertDialog open={Boolean(deleting)} onOpenChange={(open) => !open && setDeleting(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this document?</AlertDialogTitle>
-            <AlertDialogDescription>
-              &ldquo;{deleting?.title}&rdquo; will be removed from the portal and deleted from
-              storage, along with its bookmarks and view history. This cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogTitle><T>{"Delete this document?"}</T></AlertDialogTitle>
+            <AlertDialogDescription><T>{" “"}</T><T>{deleting?.title}</T><T>{"” will be removed from the portal and deleted from storage, along with its bookmarks and view history. This cannot be undone. "}</T></AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel><T>{"Cancel"}</T></AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(event) => {
@@ -502,7 +477,7 @@ export function PdfManager({
                 void confirmDelete();
               }}
             >
-              {busy ? "Deleting…" : "Delete"}
+              <T>{busy ? "Deleting…" : "Delete"}</T>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

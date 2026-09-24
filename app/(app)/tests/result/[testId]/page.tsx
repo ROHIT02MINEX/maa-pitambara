@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -73,15 +75,14 @@ export default async function TestResultPage({
               </span>
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">
-                  {passed ? "You passed!" : "Not this time"}
+                  <T>{passed ? "You passed!" : "Not this time"}</T>
                 </h1>
                 <p className="mt-1 max-w-xl text-primary-foreground/85">
-                  {passed
+                  <T>{passed
                     ? `You scored ${result.percentage}%, above the ${PASS_PERCENTAGE}% pass mark.`
-                    : `You scored ${result.percentage}%. You need ${PASS_PERCENTAGE}% to pass. The study plan below is built from the questions you missed.`}
+                    : `You scored ${result.percentage}%. You need ${PASS_PERCENTAGE}% to pass. The study plan below is built from the questions you missed.`}</T>
                 </p>
-                <p className="mt-2 text-xs text-primary-foreground/70">
-                  Submitted {result.submittedAt ? formatDate(result.submittedAt, true) : "-"}
+                <p className="mt-2 text-xs text-primary-foreground/70"><T>{" Submitted "}</T><T>{result.submittedAt ? formatDate(result.submittedAt, true) : "-"}</T>
                 </p>
               </div>
             </div>
@@ -95,10 +96,9 @@ export default async function TestResultPage({
 
           <div className="mt-7 space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">
-                Score {result.score} / {result.totalQuestions}
+              <span className="font-medium"><T>{" Score "}</T><T>{result.score}</T><T>{" / "}</T><T>{result.totalQuestions}</T>
               </span>
-              <span className="text-primary-foreground/75">Pass mark {PASS_PERCENTAGE}%</span>
+              <span className="text-primary-foreground/75"><T>{"Pass mark "}</T><T>{PASS_PERCENTAGE}</T><T>{"%"}</T></span>
             </div>
             <div
               className="h-2.5 w-full overflow-hidden rounded-full bg-white/20"
@@ -119,12 +119,10 @@ export default async function TestResultPage({
         <div className="flex flex-wrap gap-2 border-t bg-card p-4">
           <Button asChild variant="outline">
             <Link href="/learn">
-              <BookOpen className="h-4 w-4" /> Study material
-            </Link>
+              <BookOpen className="h-4 w-4" /><T>{" Study material "}</T></Link>
           </Button>
           <Button asChild>
-            <Link href="/tests">
-              Take another test <ArrowRight className="h-4 w-4" />
+            <Link href="/tests"><T>{" Take another test "}</T><ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
@@ -154,10 +152,8 @@ export default async function TestResultPage({
       {result.subjectBreakdown.length > 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>Score by subject</CardTitle>
-            <CardDescription>
-              How you did across the four papers of the trade test.
-            </CardDescription>
+            <CardTitle><T>{"Score by subject"}</T></CardTitle>
+            <CardDescription><T>{" How you did across the four papers of the trade test. "}</T></CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="grid gap-4 sm:grid-cols-2">
@@ -166,9 +162,9 @@ export default async function TestResultPage({
                 return (
                   <li key={row.subject} className="rounded-lg border p-4">
                     <div className="flex items-baseline justify-between gap-3">
-                      <p className="text-sm font-medium">{SUBJECT_LABELS[row.subject]}</p>
+                      <p className="text-sm font-medium"><T>{SUBJECT_LABELS[row.subject]}</T></p>
                       <p className="shrink-0 text-sm tabular-nums text-muted-foreground">
-                        {row.correct}/{row.total}
+                        <T>{row.correct}</T><T>{"/"}</T><T>{row.total}</T>
                       </p>
                     </div>
                     <Progress
@@ -192,13 +188,8 @@ export default async function TestResultPage({
         <Card className="border-gold/40">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-gold" aria-hidden /> Your study plan
-            </CardTitle>
-            <CardDescription>
-              Built from the {result.wrongCount + result.unansweredCount} question
-              {result.wrongCount + result.unansweredCount === 1 ? "" : "s"} you missed. Each one
-              points back to the document and pages it came from.
-            </CardDescription>
+              <Target className="h-5 w-5 text-gold" aria-hidden /><T>{" Your study plan "}</T></CardTitle>
+            <CardDescription><T>{" Built from the "}</T><T>{result.wrongCount + result.unansweredCount}</T><T>{" question "}</T><T>{result.wrongCount + result.unansweredCount === 1 ? "" : "s"}</T><T>{" you missed. Each one points back to the document and pages it came from. "}</T></CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="grid gap-3 lg:grid-cols-2">
@@ -214,34 +205,32 @@ export default async function TestResultPage({
                         <FileText className="h-5 w-5" aria-hidden />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium leading-snug">{entry.title}</p>
+                        <p className="font-medium leading-snug"><T>{entry.title}</T></p>
                         {entry.titleHi ? (
                           <p lang="hi" className="font-devanagari text-xs text-muted-foreground">
-                            {entry.titleHi}
+                            <T>{entry.titleHi}</T>
                           </p>
                         ) : null}
                       </div>
                       <Badge variant="secondary" className="shrink-0">
-                        {entry.missed} missed
-                      </Badge>
+                        <T>{entry.missed}</T><T>{" missed "}</T></Badge>
                     </div>
 
                     {pages ? (
                       <p className="mt-3 text-sm">
-                        <span className="text-muted-foreground">Read page{entry.pages.length === 1 ? "" : "s"}: </span>
-                        <span className="font-medium tabular-nums">{pages}</span>
+                        <span className="text-muted-foreground"><T>{"Read page"}</T><T>{entry.pages.length === 1 ? "" : "s"}</T><T>{": "}</T></span>
+                        <span className="font-medium tabular-nums"><T>{pages}</T></span>
                       </p>
                     ) : null}
 
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {entry.topics.slice(0, 4).map((topic) => (
                         <Badge key={topic} variant="outline" className="text-xs">
-                          {topic}
+                          <T>{topic}</T>
                         </Badge>
                       ))}
                       {entry.topics.length > 4 ? (
-                        <Badge variant="outline" className="text-xs">
-                          +{entry.topics.length - 4}
+                        <Badge variant="outline" className="text-xs"><T>{" +"}</T><T>{entry.topics.length - 4}</T>
                         </Badge>
                       ) : null}
                     </div>
@@ -259,12 +248,12 @@ export default async function TestResultPage({
                             rel="noopener noreferrer"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
-                            {entry.pages[0] ? `Start at page ${entry.pages[0]}` : "Open document"}
+                            <T>{entry.pages[0] ? `Start at page ${entry.pages[0]}` : "Open document"}</T>
                           </a>
                         </Button>
                         {entry.pdfId ? (
                           <Button asChild size="sm" variant="outline">
-                            <Link href={`/learn?highlight=${entry.pdfId}`}>Find in library</Link>
+                            <Link href={`/learn?highlight=${entry.pdfId}`}><T>{"Find in library"}</T></Link>
                           </Button>
                         ) : null}
                       </div>

@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -36,17 +38,14 @@ export default async function AdminAnalyticsPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight">Test analytics</h1>
-        <p className="mt-1 text-muted-foreground">
-          Every submitted attempt, with the learner&apos;s contact details and result. Filters apply
-          to exports too.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Test analytics"}</T></h1>
+        <p className="mt-1 text-muted-foreground"><T>{" Every submitted attempt, with the learner's contact details and result. Filters apply to exports too. "}</T></p>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle>Attempts</CardTitle>
-          <CardDescription>{result.total} attempt(s) match the current filters.</CardDescription>
+          <CardTitle><T>{"Attempts"}</T></CardTitle>
+          <CardDescription><T>{result.total}</T><T>{" attempt(s) match the current filters."}</T></CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <Suspense fallback={<TableSkeleton rows={1} cols={5} />}>
@@ -80,52 +79,50 @@ export default async function AdminAnalyticsPage({
           </Suspense>
 
           {result.items.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-              No attempts match these filters.
-            </p>
+            <p className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground"><T>{" No attempts match these filters. "}</T></p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Learner</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Occupation</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>%</TableHead>
-                  <TableHead>Correct</TableHead>
-                  <TableHead>Wrong</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead><T>{"Learner"}</T></TableHead>
+                  <TableHead><T>{"Phone"}</T></TableHead>
+                  <TableHead><T>{"Occupation"}</T></TableHead>
+                  <TableHead><T>{"Score"}</T></TableHead>
+                  <TableHead><T>{"%"}</T></TableHead>
+                  <TableHead><T>{"Correct"}</T></TableHead>
+                  <TableHead><T>{"Wrong"}</T></TableHead>
+                  <TableHead><T>{"Time"}</T></TableHead>
+                  <TableHead><T>{"Status"}</T></TableHead>
+                  <TableHead><T>{"Date"}</T></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {result.items.map((row) => (
                   <TableRow key={row.testId}>
                     <TableCell className="max-w-[220px]">
-                      <p className="truncate font-medium">{row.name ?? "Unnamed"}</p>
-                      <p className="truncate text-xs text-muted-foreground">{row.email}</p>
+                      <p className="truncate font-medium"><T>{row.name ?? "Unnamed"}</T></p>
+                      <p className="truncate text-xs text-muted-foreground"><T>{row.email}</T></p>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap">{row.phone ?? "-"}</TableCell>
+                    <TableCell className="whitespace-nowrap"><T>{row.phone ?? "-"}</T></TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{occupationLabel(row.occupation)}</Badge>
+                      <Badge variant="secondary"><T>{occupationLabel(row.occupation)}</T></Badge>
                     </TableCell>
                     <TableCell className="whitespace-nowrap font-medium tabular-nums">
-                      {row.score}/{row.totalQuestions}
+                      <T>{row.score}</T><T>{"/"}</T><T>{row.totalQuestions}</T>
                     </TableCell>
-                    <TableCell className="tabular-nums">{row.percentage}%</TableCell>
-                    <TableCell className="tabular-nums text-success">{row.correct}</TableCell>
-                    <TableCell className="tabular-nums text-destructive">{row.wrong}</TableCell>
+                    <TableCell className="tabular-nums"><T>{row.percentage}</T><T>{"%"}</T></TableCell>
+                    <TableCell className="tabular-nums text-success"><T>{row.correct}</T></TableCell>
+                    <TableCell className="tabular-nums text-destructive"><T>{row.wrong}</T></TableCell>
                     <TableCell className="whitespace-nowrap tabular-nums">
-                      {formatDuration(row.timeTaken)}
+                      <T>{formatDuration(row.timeTaken)}</T>
                     </TableCell>
                     <TableCell>
                       <Badge variant={row.status === "PASSED" ? "success" : "destructive"}>
-                        {row.status === "PASSED" ? "Passed" : "Failed"}
+                        <T>{row.status === "PASSED" ? "Passed" : "Failed"}</T>
                       </Badge>
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-                      {formatDate(row.createdAt, true)}
+                      <T>{formatDate(row.createdAt, true)}</T>
                     </TableCell>
                   </TableRow>
                 ))}

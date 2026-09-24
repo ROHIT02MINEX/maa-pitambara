@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -30,9 +32,9 @@ export function StatCard({
     <Card className={cn("p-5", className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="mt-1.5 text-2xl font-bold tracking-tight">{value}</p>
-          {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+          <p className="truncate text-sm font-medium text-muted-foreground"><T>{label}</T></p>
+          <p className="mt-1.5 text-2xl font-bold tracking-tight"><T>{value}</T></p>
+          {hint ? <p className="mt-1 text-xs text-muted-foreground"><T>{hint}</T></p> : null}
         </div>
         {Icon ? (
           <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-lg", toneClasses)}>

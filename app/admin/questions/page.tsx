@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -26,22 +28,19 @@ export default async function AdminQuestionsPage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight">Question bank</h1>
-        <p className="mt-1 text-muted-foreground">
-          Each occupation has its own bank. Tests draw 20 active questions at random.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Question bank"}</T></h1>
+        <p className="mt-1 text-muted-foreground"><T>{" Each occupation has its own bank. Tests draw 20 active questions at random. "}</T></p>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle>Questions</CardTitle>
+          <CardTitle><T>{"Questions"}</T></CardTitle>
           <CardDescription>
-            {result.total} question(s) match the current filters.
-            {result.topics.length > 0 ? (
+            <T>{result.total}</T><T>{" question(s) match the current filters. "}</T>{result.topics.length > 0 ? (
               <span className="mt-2 flex flex-wrap gap-1.5">
                 {result.topics.slice(0, 12).map((topic) => (
                   <Badge key={topic} variant="secondary">
-                    {topic}
+                    <T>{topic}</T>
                   </Badge>
                 ))}
               </span>

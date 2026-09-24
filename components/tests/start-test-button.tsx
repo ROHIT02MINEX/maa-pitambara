@@ -1,9 +1,11 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { PlayCircle } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { startTestAction } from "@/actions/test";
 import { runAction } from "@/lib/run-action";
@@ -53,8 +55,7 @@ export function StartTestButton({
         loading={loading}
         onClick={() => router.push(`/tests/${resumeId}`)}
       >
-        <PlayCircle className="h-4 w-4" /> Resume your test
-      </Button>
+        <PlayCircle className="h-4 w-4" /><T>{" Resume your test "}</T></Button>
     );
   }
 
@@ -62,28 +63,27 @@ export function StartTestButton({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button className={className} size="lg" disabled={disabled}>
-          <PlayCircle className="h-4 w-4" /> Start a test
-        </Button>
+          <PlayCircle className="h-4 w-4" /><T>{" Start a test "}</T></Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Ready to begin?</AlertDialogTitle>
+          <AlertDialogTitle><T>{"Ready to begin?"}</T></AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="space-y-2 text-sm">
-              <p>Once you start, the 30-minute timer runs on the server. To be clear:</p>
+              <p><T>{"Once you start, the 30-minute timer runs on the server. To be clear:"}</T></p>
               <ul className="list-disc space-y-1 pl-5">
-                <li>{TEST_QUESTION_COUNT} randomly selected questions, one mark each.</li>
-                <li>No negative marking, so answer everything.</li>
-                <li>Refreshing or closing the tab does not reset the clock.</li>
-                <li>When time runs out your answers are submitted automatically.</li>
-                <li>You need {PASS_PERCENTAGE}% to pass, and answers are final once submitted.</li>
+                <li><T>{TEST_QUESTION_COUNT}</T><T>{" randomly selected questions, one mark each."}</T></li>
+                <li><T>{"No negative marking, so answer everything."}</T></li>
+                <li><T>{"Refreshing or closing the tab does not reset the clock."}</T></li>
+                <li><T>{"When time runs out your answers are submitted automatically."}</T></li>
+                <li><T>{"You need "}</T><T>{PASS_PERCENTAGE}</T><T>{"% to pass, and answers are final once submitted."}</T></li>
               </ul>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Not yet</AlertDialogCancel>
-          <AlertDialogAction onClick={start}>Start the test</AlertDialogAction>
+          <AlertDialogCancel><T>{"Not yet"}</T></AlertDialogCancel>
+          <AlertDialogAction onClick={start}><T>{"Start the test"}</T></AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -40,10 +42,8 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
-        <p className="mt-1 text-muted-foreground">
-          Everything happening across the portal at a glance.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Overview"}</T></h1>
+        <p className="mt-1 text-muted-foreground"><T>{" Everything happening across the portal at a glance. "}</T></p>
       </header>
 
       <OptionalSetupNotice missing={missing} />
@@ -105,11 +105,10 @@ export default async function AdminDashboardPage() {
         {overview.occupationCounts.map((row) => (
           <Card key={row.occupation} className="p-5">
             <p className="text-sm font-medium text-muted-foreground">
-              {occupationLabel(row.occupation)}
+              <T>{occupationLabel(row.occupation)}</T>
             </p>
-            <p className="mt-1 text-2xl font-bold">{row.users}</p>
-            <p className="text-xs text-muted-foreground">
-              registered learner{row.users === 1 ? "" : "s"}
+            <p className="mt-1 text-2xl font-bold"><T>{row.users}</T></p>
+            <p className="text-xs text-muted-foreground"><T>{" registered learner"}</T><T>{row.users === 1 ? "" : "s"}</T>
             </p>
           </Card>
         ))}
@@ -126,32 +125,32 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div>
-              <CardTitle>Recent logins</CardTitle>
-              <CardDescription>Who has signed in most recently</CardDescription>
+              <CardTitle><T>{"Recent logins"}</T></CardTitle>
+              <CardDescription><T>{"Who has signed in most recently"}</T></CardDescription>
             </div>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/admin/users">All users</Link>
+              <Link href="/admin/users"><T>{"All users"}</T></Link>
             </Button>
           </CardHeader>
           <CardContent>
             {overview.recentLogins.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No sign-ins recorded yet.</p>
+              <p className="text-sm text-muted-foreground"><T>{"No sign-ins recorded yet."}</T></p>
             ) : (
               <ul className="divide-y">
                 {overview.recentLogins.map((user) => (
                   <li key={user.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                     <Avatar>
                       {user.image ? <AvatarImage src={user.image} alt="" /> : null}
-                      <AvatarFallback>{initials(user.name)}</AvatarFallback>
+                      <AvatarFallback><T>{initials(user.name)}</T></AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{user.name ?? "Unnamed"}</p>
-                      <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                      <p className="truncate font-medium"><T>{user.name ?? "Unnamed"}</T></p>
+                      <p className="truncate text-xs text-muted-foreground"><T>{user.email}</T></p>
                     </div>
                     <div className="text-right">
-                      <Badge variant="secondary">{occupationLabel(user.occupation)}</Badge>
+                      <Badge variant="secondary"><T>{occupationLabel(user.occupation)}</T></Badge>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        {user.lastLoginAt ? formatDate(user.lastLoginAt, true) : "-"}
+                        <T>{user.lastLoginAt ? formatDate(user.lastLoginAt, true) : "-"}</T>
                       </p>
                     </div>
                   </li>
@@ -164,33 +163,32 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div>
-              <CardTitle>Recent test attempts</CardTitle>
-              <CardDescription>The latest submitted assessments</CardDescription>
+              <CardTitle><T>{"Recent test attempts"}</T></CardTitle>
+              <CardDescription><T>{"The latest submitted assessments"}</T></CardDescription>
             </div>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/admin/analytics">Analytics</Link>
+              <Link href="/admin/analytics"><T>{"Analytics"}</T></Link>
             </Button>
           </CardHeader>
           <CardContent>
             {overview.recentAttempts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No attempts submitted yet.</p>
+              <p className="text-sm text-muted-foreground"><T>{"No attempts submitted yet."}</T></p>
             ) : (
               <ul className="divide-y">
                 {overview.recentAttempts.map((test) => (
                   <li key={test.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{test.user.name ?? test.user.email}</p>
+                      <p className="truncate font-medium"><T>{test.user.name ?? test.user.email}</T></p>
                       <p className="truncate text-xs text-muted-foreground">
-                        {occupationLabel(test.occupation)} ·{" "}
-                        {test.submittedAt ? formatDate(test.submittedAt, true) : "-"}
+                        <T>{occupationLabel(test.occupation)}</T><T>{" ·"}</T><T>{" "}</T>
+                        <T>{test.submittedAt ? formatDate(test.submittedAt, true) : "-"}</T>
                       </p>
                     </div>
                     <p className="text-sm font-semibold">
-                      {test.score}/{test.totalQuestions}
+                      <T>{test.score}</T><T>{"/"}</T><T>{test.totalQuestions}</T>
                     </p>
                     <Badge variant={test.status === "PASSED" ? "success" : "destructive"}>
-                      {test.percentage}%
-                    </Badge>
+                      <T>{test.percentage}</T><T>{"% "}</T></Badge>
                   </li>
                 ))}
               </ul>
@@ -201,32 +199,31 @@ export default async function AdminDashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Activity log</CardTitle>
-          <CardDescription>The most recent auditable actions across the portal.</CardDescription>
+          <CardTitle><T>{"Activity log"}</T></CardTitle>
+          <CardDescription><T>{"The most recent auditable actions across the portal."}</T></CardDescription>
         </CardHeader>
         <CardContent>
           {activity.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nothing recorded yet.</p>
+            <p className="text-sm text-muted-foreground"><T>{"Nothing recorded yet."}</T></p>
           ) : (
             <ol className="divide-y">
               {activity.map((entry) => (
                 <li key={entry.id} className="flex flex-wrap items-center gap-3 py-3 first:pt-0">
                   <span className="flex-1 text-sm">
-                    <strong className="font-medium">{activityLabel(entry.action)}</strong>
+                    <strong className="font-medium"><T>{activityLabel(entry.action)}</T></strong>
                     {entry.user ? (
                       <span className="text-muted-foreground">
-                        {" "}
-                        by {entry.user.name ?? entry.user.email}
+                        <T>{" "}</T><T>{" by "}</T><T>{entry.user.name ?? entry.user.email}</T>
                       </span>
                     ) : null}
                     {entry.detail ? (
                       <span className="block truncate text-xs text-muted-foreground">
-                        {entry.detail}
+                        <T>{entry.detail}</T>
                       </span>
                     ) : null}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {formatDate(entry.createdAt, true)}
+                    <T>{formatDate(entry.createdAt, true)}</T>
                   </span>
                 </li>
               ))}

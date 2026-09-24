@@ -1,4 +1,6 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -69,7 +71,7 @@ export function SidebarNav({
             )}
           >
             <Icon className="h-4 w-4 shrink-0" aria-hidden />
-            <span className="flex-1 truncate">{item.label}</span>
+            <span className="flex-1 truncate"><T>{item.label}</T></span>
             {active ? <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden /> : null}
           </Link>
         );

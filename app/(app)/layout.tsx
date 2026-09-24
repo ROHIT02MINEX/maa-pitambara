@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
@@ -31,13 +33,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         isAdmin ? (
           <Button asChild variant="outline" className="w-full">
             <Link href="/admin">
-              <ShieldCheck className="h-4 w-4" /> Admin panel
-            </Link>
+              <ShieldCheck className="h-4 w-4" /><T>{" Admin panel "}</T></Link>
           </Button>
         ) : null
       }
     >
-      {children}
+      <T>{children}</T>
     </AppShell>
   );
 }

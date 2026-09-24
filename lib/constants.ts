@@ -5,8 +5,8 @@ import { Occupation, Difficulty, QuestionType, Subject, TestStatus } from "@pris
  * (update.vppup.in, ITI code 2627) rather than typed from memory.
  */
 export const INSTITUTE = {
-  name: "Maa Pitambra Private ITI",
-  shortName: "Maa Pitambra ITI",
+  name: "Maa Pitambra Pvt ITI Jhansi",
+  shortName: "Maa Pitambra Pvt ITI Jhansi",
   city: "Jhansi",
   address:
     "Behind Hero JMK Showroom, Shivpuri Road, Nandanpura, Jhansi, Uttar Pradesh 284003",

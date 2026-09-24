@@ -1,7 +1,7 @@
 import "server-only";
 import { NextResponse, type NextRequest } from "next/server";
 import { Role } from "@prisma/client";
-import { auth } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { limitByIp } from "@/lib/rate-limit";
 
 export type GuardedContext = {
@@ -66,8 +66,7 @@ export function guard(handler: RouteHandler, options: GuardOptions = {}) {
       }
     }
 
-    const session = await auth();
-    const user = session?.user;
+    const user = await currentUser();
     if (!user?.id || !user.email) return jsonError("Unauthorized", 401);
     if (requireRole && user.role !== requireRole) return jsonError("Forbidden", 403);
 

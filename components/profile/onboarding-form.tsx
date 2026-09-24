@@ -1,10 +1,12 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import type { Occupation } from "@prisma/client";
 
 import { createProfileAction } from "@/actions/profile";
@@ -69,13 +71,13 @@ export function OnboardingForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       {formError ? (
         <Alert variant="destructive">
-          <AlertDescription>{formError}</AlertDescription>
+          <AlertDescription><T>{formError}</T></AlertDescription>
         </Alert>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="name">Full name</Label>
+          <Label htmlFor="name"><T>{"Full name"}</T></Label>
           <Input
             id="name"
             autoComplete="name"
@@ -83,11 +85,11 @@ export function OnboardingForm({
             aria-invalid={Boolean(errors.name)}
             {...register("name")}
           />
-          {errors.name ? <p className="text-sm text-destructive">{errors.name.message}</p> : null}
+          {errors.name ? <p className="text-sm text-destructive"><T>{errors.name.message}</T></p> : null}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone">Mobile number</Label>
+          <Label htmlFor="phone"><T>{"Mobile number"}</T></Label>
           <Input
             id="phone"
             type="tel"
@@ -97,16 +99,16 @@ export function OnboardingForm({
             aria-invalid={Boolean(errors.phone)}
             {...register("phone")}
           />
-          {errors.phone ? <p className="text-sm text-destructive">{errors.phone.message}</p> : null}
+          {errors.phone ? <p className="text-sm text-destructive"><T>{errors.phone.message}</T></p> : null}
         </div>
       </div>
 
       <fieldset className="space-y-3" disabled={Boolean(lockedOccupation)}>
-        <legend className="text-sm font-medium">Occupation</legend>
+        <legend className="text-sm font-medium"><T>{"Occupation"}</T></legend>
         <p className="text-sm text-muted-foreground">
-          {lockedOccupation
+          <T>{lockedOccupation
             ? "Your occupation has already been set and cannot be changed."
-            : "Choose carefully. Each learner belongs to exactly one trade, and this cannot be changed later."}
+            : "Choose carefully. Each learner belongs to exactly one trade, and this cannot be changed later."}</T>
         </p>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -133,7 +135,7 @@ export function OnboardingForm({
                   onChange={() => setValue("occupation", value, { shouldValidate: true })}
                 />
                 <span className="flex items-center justify-between font-medium">
-                  {OCCUPATION_LABELS[value]}
+                  <T>{OCCUPATION_LABELS[value]}</T>
                   <span
                     aria-hidden
                     className={cn(
@@ -143,7 +145,7 @@ export function OnboardingForm({
                   />
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {OCCUPATION_DESCRIPTIONS[value]}
+                  <T>{OCCUPATION_DESCRIPTIONS[value]}</T>
                 </span>
               </label>
             );
@@ -151,12 +153,12 @@ export function OnboardingForm({
         </div>
 
         {errors.occupation ? (
-          <p className="text-sm text-destructive">{errors.occupation.message}</p>
+          <p className="text-sm text-destructive"><T>{errors.occupation.message}</T></p>
         ) : null}
       </fieldset>
 
       <Button type="submit" className="w-full" size="lg" loading={isSubmitting || redirecting} disabled={isSubmitting || redirecting}>
-        {redirecting ? "Loading dashboard..." : "Save profile and continue"}
+        <T>{redirecting ? "Loading dashboard..." : "Save profile and continue"}</T>
       </Button>
     </form>
   );

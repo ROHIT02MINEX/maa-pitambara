@@ -1,4 +1,5 @@
 import NextAuth, { type Session } from "next-auth";
+import { cache } from "react";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
@@ -8,7 +9,6 @@ import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/lib/auth.config";
 import { emailVerificationRequired } from "@/lib/env";
 import { loginSchema } from "@/lib/validations/auth";
-import { consumeLoginApproval, ensurePendingLoginRequest } from "@/lib/login-approval";
 
 /** How long a JWT may go without being re-checked against the database. */
 const TOKEN_REFRESH_MS = 60 * 1000;
@@ -45,13 +45,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // link; see `emailVerificationRequired()`.
         if (emailVerificationRequired() && !user.emailVerified) return null;
 
-        if (user.role !== Role.ADMIN) {
-          const approved = await consumeLoginApproval(user.id);
-          if (!approved) {
-            await ensurePendingLoginRequest(user.id);
-            return null;
-          }
-        }
 
         return {
           id: user.id,
@@ -77,8 +70,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       });
       if (record?.disabled) return false;
 
-      // Credentials are gated atomically inside authorize(). OAuth needs the
-      // same queue here because it does not pass through that provider.
+      // Ensure OAuth users have a local profile.
       if (account?.provider !== "credentials") {
         record ??= await prisma.user.create({
           data: {
@@ -89,13 +81,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           },
         });
 
-        if (record.role !== Role.ADMIN) {
-          const approved = await consumeLoginApproval(record.id);
-          if (!approved) {
-            await ensurePendingLoginRequest(record.id);
-            return "/login?approval=pending";
-          }
-        }
       }
 
       if (record?.role === Role.ADMIN) {
@@ -173,10 +158,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 export type SessionUser = Session["user"];
 
 /** Returns the session user or `null`. Never throws. */
-export async function currentUser() {
+export const currentUser = cache(async () => {
   const session = await auth();
-  return session?.user ?? null;
-}
+  if (!session?.user?.id) return null;
+  const user = await prisma.user.findUnique({ where: { id: session.user.id },
+    select: { name: true, email: true, image: true, phone: true, occupation: true, role: true, disabled: true, emailVerified: true } });
+  if (!user || user.disabled) return null;
+  return { ...session.user, ...user, profileComplete: Boolean(user.name && user.phone && user.occupation) };
+});
 
 export async function requireUser() {
   const user = await currentUser();

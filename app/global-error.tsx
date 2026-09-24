@@ -26,6 +26,7 @@ export default function GlobalError({
       >
         <div style={{ maxWidth: 420, padding: 32, textAlign: "center" }}>
           <h1 style={{ fontSize: 20, marginBottom: 8 }}>The application failed to load</h1>
+          <p lang="hi">ऐप लोड नहीं हो सका। कृपया पुनः प्रयास करें या व्यवस्थापक से संपर्क करें।</p>
           <p style={{ fontSize: 14, color: "#475569", marginBottom: 20 }}>
             Please try again. If the problem persists, contact your administrator
             {error.digest ? ` and quote reference ${error.digest}` : ""}.
@@ -42,7 +43,7 @@ export default function GlobalError({
               cursor: "pointer",
             }}
           >
-            Try again
+            Try again / पुनः प्रयास करें
           </button>
         </div>
       </body>

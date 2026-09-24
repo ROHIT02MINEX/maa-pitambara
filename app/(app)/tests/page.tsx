@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -20,9 +22,7 @@ import {
 import { finalizeExpiredTests } from "@/lib/test-engine";
 import { occupationLabel, PASS_PERCENTAGE, TEST_QUESTION_COUNT } from "@/lib/constants";
 import { formatDate, formatDuration } from "@/lib/utils";
-import { getRetestOverview } from "@/lib/retest";
 import { StartTestButton } from "@/components/tests/start-test-button";
-import { RetestPanel } from "@/components/tests/retest-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -54,29 +54,24 @@ export default async function TestsPage() {
   // Close out anything whose timer expired while the learner was away.
   await finalizeExpiredTests(user.id);
 
-  const [inProgress, history, bankSize, retest] = await Promise.all([
+  const [inProgress, history, bankSize] = await Promise.all([
     getInProgressTest(user.id),
     getTestHistory(user.id),
     getQuestionBankSize(user.occupation),
-    getRetestOverview(user.id),
   ]);
 
   const enoughQuestions = bankSize >= TEST_QUESTION_COUNT;
-  const canStart = retest.eligibility.allowed;
-  const blockedMessage = retest.eligibility.allowed ? null : retest.eligibility.message;
 
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Assessments</h1>
+          <h1 className="text-2xl font-bold tracking-tight"><T>{"Assessments"}</T></h1>
           <p className="mt-1 text-muted-foreground">
-            {occupationLabel(user.occupation)} question bank · {bankSize} question
-            {bankSize === 1 ? "" : "s"} available
-          </p>
+            <T>{occupationLabel(user.occupation)}</T><T>{" question bank · "}</T><T>{bankSize}</T><T>{" question "}</T><T>{bankSize === 1 ? "" : "s"}</T><T>{" available "}</T></p>
         </div>
         <StartTestButton
-          disabled={!enoughQuestions || !canStart}
+          disabled={!enoughQuestions}
           resumeId={inProgress?.id ?? null}
         />
       </header>
@@ -84,29 +79,21 @@ export default async function TestsPage() {
       {inProgress ? (
         <Alert variant="warning">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>You have a test in progress</AlertTitle>
-          <AlertDescription>
-            Started {formatDate(inProgress.startedAt, true)}. The timer is still running, so resume it
-            before it expires and is submitted automatically.
-          </AlertDescription>
+          <AlertTitle><T>{"You have a test in progress"}</T></AlertTitle>
+          <AlertDescription><T>{" Started "}</T><T>{formatDate(inProgress.startedAt, true)}</T><T>{". The timer is still running, so resume it before it expires and is submitted automatically. "}</T></AlertDescription>
         </Alert>
       ) : null}
 
       {!enoughQuestions ? (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Not enough questions yet</AlertTitle>
-          <AlertDescription>
-            A test needs {TEST_QUESTION_COUNT} questions, but only {bankSize} have been published
-            for {occupationLabel(user.occupation)}. Please ask your administrator to add more.
-          </AlertDescription>
+          <AlertTitle><T>{"Not enough questions yet"}</T></AlertTitle>
+          <AlertDescription><T>{" A test needs "}</T><T>{TEST_QUESTION_COUNT}</T><T>{" questions, but only "}</T><T>{bankSize}</T><T>{" have been published for "}</T><T>{occupationLabel(user.occupation)}</T><T>{". Please ask your administrator to add more. "}</T></AlertDescription>
         </Alert>
       ) : null}
 
       <section aria-labelledby="rules-heading">
-        <h2 id="rules-heading" className="sr-only">
-          Test rules
-        </h2>
+        <h2 id="rules-heading" className="sr-only"><T>{" Test rules "}</T></h2>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {RULES.map((rule) => (
             <li key={rule.title}>
@@ -114,63 +101,55 @@ export default async function TestsPage() {
                 <span className="mb-3 grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary">
                   <rule.icon className="h-5 w-5" aria-hidden />
                 </span>
-                <h3 className="font-semibold">{rule.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{rule.body}</p>
+                <h3 className="font-semibold"><T>{rule.title}</T></h3>
+                <p className="mt-1 text-sm text-muted-foreground"><T>{rule.body}</T></p>
               </Card>
             </li>
           ))}
         </ul>
       </section>
 
-      <RetestPanel
-        canRequest={retest.eligibility.allowed === false && retest.eligibility.reason === "needs-request"}
-        blockedMessage={blockedMessage}
-        requests={retest.requests}
-        attemptsUsed={retest.attemptsUsed}
-        freeAttempts={retest.freeAttempts}
-      />
+      <p className="text-sm text-muted-foreground"><T>{"Practise as often as you like. No administrator approval is required."}</T></p>
 
       <Card>
         <CardHeader>
-          <CardTitle>Your attempts</CardTitle>
-          <CardDescription>Every completed test, newest first.</CardDescription>
+          <CardTitle><T>{"Your attempts"}</T></CardTitle>
+          <CardDescription><T>{"Every completed test, newest first."}</T></CardDescription>
         </CardHeader>
         <CardContent>
           {history.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-              No attempts yet. Start your first test when you&apos;re ready.
-            </p>
+            <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground"><T>{" No attempts yet. Start your first test when you're ready. "}</T></p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Percentage</TableHead>
-                  <TableHead>Time taken</TableHead>
-                  <TableHead>Result</TableHead>
-                  <TableHead className="text-right">Review</TableHead>
+                  <TableHead><T>{"Date"}</T></TableHead>
+                  <TableHead><T>{"Score"}</T></TableHead>
+                  <TableHead><T>{"Percentage"}</T></TableHead>
+                  <TableHead><T>{"Time taken"}</T></TableHead>
+                  <TableHead><T>{"Result"}</T></TableHead>
+                  <TableHead className="text-right"><T>{"Review"}</T></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {history.map((test) => (
                   <TableRow key={test.id}>
                     <TableCell className="whitespace-nowrap">
-                      {test.submittedAt ? formatDate(test.submittedAt, true) : "-"}
+                      <T>{test.submittedAt ? formatDate(test.submittedAt, true) : "-"}</T>
                     </TableCell>
                     <TableCell className="font-medium">
-                      {test.score}/{test.totalQuestions}
+                      <T>{test.score}</T><T>{"/"}</T><T>{test.totalQuestions}</T>
                     </TableCell>
-                    <TableCell>{test.percentage}%</TableCell>
-                    <TableCell>{formatDuration(test.timeTaken)}</TableCell>
+                    <TableCell><T>{test.percentage}</T><T>{"%"}</T></TableCell>
+                    <TableCell><T>{formatDuration(test.timeTaken)}</T></TableCell>
                     <TableCell>
                       <Badge variant={test.status === "PASSED" ? "success" : "destructive"}>
-                        {test.status === "PASSED" ? "Passed" : "Failed"}
+                        <T>{test.status === "PASSED" ? "Passed" : "Failed"}</T>
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Button asChild variant="ghost" size="sm">
-                        <Link href={`/tests/result/${test.id}`}>View</Link>
+                        <Link href={`/tests/result/${test.id}`}><T>{"View"}</T></Link>
                       </Button>
                     </TableCell>
                   </TableRow>

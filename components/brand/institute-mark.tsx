@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import { cn } from "@/lib/utils";
 
 /**
@@ -25,7 +27,7 @@ export function InstituteMark({
       aria-label={title ?? undefined}
       aria-hidden={title ? undefined : true}
     >
-      {title ? <title>{title}</title> : null}
+      {title ? <title><T>{title}</T></title> : null}
 
       <circle cx="32" cy="32" r="31" fill="hsl(var(--primary))" />
       <circle

@@ -1,9 +1,11 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { changePasswordAction } from "@/actions/auth";
 import { runAction } from "@/lib/run-action";
@@ -53,22 +55,18 @@ export function ChangePasswordForm({ hasPassword }: { hasPassword: boolean }) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       {formError ? (
         <Alert variant="destructive">
-          <AlertDescription>{formError}</AlertDescription>
+          <AlertDescription><T>{formError}</T></AlertDescription>
         </Alert>
       ) : null}
 
       {!hasPassword ? (
         <Alert variant="info">
-          <AlertDescription>
-            You signed up with Google. Set a password here if you also want to sign in with your
-            e-mail address, so type anything in the first field; it is not checked for accounts
-            without an existing password.
-          </AlertDescription>
+          <AlertDescription><T>{" You signed up with Google. Set a password here if you also want to sign in with your e-mail address, so type anything in the first field; it is not checked for accounts without an existing password. "}</T></AlertDescription>
         </Alert>
       ) : null}
 
       <div className="space-y-2">
-        <Label htmlFor="currentPassword">Current password</Label>
+        <Label htmlFor="currentPassword"><T>{"Current password"}</T></Label>
         <Input
           id="currentPassword"
           type="password"
@@ -77,12 +75,12 @@ export function ChangePasswordForm({ hasPassword }: { hasPassword: boolean }) {
           {...register("currentPassword")}
         />
         {errors.currentPassword ? (
-          <p className="text-sm text-destructive">{errors.currentPassword.message}</p>
+          <p className="text-sm text-destructive"><T>{errors.currentPassword.message}</T></p>
         ) : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="newPassword">New password</Label>
+        <Label htmlFor="newPassword"><T>{"New password"}</T></Label>
         <Input
           id="newPassword"
           type="password"
@@ -92,12 +90,12 @@ export function ChangePasswordForm({ hasPassword }: { hasPassword: boolean }) {
         />
         <PasswordStrength password={watch("newPassword") ?? ""} />
         {errors.newPassword ? (
-          <p className="text-sm text-destructive">{errors.newPassword.message}</p>
+          <p className="text-sm text-destructive"><T>{errors.newPassword.message}</T></p>
         ) : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm new password</Label>
+        <Label htmlFor="confirmPassword"><T>{"Confirm new password"}</T></Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -106,12 +104,12 @@ export function ChangePasswordForm({ hasPassword }: { hasPassword: boolean }) {
           {...register("confirmPassword")}
         />
         {errors.confirmPassword ? (
-          <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+          <p className="text-sm text-destructive"><T>{errors.confirmPassword.message}</T></p>
         ) : null}
       </div>
 
       <Button type="submit" loading={isSubmitting}>
-        {hasPassword ? "Change password" : "Set password"}
+        <T>{hasPassword ? "Change password" : "Set password"}</T>
       </Button>
     </form>
   );

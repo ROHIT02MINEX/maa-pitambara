@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-    searchParams: Promise<{ callbackUrl?: string; error?: string; approval?: string }>;
+    searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
   const params = await searchParams;
 
@@ -28,7 +28,6 @@ export default async function LoginPage({
       <LoginForm
         callbackUrl={callbackUrl}
         googleEnabled={envStatus().google}
-        initiallyPending={params.approval === "pending"}
       />
     </Suspense>
   );

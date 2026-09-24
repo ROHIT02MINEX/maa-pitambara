@@ -1,8 +1,10 @@
 "use client";
+import { T } from "@/components/translated-text";
+
 
 import * as React from "react";
 import { signIn } from "next-auth/react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 import { Button } from "@/components/ui/button";
 
@@ -58,7 +60,7 @@ export function GoogleButton({
       loading={loading}
     >
       {!loading && <GoogleIcon />}
-      {label}
+      <T>{label}</T>
     </Button>
   );
 }

@@ -1,4 +1,6 @@
+"use client";
 import * as React from "react";
+import { useTranslatedProps } from "@/hooks/use-translated-props";
 import { cn } from "@/lib/utils";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
@@ -17,7 +19,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         className,
       )}
       ref={ref}
-      {...props}
+      {...useTranslatedProps(props)}
     />
   ),
 );

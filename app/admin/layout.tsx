@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -24,12 +26,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       sidebarFooter={
         <Button asChild variant="outline" className="w-full">
           <Link href="/dashboard">
-            <ArrowLeft className="h-4 w-4" /> Back to portal
-          </Link>
+            <ArrowLeft className="h-4 w-4" /><T>{" Back to portal "}</T></Link>
         </Button>
       }
     >
-      {children}
+      <T>{children}</T>
     </AppShell>
   );
 }

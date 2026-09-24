@@ -1,4 +1,6 @@
+"use client";
 import * as React from "react";
+import { useTranslatedProps } from "@/hooks/use-translated-props";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
@@ -41,11 +43,12 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, loading = false, children, disabled, ...props }, ref) => {
+    const localizedProps = useTranslatedProps(props);
     // `Slot` requires exactly one child, so the spinner is only ever rendered
     // by the real <button> branch.
     if (asChild) {
       return (
-        <Slot className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
+        <Slot className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...localizedProps}>
           {children}
         </Slot>
       );
@@ -57,7 +60,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         aria-busy={loading || undefined}
-        {...props}
+        {...localizedProps}
       >
         {loading ? <Loader2 className="animate-spin" aria-hidden /> : null}
         {children}

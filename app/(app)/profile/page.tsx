@@ -1,3 +1,5 @@
+
+import { T } from "@/components/translated-text";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { CalendarDays, MailCheck, ShieldCheck } from "lucide-react";
@@ -46,51 +48,47 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight">Your profile</h1>
-        <p className="mt-1 text-muted-foreground">
-          Keep your details up to date and manage how you sign in.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight"><T>{"Your profile"}</T></h1>
+        <p className="mt-1 text-muted-foreground"><T>{" Keep your details up to date and manage how you sign in. "}</T></p>
       </header>
 
       <Card className="p-6">
         <div className="flex flex-wrap items-center gap-5">
           <Avatar className="h-16 w-16">
             {user.image ? <AvatarImage src={user.image} alt="" /> : null}
-            <AvatarFallback className="text-lg">{initials(user.name)}</AvatarFallback>
+            <AvatarFallback className="text-lg"><T>{initials(user.name)}</T></AvatarFallback>
           </Avatar>
 
           <div className="min-w-0 flex-1">
-            <p className="text-xl font-semibold">{user.name}</p>
-            <p className="truncate text-sm text-muted-foreground">{user.email}</p>
+            <p className="text-xl font-semibold"><T>{user.name}</T></p>
+            <p className="truncate text-sm text-muted-foreground"><T>{user.email}</T></p>
             <div className="mt-2 flex flex-wrap gap-2">
-              <Badge>{occupationLabel(user.occupation)}</Badge>
+              <Badge><T>{occupationLabel(user.occupation)}</T></Badge>
               {user.role === "ADMIN" ? (
                 <Badge variant="warning">
-                  <ShieldCheck className="h-3 w-3" /> Administrator
-                </Badge>
+                  <ShieldCheck className="h-3 w-3" /><T>{" Administrator "}</T></Badge>
               ) : null}
               {user.emailVerified ? (
                 <Badge variant="success">
-                  <MailCheck className="h-3 w-3" /> Verified
-                </Badge>
+                  <MailCheck className="h-3 w-3" /><T>{" Verified "}</T></Badge>
               ) : (
-                <Badge variant="destructive">Unverified</Badge>
+                <Badge variant="destructive"><T>{"Unverified"}</T></Badge>
               )}
             </div>
           </div>
 
           <dl className="grid grid-cols-3 gap-6 text-center">
             <div>
-              <dt className="text-xs text-muted-foreground">Tests</dt>
-              <dd className="text-lg font-bold">{user._count.tests}</dd>
+              <dt className="text-xs text-muted-foreground"><T>{"Tests"}</T></dt>
+              <dd className="text-lg font-bold"><T>{user._count.tests}</T></dd>
             </div>
             <div>
-              <dt className="text-xs text-muted-foreground">Bookmarks</dt>
-              <dd className="text-lg font-bold">{user._count.bookmarks}</dd>
+              <dt className="text-xs text-muted-foreground"><T>{"Bookmarks"}</T></dt>
+              <dd className="text-lg font-bold"><T>{user._count.bookmarks}</T></dd>
             </div>
             <div>
-              <dt className="text-xs text-muted-foreground">Member since</dt>
-              <dd className="text-sm font-medium">{formatDate(user.createdAt)}</dd>
+              <dt className="text-xs text-muted-foreground"><T>{"Member since"}</T></dt>
+              <dd className="text-sm font-medium"><T>{formatDate(user.createdAt)}</T></dd>
             </div>
           </dl>
         </div>
@@ -99,8 +97,8 @@ export default async function ProfilePage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Personal details</CardTitle>
-            <CardDescription>Your name and mobile number.</CardDescription>
+            <CardTitle><T>{"Personal details"}</T></CardTitle>
+            <CardDescription><T>{"Your name and mobile number."}</T></CardDescription>
           </CardHeader>
           <CardContent>
             <ProfileForm
@@ -113,11 +111,11 @@ export default async function ProfilePage() {
 
         <Card id="security">
           <CardHeader>
-            <CardTitle>Security</CardTitle>
+            <CardTitle><T>{"Security"}</T></CardTitle>
             <CardDescription>
-              {user.passwordHash
+              <T>{user.passwordHash
                 ? "Change the password you use to sign in."
-                : "Add a password so you can sign in without Google."}
+                : "Add a password so you can sign in without Google."}</T>
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -128,20 +126,20 @@ export default async function ProfilePage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Activity log</CardTitle>
-          <CardDescription>Recent actions recorded on your account.</CardDescription>
+          <CardTitle><T>{"Activity log"}</T></CardTitle>
+          <CardDescription><T>{"Recent actions recorded on your account."}</T></CardDescription>
         </CardHeader>
         <CardContent>
           {activity.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nothing recorded yet.</p>
+            <p className="text-sm text-muted-foreground"><T>{"Nothing recorded yet."}</T></p>
           ) : (
             <ol className="divide-y">
               {activity.map((entry) => (
                 <li key={entry.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                   <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-                  <span className="flex-1 text-sm">{activityLabel(entry.action)}</span>
+                  <span className="flex-1 text-sm"><T>{activityLabel(entry.action)}</T></span>
                   <span className="text-xs text-muted-foreground">
-                    {formatDate(entry.createdAt, true)}
+                    <T>{formatDate(entry.createdAt, true)}</T>
                   </span>
                 </li>
               ))}
