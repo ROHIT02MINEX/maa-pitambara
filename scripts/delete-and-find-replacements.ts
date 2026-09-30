@@ -13,7 +13,7 @@ async function run() {
     where: { id: { in: idsToProcess } }
   });
   
-  const breakdown = {};
+  const breakdown: Record<string, number> = {};
   for (const q of questionsToDeactivate) {
     const key = `${q.occupation} | ${q.subject}`; // Simplification since year isn't directly on question
     breakdown[key] = (breakdown[key] || 0) + 1;
@@ -54,7 +54,7 @@ async function run() {
   ];
   
   let suitableReplacementsCount = 0;
-  let breakdownReplacements = {};
+  let breakdownReplacements: Record<string, number> = {};
   
   for (const item of bankData) {
     // Basic checks

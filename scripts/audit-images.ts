@@ -104,7 +104,7 @@ async function audit() {
   const byTrade = suspected.reduce((acc, q) => {
     acc[q.occupation] = (acc[q.occupation] || 0) + 1;
     return acc;
-  }, {});
+  }, {} as Record<string, number>);
 
   report += `### Breakdown by Trade\n`;
   for (const [trade, count] of Object.entries(byTrade)) {
@@ -114,7 +114,7 @@ async function audit() {
   const bySubject = suspected.reduce((acc, q) => {
     acc[q.subject] = (acc[q.subject] || 0) + 1;
     return acc;
-  }, {});
+  }, {} as Record<string, number>);
 
   report += `\n### Breakdown by Subject\n`;
   for (const [subj, count] of Object.entries(bySubject)) {
